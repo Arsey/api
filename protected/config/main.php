@@ -19,17 +19,10 @@ return array(
         'application.components.*',
         //import user models from user module extension
         'application.modules.user.models.*',
-
+        'application.extensions.googlePlaces',
     ),
     'modules' => array(
-        //Gii tool
-
-        'gii' => array(
-            'class' => 'system.gii.GiiModule',
-            'password' => '32232131',
-            // If removed, Gii defaults to localhost only. Edit carefully to taste.
-            'ipFilters' => array('127.0.0.1', '::1'),
-        ),
+        
         //User Managment Module
 
         'user' => array(
@@ -73,8 +66,6 @@ return array(
                 //REST patterns
                 array('api/list', 'pattern' => 'api/<model:\w+>/<status:\w+>', 'verb' => 'GET'),
                 array('api/list', 'pattern' => 'api/<model:\w+>', 'verb' => 'GET'),
-
-
                 array('api/view', 'pattern' => 'api/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 array('api/update', 'pattern' => 'api/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),
                 array('api/delete', 'pattern' => 'api/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
@@ -84,14 +75,6 @@ return array(
             ),
         ),
         //MySQL database configuration
-
-        'db' => array(
-            'connectionString' => 'mysql:host=91.200.40.4;dbname=yii_planteaters',
-            'emulatePrepare' => true,
-            'username' => 'planteater',
-            'password' => '32232131',
-            'charset' => 'utf8',
-        ),
         'errorHandler' => array(
             // use 'site/error' action to display errors
             'errorAction' => 'site/error',

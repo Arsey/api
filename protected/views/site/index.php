@@ -2,8 +2,20 @@
 /* @var $this SiteController */
 
 $this->pageTitle=Yii::app()->name;
-?>
 
+
+
+$googlePlaces = new googlePlaces(helper::yiiparam('googleApiKey'));
+
+// Set the longitude and the latitude of the location you want to search the surronds of
+$latitude   = '-33.8804166';
+$longitude = '151.2107662';
+$googlePlaces->setCurloptSslVerifypeer(false);
+$googlePlaces->setLocation($latitude . ',' . $longitude);
+$googlePlaces->setRadius(5000);
+$results = $googlePlaces->Search();
+
+?>
 <h1>Welcome to <i><?php echo CHtml::encode(Yii::app()->name); ?></i></h1>
 
 <p>Congratulations! You have successfully created your Yii application.</p>
