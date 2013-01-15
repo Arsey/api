@@ -24,11 +24,24 @@ class helper extends CApplicationComponent {
         }
     }
 
+    /**
+     * It returns parameter from Yii configuration, or default value if parameter was not founds
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     */
     public static function yiiparam($name, $default = null) {
         if (isset(Yii::app()->params[$name]))
             return Yii::app()->params[$name];
         else
             return $default;
+    }
+
+    public static function cutHttpX($var_name) {
+        if (preg_match('/' . Constants::SERVER_VARIABLE_PREFIX . '/', $var_name)) {
+            return strtolower(preg_replace('/' . Constants::SERVER_VARIABLE_PREFIX . '/', '', $var_name));
+        }
+        return $var_name;
     }
 
 }

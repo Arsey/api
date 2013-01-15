@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * ApiHelper class file.
+ *
+ * @author Arsey <arseysensector@gmail.com>
+ */
+
+/**
+ *
+ */
 class ApiHelper extends CApplicationComponent {
     //constant CUSTOM message for 401 status message on api response
 
@@ -106,6 +115,37 @@ class ApiHelper extends CApplicationComponent {
         );
 
         return (isset($codes[$status])) ? $codes[$status] : '';
+    }
+
+    /**
+     *
+     * @return processed array with $_GET/$_SERVER variables
+     */
+    public function getParsedQueryParams() {
+        $params = array();
+        //array for parameters from $_GET
+        $_GET_params = array();
+
+        //$_GET not empty, assigne one by one parameters from $_GET to $_GET_params arrray;
+        if (!empty($_GET)) {
+            foreach ($_GET as $key => $value) {
+                $_GET_params[$key] = $value;
+            }
+        }
+
+        $_SERVER_params = array();
+        //variables from $_SERVER, that begins from 'HTTP_X_'
+        if (!empty($_SERVER)) {
+            foreach ($_SERVER as $key => $val) {
+                if (preg_match('/^' . Constants::SERVER_VARIABLE_PREFIX . '/', $key)) {
+                    $_SERVER_params[strtoupper($key)] = $value;
+                }
+            }
+        }
+
+        $params = CMap::mergeArray($_GET_params, $_SERVER_params);
+
+        return (empty($params) ) ? false : $params;
     }
 
 }

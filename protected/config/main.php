@@ -22,7 +22,7 @@ return array(
         'application.extensions.googlePlaces',
     ),
     'modules' => array(
-        
+
         //User Managment Module
 
         'user' => array(
@@ -64,7 +64,8 @@ return array(
                 array('//user/rest/create', 'pattern' => 'api/<mode:user>', 'verb' => 'POST'),
                 array('//user/rest/update', 'pattern' => 'api/<mode:user>/<id:\d+>', 'verb' => 'PUT'),
                 //REST patterns
-                array('api/list', 'pattern' => 'api/<model:\w+>/<status:\w+>', 'verb' => 'GET'),
+                array('api/list', 'pattern' => 'api/<model:\w+>/<searchtype:nearbysearch|textsearch>', 'verb' => 'GET'),
+                array('api/list', 'pattern' => 'api/<model:\w+>/<status:published|removed|pending|unpublished>', 'verb' => 'GET'),
                 array('api/list', 'pattern' => 'api/<model:\w+>', 'verb' => 'GET'),
                 array('api/view', 'pattern' => 'api/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 array('api/update', 'pattern' => 'api/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),

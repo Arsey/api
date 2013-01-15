@@ -39,4 +39,29 @@ class ApiHelperTest extends CTestCase {
         $this->assertEquals('Feedbacks', $this->_apiHelper->getModelExists($model));
     }
 
+    function testParseQueryParams() {
+
+
+        $key = 'textsearch';
+        $_SERVER_key = Constants::SERVER_VARIABLE_PREFIX . $key;
+        $value = 'vegetarian restaurant in New York';
+
+        //test for returning false if results is an empty;
+        $this->assertFalse($this->_apiHelper->getParsedQueryParams());
+
+        //check $_GET variables
+        $_GET[$key] = $value;
+        $parsed = $this->_apiHelper->getParsedQueryParams();
+
+        $this->assertArrayHasKey($key, $parsed);
+        $this->assertEquals($value, $parsed[$key]);
+
+        //check $_SERVER variables that named HTTP_X_{param_name}
+        $_SERVER[$_SERVER_key] = $value;
+        $parsed = $this->_apiHelper->getParsedQueryParams();
+
+        $this->assertArrayHasKey(strtoupper($_SERVER_key), $parsed);
+        $this->assertEquals($value, $parsed[strtoupper($_SERVER_key)]);
+    }
+
 }

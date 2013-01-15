@@ -27,7 +27,7 @@ class ApiController extends Controller {
 
     public function actionList($status = Constants::ACCESS_STATUS_PUBLISHED) {
 
-        $this->_checkAuth();
+        // $this->_checkAuth();
 
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             /* Get the respective model instance */
@@ -42,6 +42,9 @@ class ApiController extends Controller {
         if (empty($models)) {
             /* No */
             $this->_sendResponse(200, sprintf('No items where found in <b>%s</b>', $_GET['model']));
+        } elseif (Yii::app()->request->getQuery('searchtype')) {
+            helper::p($models);die;
+            $this->_sendResponse(200, CJSON::encode($models));
         } else {
             /* Prepare response */
             $rows = array();

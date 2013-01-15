@@ -22,4 +22,31 @@ class PlantEatersARMain extends CActiveRecord {
             throw new CDbException(Yii::t('yii', 'The active record cannot be deleted because it is new.'));
     }
 
+    protected function _allowedFindAllParams() {
+        return array(
+            'Restaurants' => array(
+                Constants::SEARCHTYPE_TEXT => array(
+                    'required' => array('query'),
+                    'optional' => array('quantity', 'radius', 'next_page_token'),
+                ),
+                Constants::SEARCHTYPE_NEARBY => array(
+                    'required' => array('location'),
+                    'optional' => array('quantity', 'radius', 'next_page_token'),
+                )
+            )
+        );
+    }
+
+    public function checkForAllowedParams($model_name, $params) {
+        $allowed_params = $this->_allowedFindAllParams();
+        if (isset($allowed_params[$model_name])) {
+            $required=array();
+            $optional=array();
+            foreach($params as $key=>$value){
+                //if()
+            }
+
+        }
+    }
+
 }

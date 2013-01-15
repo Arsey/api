@@ -7,13 +7,14 @@
  * @property string $id
  * @property string $meal_id
  * @property string $user_id
- * @property string $datetime
+ * @property integer $createtime
  * @property integer $report_code
  * @property string $text
+ * @property integer $access_status
  *
  * The followings are the available model relations:
- * @property User $user
  * @property Meals $meal
+ * @property User $user
  */
 class Reports extends PlantEatersARMain
 {
@@ -43,14 +44,14 @@ class Reports extends PlantEatersARMain
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('meal_id, user_id, datetime, report_code', 'required'),
-			array('report_code', 'numerical', 'integerOnly'=>true),
+			array('meal_id, user_id, report_code', 'required'),
+			array('createtime, report_code, access_status', 'numerical', 'integerOnly'=>true),
 			array('meal_id', 'length', 'max'=>20),
 			array('user_id', 'length', 'max'=>10),
 			array('text', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, meal_id, user_id, datetime, report_code, text', 'safe', 'on'=>'search'),
+			array('id, meal_id, user_id, createtime, report_code, text, access_status', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -62,8 +63,8 @@ class Reports extends PlantEatersARMain
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 			'meal' => array(self::BELONGS_TO, 'Meals', 'meal_id'),
+			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 		);
 	}
 
@@ -76,9 +77,10 @@ class Reports extends PlantEatersARMain
 			'id' => 'ID',
 			'meal_id' => 'Meal',
 			'user_id' => 'User',
-			'datetime' => 'Datetime',
+			'createtime' => 'Createtime',
 			'report_code' => 'Report Code',
 			'text' => 'Text',
+			'access_status' => 'Access Status',
 		);
 	}
 
@@ -96,9 +98,10 @@ class Reports extends PlantEatersARMain
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('meal_id',$this->meal_id,true);
 		$criteria->compare('user_id',$this->user_id,true);
-		$criteria->compare('datetime',$this->datetime,true);
+		$criteria->compare('createtime',$this->createtime);
 		$criteria->compare('report_code',$this->report_code);
 		$criteria->compare('text',$this->text,true);
+		$criteria->compare('access_status',$this->access_status);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

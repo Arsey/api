@@ -9,8 +9,9 @@
  * @property string $mime
  * @property string $size
  * @property string $name
- * @property string $datetime
+ * @property integer $createtime
  * @property integer $default
+ * @property integer $access_status
  *
  * The followings are the available model relations:
  * @property Meals $meal
@@ -44,14 +45,14 @@ class Photos extends PlantEatersARMain
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('meal_id, mime, size, name, datetime', 'required'),
-			array('default', 'numerical', 'integerOnly'=>true),
+			array('meal_id, mime, size, name', 'required'),
+			array('createtime, default, access_status', 'numerical', 'integerOnly'=>true),
 			array('meal_id, mime', 'length', 'max'=>20),
 			array('size', 'length', 'max'=>30),
 			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, meal_id, mime, size, name, datetime, default', 'safe', 'on'=>'search'),
+			array('id, meal_id, mime, size, name, createtime, default, access_status', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -79,8 +80,9 @@ class Photos extends PlantEatersARMain
 			'mime' => 'Mime',
 			'size' => 'Size',
 			'name' => 'Name',
-			'datetime' => 'Datetime',
+			'createtime' => 'Createtime',
 			'default' => 'Default',
+			'access_status' => 'Access Status',
 		);
 	}
 
@@ -100,8 +102,9 @@ class Photos extends PlantEatersARMain
 		$criteria->compare('mime',$this->mime,true);
 		$criteria->compare('size',$this->size,true);
 		$criteria->compare('name',$this->name,true);
-		$criteria->compare('datetime',$this->datetime,true);
+		$criteria->compare('createtime',$this->createtime);
 		$criteria->compare('default',$this->default);
+		$criteria->compare('access_status',$this->access_status);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

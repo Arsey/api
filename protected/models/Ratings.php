@@ -8,15 +8,15 @@
  * @property string $meal_id
  * @property string $user_id
  * @property string $photo_id
- * @property string $datetime
+ * @property integer $createtime
  * @property integer $rating
  * @property string $comment
- * @property integer $status
+ * @property integer $access_status
  *
  * The followings are the available model relations:
- * @property Photos $photo
  * @property Meals $meal
  * @property User $user
+ * @property Photos $photo
  */
 class Ratings extends PlantEatersARMain
 {
@@ -46,14 +46,14 @@ class Ratings extends PlantEatersARMain
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('meal_id, user_id, photo_id, datetime', 'required'),
-			array('rating, status', 'numerical', 'integerOnly'=>true),
+			array('meal_id, user_id, photo_id', 'required'),
+			array('createtime, rating, access_status', 'numerical', 'integerOnly'=>true),
 			array('meal_id, photo_id', 'length', 'max'=>20),
 			array('user_id', 'length', 'max'=>10),
 			array('comment', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, meal_id, user_id, photo_id, datetime, rating, comment, status', 'safe', 'on'=>'search'),
+			array('id, meal_id, user_id, photo_id, createtime, rating, comment, access_status', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -65,9 +65,9 @@ class Ratings extends PlantEatersARMain
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'photo' => array(self::BELONGS_TO, 'Photos', 'photo_id'),
 			'meal' => array(self::BELONGS_TO, 'Meals', 'meal_id'),
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+			'photo' => array(self::BELONGS_TO, 'Photos', 'photo_id'),
 		);
 	}
 
@@ -81,10 +81,10 @@ class Ratings extends PlantEatersARMain
 			'meal_id' => 'Meal',
 			'user_id' => 'User',
 			'photo_id' => 'Photo',
-			'datetime' => 'Datetime',
+			'createtime' => 'Createtime',
 			'rating' => 'Rating',
 			'comment' => 'Comment',
-			'status' => 'Status',
+			'access_status' => 'Access Status',
 		);
 	}
 
@@ -103,10 +103,10 @@ class Ratings extends PlantEatersARMain
 		$criteria->compare('meal_id',$this->meal_id,true);
 		$criteria->compare('user_id',$this->user_id,true);
 		$criteria->compare('photo_id',$this->photo_id,true);
-		$criteria->compare('datetime',$this->datetime,true);
+		$criteria->compare('createtime',$this->createtime);
 		$criteria->compare('rating',$this->rating);
 		$criteria->compare('comment',$this->comment,true);
-		$criteria->compare('status',$this->status);
+		$criteria->compare('access_status',$this->access_status);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
