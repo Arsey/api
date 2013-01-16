@@ -31,24 +31,88 @@
 class Restaurants extends PlantEatersARMain {
 
     public function findAllByAttributes($attributes, $condition = '', $params = array()) {
-        //search type for Google Places API query
-        $searchtype = Yii::app()->request->getQuery('searchtype', false);
 
-        //additional parameters from URL or|and $_SERVER
-        $parsed_params = Yii::app()->apiHelper->getParsedQueryParams();
-        if ($searchtype && ($searchtype === Constants::SEARCHTYPE_TEXT || $searchtype === Constants::SEARCHTYPE_NEARBY)) {
-            parent::checkForAllowedParams(__CLASS__, $parsed_params);
-            /*
-              $googlePlaces = new googlePlaces(helper::yiiparam('googleApiKey'));
-              $googlePlaces->setCurloptSslVerifypeer(false);
-              $googlePlaces->setRadius(5000);
-              $googlePlaces->setQuery($parsed_params['query']);
-              $results = $googlePlaces->textSearch();
-              return $results;
-             */
+        //get a search type for properly Google Places Api request
+        //if search type was found in URL or headers
+        if ($searchtype = parent::getSearchType()) {
+            //now we need some variables
+            $parsed_params = Yii::app()->apiHelper->getParsedQueryParams();
+
+            return $this->_sendRequestToGooglePlacesApi($searchtype, $parsed_params);
         } else {
-            parent::findAllByAttributes($attributes, $condition, $params);
+            Yii::trace(get_class($this) . '.findAllByAttributes()', 'system.db.ar.CActiveRecord');
+            $prefix = $this->getTableAlias(true) . '.';
+            $criteria = $this->getCommandBuilder()->createColumnCriteria($this->getTableSchema(), $attributes, $condition, $params, $prefix);
+            return $this->query($criteria, true);
         }
+    }
+
+    /**
+     *
+     * @param type $searchtype
+     * @param type $data
+     */
+    protected function _filterRequiredData(&$data) {
+
+        $new_data = array();
+
+        if (isset($data['next_page_token']))
+            $new_data['next_page_token'] = $data['next_page_token'];
+
+        $new_data['status'] = $data['status'];
+
+        if (!empty($data['results'])) {
+            $i = 0;
+            foreach ($data['results'] as $result) {
+                $new_data['results'][$i]['id'] = $result['id'];
+                $new_data['results'][$i]['latitude'] = $result['geometry']['location']['lat'];
+                $new_data['results'][$i]['longitude'] = $result['geometry']['location']['lng'];
+                $i++;
+            }
+        }
+
+        if (!empty($new_data)) {
+            $data = $new_data;
+        }
+    }
+
+    /**
+     * Returns the date from Google Places API Request relying on type of search and given parameters
+     * @param string $searchtype
+     * @param array $params
+     * @return array
+     */
+    protected function _sendRequestToGooglePlacesApi($searchtype, $params) {
+        //initialize google places extension
+        $googlePlaces = new googlePlaces(helper::yiiparam('googleApiKey'));
+        $googlePlaces->setCurloptSslVerifypeer(false);
+
+        //if radius is in parsed parameters and integer then $radius=$parsed_params['radius'],
+        //else by default 5000
+
+        $radius = (isset($params['radius']) && (int) $params['radius']) ? $params['radius'] : 5000;
+        $googlePlaces->setRadius($radius);
+
+        $results = null;
+
+        if (isset($params['nextpagetoken'])) {
+            $results = $googlePlaces->repeat($params['nextpagetoken']);
+        } else {
+            if (($searchtype === Constants::SEARCHTYPE_TEXT) && (isset($params['query']))) {
+                $googlePlaces->setQuery($params['query']);
+                $results = $googlePlaces->textSearch();
+            }
+
+            if (($searchtype === Constants::SEARCHTYPE_NEARBY) && (isset($params['location']))) {
+                $googlePlaces->setLocation($params['location']);
+                $results = $googlePlaces->Search();
+            }
+        }
+
+        if (isset($results['status']) && $results['status'] === 'OK')
+            $this->_filterRequiredData($results);
+
+        return $results;
     }
 
     /**
