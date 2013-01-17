@@ -29,7 +29,7 @@ class UserModule extends CWebModule {
   // for example, demo and Demo would be the same user then
 	public $caseSensitiveUsers = true;
 
-	// set this to true if you do want to access data through a REST api. 
+	// set this to true if you do want to access data through a REST api.
 	// Disabled by default for security reasons.
 	public $enableRESTapi = false;
 
@@ -42,9 +42,9 @@ class UserModule extends CWebModule {
 	public $activationPasswordSet = false;
 	public $autoLogin = false;
 
-	// set to swift to active emailing by swiftMailer or 
+	// set to swift to active emailing by swiftMailer or
 	// PHPMailer to use PHPMailer as emailing lib.
-	public $mailer = 'yum'; 
+	public $mailer = 'yum';
 	public $phpmailer = null; // PHPMailer array options.
 	public $adminEmail = 'admin@example.com';
 
@@ -57,7 +57,7 @@ class UserModule extends CWebModule {
   public $rteadapter = false; // Don't use an Adapter
 
 	public $customCsvExportCriteria = '1';
-	
+
 	//public $salt = '';
 	 // valid callback function for password hashing ie. sha1
 	//public $hashFunc = 'md5';

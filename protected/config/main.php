@@ -22,7 +22,6 @@ return array(
         'application.extensions.googlePlaces',
     ),
     'modules' => array(
-
         //User Managment Module
 
         'user' => array(
@@ -50,23 +49,41 @@ return array(
         'cache' => array(
             'class' => 'CDummyCache',
         ),
+        'config' => array(
+            'class' => 'ext.FileConfig',
+            'configFile' => 'protected/config/planteaters.conf',
+            'strictMode' => false,
+        ),
         'rest' => array(
             'class' => 'RestApiManager',
+        ),
+        //google places component
+        'gp' => array(
+            'class' => 'GPApi',
+            'googleApiKey' => '',
         ),
         //URLs in path-format
         'urlManager' => array(
             'urlFormat' => 'path',
             'showScriptName' => false,
             'rules' => array(
+                array('api/registration', 'pattern' => 'api/users/registration/<type:email|facebook>', 'verb' => 'GET'),
                 //REST patterns for user module
                 array('//user/rest/list', 'pattern' => 'api/<mode:users>', 'verb' => 'GET'),
                 array('//user/rest/view', 'pattern' => 'api/<mode:user>/<id:\d+>', 'verb' => 'GET'),
                 array('//user/rest/create', 'pattern' => 'api/<mode:user>', 'verb' => 'POST'),
                 array('//user/rest/update', 'pattern' => 'api/<mode:user>/<id:\d+>', 'verb' => 'PUT'),
                 //REST patterns
-                array('api/list', 'pattern' => 'api/<model:\w+>/<searchtype:nearbysearch|textsearch>', 'verb' => 'GET'),
+                array(
+                    'api/list',
+                    //pattern for search restaurants with Google Places API
+                    'pattern' => 'api/<model:restaurants>/<searchtype:nearbysearch|textsearch>',
+                    'verb' => 'GET'
+                ),
+                //pattern to apply access filter for any model
                 array('api/list', 'pattern' => 'api/<model:\w+>/<status:published|removed|pending|unpublished>', 'verb' => 'GET'),
                 array('api/list', 'pattern' => 'api/<model:\w+>', 'verb' => 'GET'),
+                array('api/view', 'pattern' => 'api/<model:\w+>/<id:\d+|\S+>', 'verb' => 'GET'),
                 array('api/view', 'pattern' => 'api/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 array('api/update', 'pattern' => 'api/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),
                 array('api/delete', 'pattern' => 'api/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),

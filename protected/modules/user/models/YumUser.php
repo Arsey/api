@@ -274,7 +274,7 @@ class YumUser extends YumActiveRecord
 			// require an avatar image in the avatar upload screen
 			$rules[] = array('avatar', 'required', 'on' => 'avatarUpload');
 
-			// if automatic scaling is deactivated, require the exact size	
+			// if automatic scaling is deactivated, require the exact size
 			$rules[] = array('avatar', 'EPhotoValidator',
 					'allowEmpty' => true,
 					'mimeType' => array('image/jpeg', 'image/png', 'image/gif'),
@@ -302,7 +302,7 @@ class YumUser extends YumActiveRecord
 		}
 
 		foreach ($roles as $role)
-			if ((is_numeric($role) && $role == $role_title) 
+			if ((is_numeric($role) && $role == $role_title)
 					|| ($role->id == $role_title || $role->title == $role_title))
 				return true;
 
@@ -492,12 +492,12 @@ class YumUser extends YumActiveRecord
 		return $friends;
 	}
 
-	// Registers a user 
+	// Registers a user
 	public function register($username = null,
 			$password = null,
 			$profile = null,
 			$salt = null) {
-		if (!($profile instanceof YumProfile)) 
+		if (!($profile instanceof YumProfile))
 			return false;
 
 		if ($username !== null && $password !== null) {
@@ -653,7 +653,7 @@ class YumUser extends YumActiveRecord
 				'avatar' => Yum::t("Avatar image"),
 				);
 	}
-	
+
 	public function withRoles($roles)
 	{
 		if(!is_array($roles))
@@ -722,7 +722,7 @@ class YumUser extends YumActiveRecord
 	}
 
 	public function getGravatarHash() {
-		return md5(strtolower(trim($this->profile->email)));		
+		return md5(strtolower(trim($this->profile->email)));
 	}
 
 	public function getAvatar($thumb = false)
@@ -736,7 +736,7 @@ class YumUser extends YumActiveRecord
 
 			$return = '<div class="avatar">';
 
-			if(Yum::module('avatar')->enableGravatar && $this->avatar == 'gravatar') 
+			if(Yum::module('avatar')->enableGravatar && $this->avatar == 'gravatar')
 				return CHtml::image(
 						'http://www.gravatar.com/avatar/'. $this->getGravatarHash(),
 						Yum::t('Avatar image'),

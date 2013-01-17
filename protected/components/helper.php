@@ -1,6 +1,16 @@
 <?php
 
 class helper extends CApplicationComponent {
+    
+    public static function translateAccessStatus($string){
+        $statuses=array(
+            'published'=>  Constants::ACCESS_STATUS_PUBLISHED,
+            'removed'=>  Constants::ACCESS_STATUS_REMOVED,
+            'pending'=>  Constants::ACCESS_STATUS_PENDING,
+            'unpublished'=>  Constants::ACCESS_STATUS_UNPUBLISHED,
+        );
+        return isset($statuses[$string])?$statuses[$string]:false;
+    }
 
     /**
      * This function print out variable or object in comfortable view

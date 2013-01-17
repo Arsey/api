@@ -30,6 +30,23 @@
  */
 class Restaurants extends PlantEatersARMain {
 
+    public function findByPk($pk, $condition = '', $params = array()) {
+
+        if (is_numeric($pk)) {
+
+            Yii::trace(get_class($this) . '.findByPk()', 'system.db.ar.CActiveRecord');
+            $prefix = $this->getTableAlias(true) . '.';
+            $criteria = $this->getCommandBuilder()->createPkCriteria($this->getTableSchema(), $pk, $condition, $params, $prefix);
+            return $this->query($criteria);
+        } elseif ((string) $pk) {
+
+            $googlePlaces = new googlePlaces(helper::yiiparam('googleApiKey'));
+            $googlePlaces->setCurloptSslVerifypeer(false);
+            $googlePlaces->setReference($pk);
+            return $googlePlaces->details();
+        }
+    }
+
     public function findAllByAttributes($attributes, $condition = '', $params = array()) {
 
         //get a search type for properly Google Places Api request
@@ -65,6 +82,8 @@ class Restaurants extends PlantEatersARMain {
             $i = 0;
             foreach ($data['results'] as $result) {
                 $new_data['results'][$i]['id'] = $result['id'];
+                $new_data['results'][$i]['reference'] = $result['reference'];
+                $new_data['results'][$i]['name'] = $result['name'];
                 $new_data['results'][$i]['latitude'] = $result['geometry']['location']['lat'];
                 $new_data['results'][$i]['longitude'] = $result['geometry']['location']['lng'];
                 $i++;
@@ -83,31 +102,25 @@ class Restaurants extends PlantEatersARMain {
      * @return array
      */
     protected function _sendRequestToGooglePlacesApi($searchtype, $params) {
-        //initialize google places extension
-        $googlePlaces = new googlePlaces(helper::yiiparam('googleApiKey'));
-        $googlePlaces->setCurloptSslVerifypeer(false);
-
-        //if radius is in parsed parameters and integer then $radius=$parsed_params['radius'],
-        //else by default 5000
 
         $radius = (isset($params['radius']) && (int) $params['radius']) ? $params['radius'] : 5000;
-        $googlePlaces->setRadius($radius);
 
         $results = null;
 
-        if (isset($params['nextpagetoken'])) {
-            $results = $googlePlaces->repeat($params['nextpagetoken']);
-        } else {
-            if (($searchtype === Constants::SEARCHTYPE_TEXT) && (isset($params['query']))) {
-                $googlePlaces->setQuery($params['query']);
-                $results = $googlePlaces->textSearch();
+        if ($searchtype === Constants::SEARCHTYPE_TEXT) {
+            if (isset($params['nextpagetoken'])) {
+                $results = Yii::app()->gp->textsearchNextpage($params['nextpagetoken']);
+            } elseif (isset($params['query'])) {
+                $results = Yii::app()->gp->setRadius($radius)->textsearch($params['query']);
             }
-
-            if (($searchtype === Constants::SEARCHTYPE_NEARBY) && (isset($params['location']))) {
-                $googlePlaces->setLocation($params['location']);
-                $results = $googlePlaces->Search();
+        } elseif ($searchtype === Constants::SEARCHTYPE_NEARBY) {
+            if (isset($params['nextpagetoken'])) {
+                $results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
+            } elseif (isset($params['location'])) {
+                $results = Yii::app()->gp->setRadius($radius)->nearbysearch($params['location']);
             }
         }
+
 
         if (isset($results['status']) && $results['status'] === 'OK')
             $this->_filterRequiredData($results);

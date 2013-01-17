@@ -22,8 +22,6 @@ class PlantEatersARMain extends CActiveRecord {
             throw new CDbException(Yii::t('yii', 'The active record cannot be deleted because it is new.'));
     }
 
-
-
     //search type for Google Places API query
     public function getSearchType() {
         return Yii::app()->request->getQuery('searchtype', false);

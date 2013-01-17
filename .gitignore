@@ -1,7 +1,6 @@
 
 /protected/config/main-local.php
-/assets/*
-!/assets/.gitignore
-/protected/runtime/*
-!/protected/runtime/.gitignore
-/protected/data/*.db
+/protected/config/planteaters.conf
+/assets
+/protected/data
+/protected/runtime

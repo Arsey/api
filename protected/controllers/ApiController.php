@@ -25,22 +25,22 @@ class ApiController extends Controller {
 
     /* Actions */
 
-    public function actionList($status = Constants::ACCESS_STATUS_PUBLISHED) {
+    public function actionList($status = 'published') {
         // $this->_checkAuth();
 
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             /* Get the respective model instance */
-            $models = $model_name::model()->findAllByAttributes(array('access_status' => $status));
+            $models = $model_name::model()->findAllByAttributes(array('access_status' => helper::translateAccessStatus($status)));
         } else {
             /* Model not implemented error */
-            $this->_sendResponse(501, sprintf('Error: Mode <b>list</b> is not impemented for model <b>%s</b>', $_GET['model']));
+            $this->_sendResponse(501, sprintf('Error: Mode list</b> is not impemented for model %s', $_GET['model']));
             Yii::app()->end();
         }
 
         /* If got some results */
         if (empty($models)) {
             /* No */
-            $this->_sendResponse(200, sprintf('No items where found in <b>%s</b>', $_GET['model']));
+            $this->_sendResponse(200, sprintf('No items where found in %s', $_GET['model']));
         } elseif (Yii::app()->request->getQuery('searchtype')) {
             $this->_sendResponse(200, CJSON::encode($models));
         } else {
@@ -57,13 +57,13 @@ class ApiController extends Controller {
 
         /* Check if id was submitted via GET */
         if (!isset($_GET['id']))
-            $this->_sendResponse(500, 'Error: Parameter <b>id</b> is missing');
+            $this->_sendResponse(500, 'Error: Parameter id is missing');
 
 
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             $model = $model_name::model()->findByPk($_GET['id']);
         } else {
-            $this->_sendResponse(501, sprintf('Mode <b>view</b> is not implemented for model <b>%s</b>', $_GET['model']));
+            $this->_sendResponse(501, sprintf('Mode view is not implemented for model %s', $_GET['model']));
             Yii::app()->end();
         }
 
@@ -172,6 +172,48 @@ class ApiController extends Controller {
         }
     }
 
+    public function actionRegistration($type) {
+
+        Yii::import('application.modules.profile.models.*');
+        $profile = new YumProfile;
+        if (isset($_GET['password'], $_GET['email'], $_GET['username'])) {
+            $profile->lastname = $profile->firstname = $_GET['username'];
+            $profile->email = $_GET['email'];
+            
+            //helper::p($profile->errors);
+            if ($profile->save()) {
+                $user = new YumUser;
+                $password = $_GET['password'];
+                $user->register(md5($profile->email), $password, $profile);
+                $this->sendRegistrationEmail($user, $password);
+            }
+        }
+    }
+
+    public function sendRegistrationEmail($user, $password) {
+        if (!isset($user->profile->email)) {
+            throw new CException(Yum::t('Email is not set when trying to send Registration Email'));
+        }
+        $activation_url = $user->getActivationUrl();
+
+        if (is_object($content)) {
+            $body = strtr('Hi, {email}, your new password is {password}. Please activate your account by clicking this link: {activation_url}', array(
+                '{email}' => $user->profile->email,
+                '{password}' => $password,
+                '{activation_url}' => $activation_url));
+
+            $mail = array(
+                'from' => Yum::module('registration')->registrationEmail,
+                'to' => $user->profile->email,
+                'subject' => 'Your registration on my example Website',
+                'body' => $body,
+            );
+            $sent = YumMailer::send($mail);
+        }
+
+        return $sent;
+    }
+
     /**
      *
      * @param integer $status
@@ -179,8 +221,9 @@ class ApiController extends Controller {
      * @param string $content_type
      */
     private function _sendResponse($status = 200, $body = '', $content_type = 'text/html') {
+
         /* set the status */
-        $status_header = 'HTTP/1.1' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
+        $status_header = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
         header($status_header);
         /* and the content type */
         header('Content-type:' . $content_type);

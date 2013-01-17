@@ -67,6 +67,13 @@ class googlePlaces {
         return $this->_apiCall();
     }
 
+    public function textsearchRepeat($pageToken) {
+        $this->_apiCallType = 'textsearchRepeat';
+        $this->_pageToken = $pageToken;
+
+        return $this->_apiCall();
+    }
+
     public function setLocation($location) {
         $this->_location = $location;
     }
@@ -175,13 +182,17 @@ class googlePlaces {
                 $URLparams = 'radius=' . $this->_radius . '&sensor=' . $this->_sensor . '&pagetoken=' . $this->_pageToken;
                 $this->_apiCallType = 'search';
                 break;
+            case ('textsearchRepeat'):
+                $URLparams = 'radius=' . $this->_radius . '&sensor=' . $this->_sensor . '&pagetoken=' . $this->_pageToken;
+                $this->_apiCallType = 'textsearch';
+                break;
         }
 
         $URLToCall = $this->_apiUrl . '/' . $this->_apiCallType . '/' . $this->_outputType . '?key=' . $this->_apiKey . '&' . $URLparams;
         $result = json_decode($this->_curlCall($URLToCall), true);
         $result['errors'] = $this->_errors;
 
-        if (isset($result['status'])&&$result['status'] == 'OK' && $this->_apiCallType == 'details') {
+        if (isset($result['status']) && $result['status'] == 'OK' && $this->_apiCallType == 'details') {
             foreach ($result['result']['address_components'] as $key => $component) {
 
                 if ($component['types'][0] == 'street_number') {
