@@ -251,17 +251,15 @@ class ApiController extends Controller {
         if ($username && $password) {
             $user = YumUser::model()->find('LOWER(username)=?', array(
                 strtolower($username)));
-
+            
             if (Yum::module()->RESTfulCleartextPasswords
                     && $user !== null
-                    && $user->superuser
-                    && md5($password) == $user->password)
+                    && YumEncrypt::encrypt($password, $user->salt)== $user->password)
                 return true;
 
             if (!Yum::module()->RESTfulCleartextPasswords
                     && $user !== null
-                    && $user->superuser
-                    && $password == $user->password)
+                    && YumEncrypt::encrypt($password, $user->salt) == $user->password)
                 return true;
         }
         Yii::app()->apiHelper->sendResponse(401, 'Error: Username or password is invalid');
