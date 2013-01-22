@@ -20,13 +20,15 @@ class ApiController extends Controller {
      * @return array action filters
      */
     public function filters() {
-        return array();
+        return array(
+            'checkAuth',
+        );
     }
 
     /* Actions */
 
     public function actionList($status = 'published') {
-        // $this->_checkAuth();
+
 
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             /* Get the respective model instance */
@@ -179,7 +181,7 @@ class ApiController extends Controller {
         if (isset($_GET['password'], $_GET['email'], $_GET['username'])) {
             $profile->lastname = $profile->firstname = $_GET['username'];
             $profile->email = $_GET['email'];
-            
+
             //helper::p($profile->errors);
             if ($profile->save()) {
                 $user = new YumUser;
@@ -250,7 +252,7 @@ class ApiController extends Controller {
         }
     }
 
-    private function _checkAuth() {
+    public  function filterCheckAuth() {
         foreach (array('HTTP_X_USERNAME', 'PHP_AUTH_USER') as $var)
             if (isset($_SERVER[$var]) && $_SERVER[$var] != '')
                 $username = $_SERVER[$var];

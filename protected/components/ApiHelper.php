@@ -38,8 +38,9 @@ class ApiHelper extends CApplicationComponent {
      * @return boolean false if such model doesn't exists or capitalized model name if such model exists
      */
     public static function getModelExists($model) {
+        $model = ucwords($model);
         if (@class_exists($model)) {
-            return ucwords($model);
+            return $model;
         }
         return false;
     }
