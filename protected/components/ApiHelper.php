@@ -45,6 +45,24 @@ class ApiHelper extends CApplicationComponent {
         return false;
     }
 
+     /**
+     *
+     * @param integer $status
+     * @param string $body
+     * @param string $content_type
+     */
+    public function sendResponse($status = 200, $body = '', $content_type = 'text/html') {
+        /* set the status */
+        $status_header = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
+        header($status_header);
+        /* and the content type */
+        header('Content-type:' . $content_type);
+
+        /* body of response */
+        echo Yii::app()->apiHelper->getResponseBody($status, $body);
+        Yii::app()->end();
+    }
+
     /**
      *
      * @param type $status

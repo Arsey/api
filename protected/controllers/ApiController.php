@@ -17,41 +17,44 @@ class ApiController extends Controller {
     private $format = 'json';
 
     /**
-     * @return array action filters
+     * This method is invoked right before an action is to be executed (after all possible filters.)
+     * @param CAction $action the action to be executed.
+     * @return mixed
+     * @throws CHttpException
      */
-    public function filters() {
-        return array(
-            'checkAuth',
-        );
+    public function beforeAction($action) {
+        if ($this->_checkAuth())
+            return parent::beforeAction($action);
+        else
+            throw new CHttpException(403);
     }
 
     /* Actions */
 
     public function actionList($status = 'published') {
 
-
+        //if model exists
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             /* Get the respective model instance */
             $models = $model_name::model()->findAllByAttributes(array('access_status' => helper::translateAccessStatus($status)));
         } else {
             /* Model not implemented error */
-            $this->_sendResponse(501, sprintf('Error: Mode list</b> is not impemented for model %s', $_GET['model']));
-            Yii::app()->end();
+            Yii::app()->apiHelper->sendResponse(501, sprintf('Error: Mode list</b> is not impemented for model %s', $_GET['model']));
         }
 
         /* If got some results */
         if (empty($models)) {
             /* No */
-            $this->_sendResponse(200, sprintf('No items where found in %s', $_GET['model']));
+            Yii::app()->apiHelper->sendResponse(200, sprintf('No items where found in %s', $_GET['model']));
         } elseif (Yii::app()->request->getQuery('searchtype')) {
-            $this->_sendResponse(200, CJSON::encode($models));
+            Yii::app()->apiHelper->sendResponse(200, CJSON::encode($models));
         } else {
             /* Prepare response */
             $rows = array();
             foreach ($models as $model)
                 $rows[] = $model->attributes;
             /* Send the response */
-            $this->_sendResponse(200, CJSON::encode($rows));
+            Yii::app()->apiHelper->sendResponse(200, CJSON::encode($rows));
         }
     }
 
@@ -59,22 +62,20 @@ class ApiController extends Controller {
 
         /* Check if id was submitted via GET */
         if (!isset($_GET['id']))
-            $this->_sendResponse(500, 'Error: Parameter id is missing');
-
+            Yii::app()->apiHelper->sendResponse(500, 'Error: Parameter id is missing');
 
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             $model = $model_name::model()->findByPk($_GET['id']);
         } else {
-            $this->_sendResponse(501, sprintf('Mode view is not implemented for model %s', $_GET['model']));
-            Yii::app()->end();
+            Yii::app()->apiHelper->sendResponse(501, sprintf('Mode view is not implemented for model %s', $_GET['model']));
         }
 
 
         /* Did we find the requested model? If not, raise an error */
         if (is_null($model))
-            $this->_sendResponse(404, 'No Item was found with id ' . $_GET['id']);
+            Yii::app()->apiHelper->sendResponse(404, 'No Item was found with id ' . $_GET['id']);
         else
-            $this->_sendResponse(200, CJSON::encode($model));
+            Yii::app()->apiHelper->sendResponse(200, CJSON::encode($model));
     }
 
     public function actionCreate() {
@@ -82,8 +83,7 @@ class ApiController extends Controller {
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             $model = new $model_name;
         } else {
-            $this->_sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
-            Yii::app()->end();
+            Yii::app()->apiHelper->sendResponse(501, sprintf('Mode <b>create</b> is not implemented for model <b>%s</b>', $_GET['model']));
         }
 
         // Try to assign POST values to attributes
@@ -91,7 +91,7 @@ class ApiController extends Controller {
 
         //Try to save the model
         if ($model->save()) {
-            $this->_sendResponse(200, CJSON::encode($model));
+            Yii::app()->apiHelper->sendResponse(200, CJSON::encode($model));
         } else {
             //Errorss occured
             $msg = "<h1>Error</h1>";
@@ -105,7 +105,7 @@ class ApiController extends Controller {
                 $msg .= "</ul>";
             }
             $msg .= "</ul>";
-            $this->_sendResponse(500, $msg);
+            Yii::app()->apiHelper->sendResponse(500, $msg);
         }
     }
 
@@ -119,13 +119,12 @@ class ApiController extends Controller {
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             $model = $model_name->findByPk($_GET['id']);
         } else {
-            $this->_sendResponse(501, sprintf('Error: Mode update is not implemented for model %s', $_GET['model']));
-            Yii::app()->end();
+            Yii::app()->apiHelper->sendResponse(501, sprintf('Error: Mode update is not implemented for model %s', $_GET['model']));
         }
 
         //Dod we find the requested model? If not, raise an arror
         if (is_null($model)) {
-            $this->_sendResponse(400, sprintf("Error: Didn't find any model %s with ID %s", $_GET['model'], $_GET['id']));
+            Yii::app()->apiHelper->sendResponse(400, sprintf("Error: Didn't find any model %s with ID %s", $_GET['model'], $_GET['id']));
         }
 
         //Try to assign PUT parameters to attributes
@@ -133,7 +132,7 @@ class ApiController extends Controller {
 
         //Try to save the model
         if ($model->save()) {
-            $this->_sendResponse(200, CJSON::encode($model));
+            Yii::app()->apiHelper->sendResponse(200, CJSON::encode($model));
         } else {
             //Errorss occured
             $msg = "<h1>Error</h1>";
@@ -147,7 +146,7 @@ class ApiController extends Controller {
                 $msg .= "</ul>";
             }
             $msg .= "</ul>";
-            $this->_sendResponse(500, $msg);
+            Yii::app()->apiHelper->sendResponse(500, $msg);
         }
     }
 
@@ -156,21 +155,20 @@ class ApiController extends Controller {
         if ($model_name = Yii::app()->apiHelper->getModelExists($_GET['model'])) {
             $model = $model_name::model()->findByPk($_GET['id']);
         } else {
-            $this->_sendResponse(501, sprintf("Error: Mode delete is not implemented for model %s", $_GET['model']));
-            Yii::app()->end();
+            Yii::app()->apiHelper->sendResponse(501, sprintf("Error: Mode delete is not implemented for model %s", $_GET['model']));
         }
 
         //Was a model found? If not, raise an error
         if (is_null($model)) {
-            $this->_sendResponse(400, sprintf("Error: Didn't find any model %s with ID %s", $_GET['model'], $_GET['id']));
+            Yii::app()->apiHelper->sendResponse(400, sprintf("Error: Didn't find any model %s with ID %s", $_GET['model'], $_GET['id']));
         }
 
         //Delete the model
         $num = $model->delete();
         if ($num > 0) {
-            $this->_sendResponse(200, $num); //this is the only way to work with backbone
+            Yii::app()->apiHelper->sendResponse(200, $num); //this is the only way to work with backbone
         } else {
-            $this->_sendResponse(500, sprintf("Error: Couldn't delete model %s with ID %s.", $_GET['model'], $_GET['id']));
+            Yii::app()->apiHelper->sendResponse(500, sprintf("Error: Couldn't delete model %s with ID %s.", $_GET['model'], $_GET['id']));
         }
     }
 
@@ -189,6 +187,12 @@ class ApiController extends Controller {
                 $user->register(md5($profile->email), $password, $profile);
                 $this->sendRegistrationEmail($user, $password);
             }
+        }
+    }
+
+    public function actionError() {
+        if ($error = Yii::app()->errorHandler->error) {
+            Yii::app()->apiHelper->sendResponse(500, $error);
         }
     }
 
@@ -218,25 +222,6 @@ class ApiController extends Controller {
 
     /**
      *
-     * @param integer $status
-     * @param string $body
-     * @param string $content_type
-     */
-    private function _sendResponse($status = 200, $body = '', $content_type = 'text/html') {
-
-        /* set the status */
-        $status_header = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
-        header($status_header);
-        /* and the content type */
-        header('Content-type:' . $content_type);
-
-        /* body of response */
-        echo Yii::app()->apiHelper->getResponseBody($status, $body);
-        Yii::app()->end();
-    }
-
-    /**
-     *
      * @param array $vars
      * @param object $model
      */
@@ -248,11 +233,13 @@ class ApiController extends Controller {
             if ($model->hasAttribute($var))
                 $model->$var = $value;
             else
-                $this->_sendResponse(500, sprintf('Parameter "%s" is not allowed for model "%s"', $var, $_GET['model']));
+                Yii::app()->apiHelper->sendResponse(500, sprintf('Parameter "%s" is not allowed for model "%s"', $var, $_GET['model']));
         }
     }
 
-    public  function filterCheckAuth() {
+    public function _checkAuth() {
+        $username = false;
+        $password = false;
         foreach (array('HTTP_X_USERNAME', 'PHP_AUTH_USER') as $var)
             if (isset($_SERVER[$var]) && $_SERVER[$var] != '')
                 $username = $_SERVER[$var];
@@ -277,7 +264,7 @@ class ApiController extends Controller {
                     && $password == $user->password)
                 return true;
         }
-        $this->_sendResponse(401, 'Error: Username or password is invalid');
+        Yii::app()->apiHelper->sendResponse(401, 'Error: Username or password is invalid');
     }
 
 }

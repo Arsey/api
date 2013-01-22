@@ -95,7 +95,7 @@ return array(
         //MySQL database configuration
         'errorHandler' => array(
             // use 'site/error' action to display errors
-            'errorAction' => 'site/error',
+            'errorAction' => 'api/error',
         ),
         'log' => array(
             'class' => 'CLogRouter',

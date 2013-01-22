@@ -27,4 +27,6 @@ class PlantEatersARMain extends CActiveRecord {
         return Yii::app()->request->getQuery('searchtype', false);
     }
 
+    //public function accessFields
+
 }
