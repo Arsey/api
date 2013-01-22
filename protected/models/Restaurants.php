@@ -125,6 +125,9 @@ class Restaurants extends PlantEatersARMain {
         if (isset($results['status']) && $results['status'] === 'OK')
             $this->_filterRequiredData($results);
 
+        if (isset($results['status']) && $results['status'] === 'ZERO_RESULTS')
+            $results = array('friendly_status' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
+
         return $results;
     }
 

@@ -32,6 +32,8 @@ class ApiHelper extends CApplicationComponent {
     const MESSAGE_500 = 'Internal Server Error';
     const MESSAGE_501 = 'Not Implemented';
 
+    protected $_format = Constants::APPLICATION_JSON;
+
     /**
      *
      * @param type $model
@@ -45,22 +47,32 @@ class ApiHelper extends CApplicationComponent {
         return false;
     }
 
-     /**
+    /**
      *
      * @param integer $status
-     * @param string $body
-     * @param string $content_type
+     * @param array $body
+     * @param string $_format
      */
-    public function sendResponse($status = 200, $body = '', $content_type = 'text/html') {
+    public function sendResponse($status = 200, $body = array()) {
         /* set the status */
         $status_header = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
         header($status_header);
         /* and the content type */
-        header('Content-type:' . $content_type);
+        header('Content-type:' . $this->_format);
 
         /* body of response */
+
         echo Yii::app()->apiHelper->getResponseBody($status, $body);
         Yii::app()->end();
+    }
+
+    protected function _encode($array) {
+
+        if ($this->_format === Constants::APPLICATION_JSON) {
+            return CJSON::encode($array);
+        } elseif ($this->_format === Constants::APPLICATION_XML) {
+            return helper::array_to_xml($array, new SimpleXMLElement('<root/>'))->asXML();
+        }
     }
 
     /**
@@ -69,51 +81,31 @@ class ApiHelper extends CApplicationComponent {
      * @param type $body
      * @return body for api response
      */
-    public function getResponseBody($status = 200, $body = '') {
-
-        //for pages with not empty body
-        if ($body != '') {
-            //return the body
-            return $body;
+    public function getResponseBody($status = 200, $body = array()) {
+        $body_return = array();
+        if (isset($body['next_page_token']) && !empty($body['next_page_token'])) {
+            $body_return['resnext_page_tokenults'] = $body['next_page_token'];
         }
-        //we need to create the body if none is passed
-        else {
-            switch ($status) {
-                case 401:
-                    $message = self::CUSTOM_MESSAGE_401;
-                    break;
-                case 404:
-                    $message = self::CUSTOM_MESSAGE_404_BEGIN . Yii::app()->request->requestUri . self::CUSTOM_MESSAGE_404_END;
-                    break;
-                case 500:
-                    $message = self::CUSTOM_MESSAGE_500;
-                    break;
-                case 501:
-                    $message = self::CUSTOM_MESSAGE_501;
-                    break;
-            }
+        $body_return['results'] = (isset($body['results']) && !empty($body['results'])) ? $body['results'] : '';
+        $body_return['friendly_status'] = (isset($body['friendly_status']) && !empty($body['friendly_status'])) ? $body['friendly_status'] : $this->getFriendlyStatusCodeMessage($status);
+        $body_return['status'] = $this->getStatusCodeMessage($status);
+        $body_return['server_signature'] = $this->getServerSignature();
+        return $this->_encode($body_return);
+    }
 
-            // servers don't always have a signature turned on
-            // (this is an apache directive "ServerSignature On")
-            $signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
-
-            // this should be templated in a real-world solution
-            $body = '
-                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-                    <html>
-                        <head>
-                            <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-                            <title>' . $status . ' ' . $this->_getStatusCodeMessage($status) . '</title>
-                        </head>
-                        <body>
-                            <h1>' . $this->_getStatusCodeMessage($status) . '</h1>
-                            <p>' . $message . '</p>
-                            <hr />
-                            <address>' . $signature . '</address>
-                        </body>
-                    </html>';
-            return $body;
-        }
+    /**
+     *
+     * @param type $status
+     * @return status code message
+     */
+    public function getFriendlyStatusCodeMessage($status) {
+        $codes = array(
+            401 => self::CUSTOM_MESSAGE_401,
+            404 => self::CUSTOM_MESSAGE_404_BEGIN . Yii::app()->request->requestUri . self::CUSTOM_MESSAGE_404_END,
+            500 => self::CUSTOM_MESSAGE_500,
+            501 => self::CUSTOM_MESSAGE_501,
+        );
+        return (isset($codes[$status])) ? $codes[$status] : '';
     }
 
     /**
@@ -132,7 +124,6 @@ class ApiHelper extends CApplicationComponent {
             500 => self::MESSAGE_500,
             501 => self::MESSAGE_501,
         );
-
         return (isset($codes[$status])) ? $codes[$status] : '';
     }
 
@@ -165,6 +156,28 @@ class ApiHelper extends CApplicationComponent {
         $params = CMap::mergeArray($_GET_params, $_SERVER_params);
 
         return (empty($params) ) ? false : $params;
+    }
+
+    /**
+     * servers don't always have a signature turned on (this is an apache directive "ServerSignature On")
+     * @return string
+     */
+    public function getServerSignature() {
+        return ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] .
+                ' Server at ' .
+                $_SERVER['SERVER_NAME'] .
+                ' Port ' .
+                $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
+    }
+
+    /**
+     * Setter that says in what ways encode response from server
+     * @param string $format
+     * @return \ApiHelper
+     */
+    public function setFormat($format) {
+        $this->_format = $format;
+        return $this;
     }
 
 }

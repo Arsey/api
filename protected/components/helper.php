@@ -1,15 +1,15 @@
 <?php
 
 class helper extends CApplicationComponent {
-    
-    public static function translateAccessStatus($string){
-        $statuses=array(
-            'published'=>  Constants::ACCESS_STATUS_PUBLISHED,
-            'removed'=>  Constants::ACCESS_STATUS_REMOVED,
-            'pending'=>  Constants::ACCESS_STATUS_PENDING,
-            'unpublished'=>  Constants::ACCESS_STATUS_UNPUBLISHED,
+
+    public static function translateAccessStatus($string) {
+        $statuses = array(
+            'published' => Constants::ACCESS_STATUS_PUBLISHED,
+            'removed' => Constants::ACCESS_STATUS_REMOVED,
+            'pending' => Constants::ACCESS_STATUS_PENDING,
+            'unpublished' => Constants::ACCESS_STATUS_UNPUBLISHED,
         );
-        return isset($statuses[$string])?$statuses[$string]:false;
+        return isset($statuses[$string]) ? $statuses[$string] : false;
     }
 
     /**
@@ -52,6 +52,14 @@ class helper extends CApplicationComponent {
             return strtolower(preg_replace('/' . Constants::SERVER_VARIABLE_PREFIX . '/', '', $var_name));
         }
         return $var_name;
+    }
+
+
+    public function array_to_xml(array $arr, SimpleXMLElement $xml) {
+        foreach ($arr as $k => $v) {
+            is_array($v) ? helper::array_to_xml($v, $xml->addChild($k)) : $xml->addChild($k, $v);
+        }
+        return $xml;
     }
 
 }
