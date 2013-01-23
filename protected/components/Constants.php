@@ -22,7 +22,7 @@ class Constants {
     const ZERO_RESULTS_BY_ID = 'No Item was found with id %d';
     const ZERO_RESULTS = 'No items where found in %s';
     const ZERO_RESULTS_ON_UPDATE='Didn\'t find any model %s with ID %s';
-    const BAD_USER_CREDNTIALS = 'Username or password is invalid';
+    const BAD_USER_CREDNTIALS = 'Username or password is valid';
     const NOT_ALLOWED_MODEL_PARAMETER = 'Parameter "%s" is not allowed for model "%s"';
     const MODEL_DELETE_ERROR = 'Couldn\'t delete %s with ID %s.';
     /*modes*/

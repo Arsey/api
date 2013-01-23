@@ -16,7 +16,7 @@ class ApiHelper extends CApplicationComponent {
 
     //CUSTOM message for 404
     const CUSTOM_MESSAGE_404_BEGIN = 'The requested URL ';
-    const CUSTOM_MESSAGE_404_END = ' was not found.';
+    const CUSTOM_MESSAGE_404_END = 'was not found.';
     //CUSTOM message for 500
     const CUSTOM_MESSAGE_500 = 'The server encountered an error processing your request.';
     //CUSTOM message for 501
@@ -35,19 +35,8 @@ class ApiHelper extends CApplicationComponent {
     protected $_format = Constants::APPLICATION_JSON;
 
     /**
-     *
-     * @param type $model
-     * @return boolean false if such model doesn't exists or capitalized model name if such model exists
-     */
-    public static function getModelExists($model) {
-        $model = ucwords($model);
-        if (@class_exists($model)) {
-            return $model;
-        }
-        return false;
-    }
-
-    /**
+     * sendResponse method sending server response
+     * with required headers and it's boyd to client application
      *
      * @param integer $status
      * @param array $body
@@ -57,7 +46,7 @@ class ApiHelper extends CApplicationComponent {
         /* set the status */
         $status_header = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
         header($status_header);
-        /* and the content type */
+        /* and the content type (json/xml) */
         header('Content-type:' . $this->_format);
 
         /* body of response */
@@ -66,8 +55,12 @@ class ApiHelper extends CApplicationComponent {
         Yii::app()->end();
     }
 
+    /**
+     * This method encodes data from array to json/xml ,looking at $_format variable
+     * @param type $array
+     * @return string
+     */
     protected function _encode($array) {
-
         if ($this->_format === Constants::APPLICATION_JSON) {
             return CJSON::encode($array);
         } elseif ($this->_format === Constants::APPLICATION_XML) {
@@ -76,20 +69,45 @@ class ApiHelper extends CApplicationComponent {
     }
 
     /**
-     *
+     * It returns whole contents body of server response with some details
      * @param type $status
      * @param type $body
      * @return body for api response
      */
     public function getResponseBody($status = 200, $body = array()) {
+        /* array to return on finish */
         $body_return = array();
+
+        /*
+         * next_page_token - variable , that needed on searching a restaurants
+         * in Google Places Api
+         */
         if (isset($body['next_page_token']) && !empty($body['next_page_token'])) {
             $body_return['resnext_page_tokenults'] = $body['next_page_token'];
         }
+
+        /*
+         * Results for request. It also can be an empty.
+         */
         $body_return['results'] = (isset($body['results']) && !empty($body['results'])) ? $body['results'] : '';
+
+        /*
+         * friendly_status is familiar with status and relying on status codes(200,400, etc.) too.
+         * With this status we can shows to users friendly statuses of response from server.
+         */
         $body_return['friendly_status'] = (isset($body['friendly_status']) && !empty($body['friendly_status'])) ? $body['friendly_status'] : $this->getFriendlyStatusCodeMessage($status);
         $body_return['status'] = $this->getStatusCodeMessage($status);
+
+
+        /*
+         * The server signature can be used for software monitoring.
+         * Application server signatures apply to an application program loaded on a server
+         * in a distributed network, and the server provides the execution environment
+         * for the program.
+         */
         $body_return['server_signature'] = $this->getServerSignature();
+
+        //at the end we need to encode data into json or xml based on $this->_format variable
         return $this->_encode($body_return);
     }
 
@@ -99,9 +117,10 @@ class ApiHelper extends CApplicationComponent {
      * @return status code message
      */
     public function getFriendlyStatusCodeMessage($status) {
+        $rewrite_url = isset($_SERVER['HTTP_X_REWRITE_URL']) ? $_SERVER['HTTP_X_REWRITE_URL'] . ' ' : '';
         $codes = array(
             401 => self::CUSTOM_MESSAGE_401,
-            404 => self::CUSTOM_MESSAGE_404_BEGIN . Yii::app()->request->requestUri . self::CUSTOM_MESSAGE_404_END,
+            404 => self::CUSTOM_MESSAGE_404_BEGIN . $rewrite_url . self::CUSTOM_MESSAGE_404_END,
             500 => self::CUSTOM_MESSAGE_500,
             501 => self::CUSTOM_MESSAGE_501,
         );
@@ -159,15 +178,18 @@ class ApiHelper extends CApplicationComponent {
     }
 
     /**
-     * servers don't always have a signature turned on (this is an apache directive "ServerSignature On")
+     * Servers don't always have a signature turned on (this is an apache directive "ServerSignature On")
      * @return string
      */
     public function getServerSignature() {
-        return ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] .
-                ' Server at ' .
-                $_SERVER['SERVER_NAME'] .
-                ' Port ' .
-                $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
+        if (isset($_SERVER['SERVER_SIGNATURE'])) {
+            return ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] .
+                    ' Server at ' .
+                    $_SERVER['SERVER_NAME'] .
+                    ' Port ' .
+                    $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
+        }
+        return;
     }
 
     /**

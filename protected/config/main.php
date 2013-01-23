@@ -6,6 +6,7 @@
 // CWebApplication properties can be configured here.
 return array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
+    'defaultController'=>'api',
     'name' => 'PLANTEATERS',
     // preloading 'log' component
     'preload' => array('log'),
@@ -20,6 +21,8 @@ return array(
         //import user models from user module extension
         'application.modules.user.models.*',
         'application.extensions.googlePlaces',
+        //curl extension
+        'application.extensions.components.*'
     ),
     'modules' => array(
         //User Managment Module
@@ -90,7 +93,7 @@ return array(
                 array('api/delete', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
                 //Other controllers
-                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+                //'<controller:\w+>/<action:\w+>' => '<controller>/<action>',
             ),
         ),
         //MySQL database configuration
@@ -119,5 +122,6 @@ return array(
     'params' => array(
         // this is used in contact page
         'adminEmail' => 'webmaster@example.com',
+        'dummy_parameter'=>'dummy'
     ),
 );

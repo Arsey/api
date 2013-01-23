@@ -2,6 +2,11 @@
 
 class helper extends CApplicationComponent {
 
+    /**
+     * Translate access status from usual words onto system constants of access
+     * @param type $string
+     * @return type
+     */
     public static function translateAccessStatus($string) {
         $statuses = array(
             'published' => Constants::ACCESS_STATUS_PUBLISHED,
@@ -13,7 +18,7 @@ class helper extends CApplicationComponent {
     }
 
     /**
-     * This function print out variable or object in comfortable view
+     * It's layout objects,array,string in handy view
      * @param integer, string, array, object, etc. $var
      * @param boolean $print
      * @return string|output to screen
@@ -47,6 +52,11 @@ class helper extends CApplicationComponent {
             return $default;
     }
 
+    /**
+     *
+     * @param type $var_name
+     * @return type
+     */
     public static function cutHttpX($var_name) {
         if (preg_match('/' . Constants::SERVER_VARIABLE_PREFIX . '/', $var_name)) {
             return strtolower(preg_replace('/' . Constants::SERVER_VARIABLE_PREFIX . '/', '', $var_name));
@@ -54,12 +64,33 @@ class helper extends CApplicationComponent {
         return $var_name;
     }
 
-
+    /**
+     *
+     * @param array $arr
+     * @param SimpleXMLElement $xml
+     * @return \SimpleXMLElement
+     */
     public function array_to_xml(array $arr, SimpleXMLElement $xml) {
         foreach ($arr as $k => $v) {
             is_array($v) ? helper::array_to_xml($v, $xml->addChild($k)) : $xml->addChild($k, $v);
         }
         return $xml;
+    }
+
+    /**
+     *
+     * @param type $model
+     * @return boolean false if such model doesn't exists or capitalized model name if such model exists
+     */
+    public static function getModelExists($model) {
+        /* model begins from upper latter */
+        $model = ucwords($model);
+
+        /* check if model class exists */
+        if (@class_exists($model)) {
+            return $model;
+        }
+        return false;
     }
 
 }

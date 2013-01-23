@@ -32,25 +32,18 @@ class ApiController extends Controller {
         parent::__construct($id, $module);
     }
 
-    /**
-     * This method is invoked right before an action is to be executed (after all possible filters.)
-     * @param CAction $action the action to be executed.
-     * @return mixed
-     * @throws CHttpException
-     */
-    /* public function beforeAction($action) {
-      if ($this->_checkAuth())
-      return parent::beforeAction($action);
-      else
-      throw new CHttpException(403);
-      } */
+    public function filters() {
+        return array(
+            'CheckAuth-error'
+        );
+    }
 
     /* Actions */
 
     public function actionList($status = 'published') {
 
         //if model exists
-        if ($model_name = $this->_apiHelper->getModelExists($_GET['model'])) {
+        if ($model_name = helper::getModelExists($_GET['model'])) {
             /* Get the respective model instance */
             $models = $model_name::model()->findAllByAttributes(array('access_status' => helper::translateAccessStatus($status)));
         } else {
@@ -81,7 +74,7 @@ class ApiController extends Controller {
         if (!isset($_GET['id']))
             $this->_apiHelper->sendResponse(500, array('friendly_status' => Constants::MISSING_PARAMETER));
 
-        if ($model_name = $this->_apiHelper->getModelExists($_GET['model'])) {
+        if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = $model_name::model()->findByPk($_GET['id']);
         } else {
             $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf(Constants::MODE_VIEW_NOT_IMPLEMENTED, $_GET['model'])));
@@ -97,7 +90,7 @@ class ApiController extends Controller {
 
     public function actionCreate() {
 
-        if ($model_name = $this->_apiHelper->getModelExists($_GET['model'])) {
+        if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = new $model_name;
         } else {
             $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf(Constants::MODE_CREATE_NOT_IMPLEMENTED, $_GET['model'])));
@@ -122,7 +115,7 @@ class ApiController extends Controller {
         $json = file_get_contents('php://input'); //$GLOBALS['HTTP_RAW_POST_DATA'] is not preferred http://www.php.net/manual/en/ini.core.php#ini.always-populate-raw-post-data
         $put_vars = CJSON::decode($json, true); //true means use associative array
 
-        if ($model_name = $this->_apiHelper->getModelExists($_GET['model'])) {
+        if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = $model_name->findByPk($_GET['id']);
         } else {
             $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf(Constants::MODE_UPDATE_NOT_IMPLEMENTED, $_GET['model'])));
@@ -147,15 +140,15 @@ class ApiController extends Controller {
 
     public function actionDelete() {
 
-        if ($model_name = $this->_apiHelper->getModelExists($_GET['model'])) {
+        if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = $model_name::model()->findByPk($_GET['id']);
         } else {
-            $this->_apiHelper->sendResponse(501, array('friendly_status' =>sprintf("Mode delete is not implemented for model %s", $_GET['model'])));
+            $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf("Mode delete is not implemented for model %s", $_GET['model'])));
         }
 
         //Was a model found? If not, raise an error
         if (is_null($model)) {
-            $this->_apiHelper->sendResponse(400, array('friendly_status' =>sprintf("Didn't find any model %s with ID %s", $_GET['model'], $_GET['id'])));
+            $this->_apiHelper->sendResponse(400, array('friendly_status' => sprintf("Didn't find any model %s with ID %s", $_GET['model'], $_GET['id'])));
         }
 
         //Delete the model
@@ -187,7 +180,7 @@ class ApiController extends Controller {
 
     public function actionError() {
         if ($error = Yii::app()->errorHandler->error) {
-            $this->_apiHelper->sendResponse(500, $error);
+            $this->_apiHelper->sendResponse(404, $error);
         }
     }
 
@@ -232,7 +225,7 @@ class ApiController extends Controller {
         }
     }
 
-    public function _checkAuth() {
+    public function filterCheckAuth($filterChain) {
         $username = false;
         $password = false;
         foreach (array('HTTP_X_USERNAME', 'PHP_AUTH_USER') as $var)
@@ -243,6 +236,13 @@ class ApiController extends Controller {
             if (isset($_SERVER[$var]) && $_SERVER[$var] != '')
                 $password = $_SERVER[$var];
 
+
+        $query_parameters = Yii::app()->apiHelper->getParsedQueryParams();
+        if (!$username && !$password && isset($query_parameters['username']) && isset($query_parameters['password'])) {
+            $username = $query_parameters['username'];
+            $password = $query_parameters['password'];
+        }
+
         if ($username && $password) {
             $user = YumUser::model()->find('LOWER(username)=?', array(
                 strtolower($username)));
@@ -250,12 +250,13 @@ class ApiController extends Controller {
             if (Yum::module()->RESTfulCleartextPasswords
                     && $user !== null
                     && YumEncrypt::encrypt($password, $user->salt) == $user->password)
-                return true;
+                $filterChain->run();
+
 
             if (!Yum::module()->RESTfulCleartextPasswords
                     && $user !== null
                     && YumEncrypt::encrypt($password, $user->salt) == $user->password)
-                return true;
+                $filterChain->run();
         }
         $this->_apiHelper->sendResponse(401, array('friendly_status' => Constants::BAD_USER_CREDNTIALS));
     }
