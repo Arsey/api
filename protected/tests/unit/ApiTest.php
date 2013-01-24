@@ -2,64 +2,33 @@
 
 class ApiTest extends CDbTestCase {
 
-    private $_base_url = 'https://api.planteaters.loc/';
-    public $fixtures = array(
-        'feedbacks' => 'Feedbacks',
-        'user' => 'YumUser',
+    private $_users = array(
+        'bad' => array(
+            'username' => 'bad_username',
+            'password' => 'bad_password',
+        ),
+        'good' => array(
+            'username' => 'demo',
+            'password' => 'demo',
+        ),
+        'super' => array(
+            'username' => 'admin',
+            'password' => '32232131',
+        ),
     );
-    private $_bad_user = array(
-        'username' => 'bad_username',
-        'password' => 'bad_password'
-    );
-    private $_good_user = array(
-        'username' => 'demo',
-        'password' => 'demo'
-    );
+    private $_wrong_model_name = 'abracadabra_model_name';
+    private $_not_found_message;
+    private $_method = 'get';
+    private $_headers = array();
+    private $_skip_all_test_not_single = false;
 
-    public static function setUpBeforeClass() {
-        if (!extension_loaded('pdo') || !extension_loaded('pdo_sqlite'))
-            markTestSkipped('PDO and SQLiete extensions are required.');
-
-        $config = array(
-            'basePath' => dirname(__FILE__),
-            'components' => array(
-                'db' => array(
-                    'class' => 'system.db.CDbConnection',
-                    'connectionString' => 'sqlite::memory:',
-                ),
-                'fixture' => array(
-                    'class' => 'system.test.CDbFixtureManager',
-                )
-            ),
-        );
-
-        Yii::app()->configure($config);
-
-
-        $c = Yii::app()->db->createCommand();
-        $c->createTable(
-                'feedbacks', array(
-            'id' => "bigint(20) PRIMARY KEY NOT NULL",
-            'user_id' => "int(10) NOT NULL",
-            'text' => "text NOT NULL",
-            'createtime' => "int(10) DEFAULT '0'",
-            'access_status' => "tinyint(1) NOT NULL DEFAULT '1'",
-                )
-        );
-        $c->createTable(
-                'user', array(
-            'id' => 'int(10) PRIMARY KEY NOT NULL',
-            'username' => 'varchar(50) NOT NULL',
-            'password' => 'varchar(128) NOT NULL',
-            'salt' => 'varchar(128) NOT NULL',
-                )
-        );
+    public function __construct($name = NULL, array $data = array(), $dataName = '') {
+        $this->_not_found_message = ApiHelper::CUSTOM_MESSAGE_404_BEGIN . ApiHelper::CUSTOM_MESSAGE_404_END;
+        parent::__construct($name, $data, $dataName);
     }
 
-    public static function tearDownAfterClass() {
-        if (Yii::app()->db) {
-            Yii::app()->db->active = false;
-        }
+    function testSingle() {
+
     }
 
     /**
@@ -67,88 +36,149 @@ class ApiTest extends CDbTestCase {
      * And also check all required fields in server Response
      */
     public function testNotFound() {
+        if ($this->_skip_all_test_not_single)
+            $this->markTestSkipped();
+        /*
+         * URL=rest_api_server_base_url
+         * Looking at the root & check for not found message
+         */
 
-        $not_found_message = ApiHelper::CUSTOM_MESSAGE_404_BEGIN . ApiHelper::CUSTOM_MESSAGE_404_END;
-        ///////////////////////////////////////////////////////////
+        $this->assertContains($this->_not_found_message, $this->_sendRequest());
+
         /*
-         * URL=$this->_base_url
-         * Looking at the root
+         * URL=rest_api_server_base_url/api
          */
-        $rest = $this->_getRestClient();
-        $response_encoded = $this->_decode($rest->get(''));
-        //check for not found message
-        $this->assertContains($not_found_message, $response_encoded);
-        ///////////////////////////////////////////////////////////
-        /*
-         * URL=$this->_base_url/api
-         */
-        $rest = $this->_getRestClient();
-        $response_encoded = $this->_decode($rest->get('api'));
+
+        $response = $this->_sendRequest('api');
         //is response have all required fields
-        $this->assertArrayHasKey('friendly_status', $response_encoded);
-        $this->assertArrayHasKey('status', $response_encoded);
-        $this->assertArrayHasKey('results', $response_encoded);
+        $this->assertArrayHasKey('friendly_status', $response);
+        $this->assertArrayHasKey('status', $response);
+        $this->assertArrayHasKey('results', $response);
 
         //check for not found message
-        $this->assertContains($not_found_message, $response_encoded);
-        ///////////////////////////////////////////////////////////
+        $this->assertContains($this->_not_found_message, $response);
+
         /*
-         * URL=$this->_base_url/api/json
+         * URL=rest_api_server_base_url/api/json
+         * check for not found message
          */
-        $rest = $this->_getRestClient();
-        $response_encoded = $this->_decode($rest->get('api/json'));
-        //check for not found message
-        $this->assertContains($not_found_message, $response_encoded);
+
+        $this->assertContains($this->_not_found_message, $this->_sendRequest('api/json'));
     }
 
     public function testAuth() {
-        ///////////////////////////////////////////////////////////
+        if ($this->_skip_all_test_not_single)
+            $this->markTestSkipped();
         /*
          * Valid URL, NO username and password
          * Must return bad user credentials message in response
          */
-        $rest = $this->_getRestClient();
-        $response_encoded = $this->_decode($rest->get('api/json/feedbacks'));
-        $this->assertContains(Constants::BAD_USER_CREDNTIALS, $response_encoded);
-        ///////////////////////////////////////////////////////////
+        $this->assertContains(
+                Constants::BAD_USER_CREDNTIALS, $this->_sendRequest('api/json/feedbacks')
+        );
+
         /*
          * Valid URL, invalid username and password
          * Must return bad user credentials message in response
          */
-        $rest = $this->_getRestClient();
-        $response_encoded = $this->_decode($rest->get('api/json/feedbacks'), $this->_bad_user);
-        $this->assertContains(Constants::BAD_USER_CREDNTIALS, $response_encoded);
-        ///////////////////////////////////////////////////////////
+        $this->assertContains(
+                Constants::BAD_USER_CREDNTIALS, $this->_sendRequest('api/json/feedbacks', $this->_users['bad'])
+        );
+
         /*
          * Valid URL, valid username and password
          * Mustn't return bad user credentials message in response
          */
-        /*$rest = $this->_getRestClient();
-        $response_encoded = $this->_decode($rest->get('api/json/feedbacks', $this->_good_user));
-        helper::p($response_encoded);
-        //$this->assertNotContains(Constants::BAD_USER_CREDNTIALS, $response_encoded);
-        ///////////////////////////////////////////////////////////
+        $this->assertNotContains(
+                Constants::BAD_USER_CREDNTIALS, $this->_sendRequest('api/json/feedbacks', $this->_users['good'])
+        );
+
         /*
          * Invalid URL(wrong model name), valid username and password
          * Must return mode list not implemented message
          */
-        /*$rest = $this->_getRestClient();
-        $wrong_model_name = 'wrongmodel';
-        $response_encoded = $this->_decode($rest->get('api/json/' . $wrong_model_name, $this->_good_user));
-        $this->assertContains(sprintf(Constants::MODE_LIST_NOT_IMPLEMENTED, $wrong_model_name), $response_encoded);
-         *
-         */
+        $this->assertContains(
+                sprintf(
+                        Constants::MODE_LIST_NOT_IMPLEMENTED, $this->_wrong_model_name
+                ), $this->_sendRequest('api/json/' . $this->_wrong_model_name, $this->_users['good'])
+        );
     }
 
-    private function _getRestClient() {
+    public function testModelsRestfull() {
+        if ($this->_skip_all_test_not_single)
+            $this->markTestSkipped();
+
+        foreach ($this->models() as $model_name => $model_data) {
+            $uri = 'api/json/' . $model_name;
+
+            /*
+             * empty model table
+             */
+            Yii::app()->db->createCommand()->truncateTable($model_name);
+
+            /*
+             * create new
+             */
+            $this->_method = 'post';
+            $this->_headers = array(
+                'X_USERNAME' => $this->_users['good']['username'],
+                'X_PASSWORD' => $this->_users['good']['password'],
+            );
+            $response = $this->_sendRequest($uri, $model_data);
+            $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
+            //helper::p($response);
+
+
+            /*
+             * Testing LIST REST mode
+             */
+            $this->_method = 'get';
+            $response = $this->_sendRequest($uri, $this->_users['good']);
+            //response must be successfull
+            $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
+            $this->assertTrue(!empty($response['results']));
+
+            /*
+             * Testing VIEW REST mode
+             */
+            $id = $response['results'][0]['id'];
+            $response = $this->_sendRequest($uri . "/" . $id, $this->_users['good']);
+            $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
+            $this->assertTrue(!empty($response['results']));
+            $this->assertTrue(!empty($response['results']) && count($response['results']) > 1);
+        }
+    }
+
+    private function _sendRequest($uri = '', $query_parameters = array()) {
         $rest = new RESTClient();
-        $rest->initialize(array('server' => $this->_base_url));
+        $rest->initialize(array('server' => helper::yiiparam('rest_api_server_base_url')));
         $rest->option(CURLOPT_SSL_VERIFYPEER, false);
-        return $rest;
+
+        if ($this->_method == 'get') {
+            $rest_response = $rest->get($uri, $query_parameters);
+        } elseif ($this->_method == 'put') {
+            $rest_response = $rest->put($uri, $query_parameters);
+        } elseif ($this->_method == 'post') {
+            if (!empty($this->_headers)) {
+                foreach ($this->_headers as $header_name => $value) {
+                    $rest->set_header($header_name, $value);
+                }
+            }
+            $rest_response = $rest->post($uri, $query_parameters);
+        }
+        if ($response_encoded = CJSON::decode($rest_response)) {
+            return $response_encoded;
+        }
+        return $rest_response;
     }
 
-    private function _decode($data) {
-        return CJSON::decode($data);
+    private function models() {
+        return array(
+            'feedbacks' => array(
+                'user_id' => 1,
+                'text' => 'test text here'
+            )
+        );
     }
 
 }

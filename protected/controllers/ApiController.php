@@ -89,7 +89,6 @@ class ApiController extends Controller {
     }
 
     public function actionCreate() {
-
         if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = new $model_name;
         } else {

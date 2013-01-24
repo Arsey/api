@@ -89,8 +89,12 @@ return array(
 
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+|\S+>', 'verb' => 'GET'),
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
+
+
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),
+
                 array('api/delete', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
+                
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
                 //Other controllers
                 //'<controller:\w+>/<action:\w+>' => '<controller>/<action>',
