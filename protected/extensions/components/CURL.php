@@ -49,7 +49,7 @@ class CURL extends CComponent
             return CVarDumper::dumpAsString($var,$depth=15,$highlight);
         }
     }
-	
+
 	function __construct($url = '')
 	{
 		Yii::log('debug', 'cURL Class Initialized');

@@ -33,6 +33,11 @@ class Constants {
     const MISSING_PARAMETER = 'Parameter id is missing';
     const COUNLDNT_CREATE_ITEM='Couldn\'t create an item';
     const MODEL_CREATE_ERROR='Couldn\'t create model %s';
+    //user identity messages on error
+    const USERNAME_OR_PASSWORD_INCORRECT='Username or Password is incorrect';
+    const ACCOUNT_NOT_ACTIVATED='This account is not activated.';
+    const ACCOUNT_BLOCKED='This account is blocked.';
+    const ACCOUNT_DELETED='Your account has been deleted.';
 
 
 }

@@ -8,11 +8,10 @@ class ApiController extends Controller {
 
     const APPLICATION_ID = 'ASCCPE';
 
-    private $_format;
-    private $_apiHelper;
+    protected $_format;
+    protected $_apiHelper;
 
     public function __construct($id, $module = null) {
-
         // Default response format either 'json' or 'xml'
 
         $this->_format = Constants::APPLICATION_JSON;
@@ -34,9 +33,34 @@ class ApiController extends Controller {
 
     public function filters() {
         return array(
-            'CheckAuth-error'
+            'accessControl'
         );
     }
+
+    public function accessRules() {
+        return array(
+            array(
+                'allow',
+                'actions' => array('error', 'join', 'activation', 'signin'),
+                'users' => array('?'),
+            ),
+            array(
+                'deny',
+                'actions' => array('list', 'view', 'create', 'update', 'delete','signout'),
+                'users' => array('?'),
+            ),
+            array(
+                'allow',
+                'actions' => array('signout'),
+                'users' => array('@'),
+            ),
+        );
+    }
+
+    /* public function beforeAction($action) {
+      echo $action->id;
+      parent::beforeAction($action);
+      } */
 
     /* Actions */
 
@@ -159,52 +183,10 @@ class ApiController extends Controller {
         }
     }
 
-    public function actionRegistration($type) {
-
-        Yii::import('application.modules.profile.models.*');
-        $profile = new YumProfile;
-        if (isset($_GET['password'], $_GET['email'], $_GET['username'])) {
-            $profile->lastname = $profile->firstname = $_GET['username'];
-            $profile->email = $_GET['email'];
-
-            //helper::p($profile->errors);
-            if ($profile->save()) {
-                $user = new YumUser;
-                $password = $_GET['password'];
-                $user->register(md5($profile->email), $password, $profile);
-                $this->sendRegistrationEmail($user, $password);
-            }
-        }
-    }
-
     public function actionError() {
         if ($error = Yii::app()->errorHandler->error) {
             $this->_apiHelper->sendResponse(404, $error);
         }
-    }
-
-    public function sendRegistrationEmail($user, $password) {
-        if (!isset($user->profile->email)) {
-            throw new CException(Yum::t('Email is not set when trying to send Registration Email'));
-        }
-        $activation_url = $user->getActivationUrl();
-
-        if (is_object($content)) {
-            $body = strtr('Hi, {email}, your new password is {password}. Please activate your account by clicking this link: {activation_url}', array(
-                '{email}' => $user->profile->email,
-                '{password}' => $password,
-                '{activation_url}' => $activation_url));
-
-            $mail = array(
-                'from' => Yum::module('registration')->registrationEmail,
-                'to' => $user->profile->email,
-                'subject' => 'Your registration on my example Website',
-                'body' => $body,
-            );
-            $sent = YumMailer::send($mail);
-        }
-
-        return $sent;
     }
 
     /**
@@ -222,42 +204,6 @@ class ApiController extends Controller {
             else
                 $this->_apiHelper->sendResponse(500, sprintf(Constants::NOT_ALLOWED_MODEL_PARAMETER, $var, $_GET['model']));
         }
-    }
-
-    public function filterCheckAuth($filterChain) {
-        $username = false;
-        $password = false;
-        foreach (array('HTTP_X_USERNAME', 'PHP_AUTH_USER') as $var)
-            if (isset($_SERVER[$var]) && $_SERVER[$var] != '')
-                $username = $_SERVER[$var];
-
-        foreach (array('HTTP_X_PASSWORD', 'PHP_AUTH_PW') as $var)
-            if (isset($_SERVER[$var]) && $_SERVER[$var] != '')
-                $password = $_SERVER[$var];
-
-
-        $query_parameters = Yii::app()->apiHelper->getParsedQueryParams();
-        if (!$username && !$password && isset($query_parameters['username']) && isset($query_parameters['password'])) {
-            $username = $query_parameters['username'];
-            $password = $query_parameters['password'];
-        }
-
-        if ($username && $password) {
-            $user = YumUser::model()->find('LOWER(username)=?', array(
-                strtolower($username)));
-
-            if (Yum::module()->RESTfulCleartextPasswords
-                    && $user !== null
-                    && YumEncrypt::encrypt($password, $user->salt) == $user->password)
-                $filterChain->run();
-
-
-            if (!Yum::module()->RESTfulCleartextPasswords
-                    && $user !== null
-                    && YumEncrypt::encrypt($password, $user->salt) == $user->password)
-                $filterChain->run();
-        }
-        $this->_apiHelper->sendResponse(401, array('friendly_status' => Constants::BAD_USER_CREDNTIALS));
     }
 
 }

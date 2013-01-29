@@ -93,4 +93,23 @@ class helper extends CApplicationComponent {
         return false;
     }
 
+    /**
+     * This static method initializing REST Client extension, that using CURL,
+     * and returns it's RESTClient object
+     * @param string $server
+     * @return \RESTClient
+     */
+    public static function curlInit($server, $ssl_verifypeer = false) {
+        $rest = new RESTClient();
+        $rest->initialize(array('server' => $server));
+        $rest->option('SSL_VERIFYPEER', $ssl_verifypeer);
+        return $rest;
+    }
+
+    public static function jsonDecode($data) {
+        if ($encoded = CJSON::decode($data))
+            return $encoded;
+        return $data;
+    }
+
 }

@@ -17,114 +17,119 @@
  * @property integer $access_status
  *
  * The followings are the available model relations:
+ * @property Users $user
  * @property Restaurants $restaurant
- * @property User $user
  * @property Photos[] $photoses
  * @property Ratings[] $ratings
  * @property Reports[] $reports
  */
-class Meals extends PlantEatersARMain
-{
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @param string $className active record class name.
-	 * @return Meals the static model class
-	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+class Meals extends CActiveRecord {
 
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName()
-	{
-		return 'meals';
-	}
+    public function behaviors() {
+        return array(
+            'timestamps' => array(
+                'class' => 'zii.behaviors.CTimestampBehavior',
+                'createAttribute' => 'createtime',
+                'updateAttribute' => 'modifiedtime',
+                'setUpdateOnCreate' => true,
+            ),
+        );
+    }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('restaurant_id, user_id, name', 'required'),
-			array('vegan, gluten_free, createtime, modifiedtime, access_status', 'numerical', 'integerOnly'=>true),
-			array('restaurant_id', 'length', 'max'=>20),
-			array('user_id', 'length', 'max'=>10),
-			array('name', 'length', 'max'=>100),
-			array('rating', 'length', 'max'=>4),
-			array('description', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, restaurant_id, user_id, name, description, vegan, gluten_free, rating, createtime, modifiedtime, access_status', 'safe', 'on'=>'search'),
-		);
-	}
+    /**
+     * Returns the static model of the specified AR class.
+     * @param string $className active record class name.
+     * @return Meals the static model class
+     */
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-			'restaurant' => array(self::BELONGS_TO, 'Restaurants', 'restaurant_id'),
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
-			'photoses' => array(self::HAS_MANY, 'Photos', 'meal_id'),
-			'ratings' => array(self::HAS_MANY, 'Ratings', 'meal_id'),
-			'reports' => array(self::HAS_MANY, 'Reports', 'meal_id'),
-		);
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName() {
+        return 'meals';
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels()
-	{
-		return array(
-			'id' => 'ID',
-			'restaurant_id' => 'Restaurant',
-			'user_id' => 'User',
-			'name' => 'Name',
-			'description' => 'Description',
-			'vegan' => 'Vegan',
-			'gluten_free' => 'Gluten Free',
-			'rating' => 'Rating',
-			'createtime' => 'Createtime',
-			'modifiedtime' => 'Modifiedtime',
-			'access_status' => 'Access Status',
-		);
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules() {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('restaurant_id, user_id, name', 'required'),
+            array('vegan, gluten_free, createtime, modifiedtime, access_status', 'numerical', 'integerOnly' => true),
+            array('restaurant_id, user_id', 'length', 'max' => 20),
+            array('name', 'length', 'max' => 100),
+            array('rating', 'length', 'max' => 4),
+            array('description', 'safe'),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, restaurant_id, user_id, name, description, vegan, gluten_free, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
+        );
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+    /**
+     * @return array relational rules.
+     */
+    public function relations() {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array(
+            'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
+            'restaurant' => array(self::BELONGS_TO, 'Restaurants', 'restaurant_id'),
+            'photoses' => array(self::HAS_MANY, 'Photos', 'meal_id'),
+            'ratings' => array(self::HAS_MANY, 'Ratings', 'meal_id'),
+            'reports' => array(self::HAS_MANY, 'Reports', 'meal_id'),
+        );
+    }
 
-		$criteria=new CDbCriteria;
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels() {
+        return array(
+            'id' => 'ID',
+            'restaurant_id' => 'Restaurant',
+            'user_id' => 'User',
+            'name' => 'Name',
+            'description' => 'Description',
+            'vegan' => 'Vegan',
+            'gluten_free' => 'Gluten Free',
+            'rating' => 'Rating',
+            'createtime' => 'Createtime',
+            'modifiedtime' => 'Modifiedtime',
+            'access_status' => 'Access Status',
+        );
+    }
 
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('restaurant_id',$this->restaurant_id,true);
-		$criteria->compare('user_id',$this->user_id,true);
-		$criteria->compare('name',$this->name,true);
-		$criteria->compare('description',$this->description,true);
-		$criteria->compare('vegan',$this->vegan);
-		$criteria->compare('gluten_free',$this->gluten_free);
-		$criteria->compare('rating',$this->rating,true);
-		$criteria->compare('createtime',$this->createtime);
-		$criteria->compare('modifiedtime',$this->modifiedtime);
-		$criteria->compare('access_status',$this->access_status);
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     */
+    public function search() {
+        // Warning: Please modify the following code to remove attributes that
+        // should not be searched.
 
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
+        $criteria = new CDbCriteria;
+
+        $criteria->compare('id', $this->id, true);
+        $criteria->compare('restaurant_id', $this->restaurant_id, true);
+        $criteria->compare('user_id', $this->user_id, true);
+        $criteria->compare('name', $this->name, true);
+        $criteria->compare('description', $this->description, true);
+        $criteria->compare('vegan', $this->vegan);
+        $criteria->compare('gluten_free', $this->gluten_free);
+        $criteria->compare('rating', $this->rating, true);
+        $criteria->compare('createtime', $this->createtime);
+        $criteria->compare('modifiedtime', $this->modifiedtime);
+        $criteria->compare('access_status', $this->access_status);
+
+        return new CActiveDataProvider($this, array(
+                    'criteria' => $criteria,
+                ));
+    }
+
 }

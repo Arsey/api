@@ -5,3 +5,5 @@
 /protected/data
 /protected/runtime
 /protected/config/test-config.php
+/protected/config/localinstance.php
+/protected/config/localinstance

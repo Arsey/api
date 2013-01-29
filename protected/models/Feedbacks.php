@@ -11,9 +11,9 @@
  * @property integer $access_status
  *
  * The followings are the available model relations:
- * @property User $user
+ * @property Users $user
  */
-class Feedbacks extends PlantEatersARMain
+class Feedbacks extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -43,7 +43,7 @@ class Feedbacks extends PlantEatersARMain
 		return array(
 			array('user_id, text', 'required'),
 			array('createtime, access_status', 'numerical', 'integerOnly'=>true),
-			array('user_id', 'length', 'max'=>10),
+			array('user_id', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, user_id, text, createtime, access_status', 'safe', 'on'=>'search'),
@@ -58,7 +58,7 @@ class Feedbacks extends PlantEatersARMain
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+			'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
 		);
 	}
 

@@ -26,7 +26,7 @@
  *
  * The followings are the available model relations:
  * @property Meals[] $meals
- * @property User $user
+ * @property Users $user
  */
 class Restaurants extends PlantEatersARMain {
 
@@ -157,7 +157,7 @@ class Restaurants extends PlantEatersARMain {
             array('user_id, latitude, longitude, name, street_address', 'required'),
             array('vegan, createtime, modifiedtime, access_status', 'numerical', 'integerOnly' => true),
             array('external_id, name, street_address, street_address_2, email, website', 'length', 'max' => 255),
-            array('user_id, state', 'length', 'max' => 10),
+            array('user_id, state', 'length', 'max' => 20),
             array('latitude, longitude', 'length', 'max' => 18),
             array('city, country', 'length', 'max' => 100),
             array('phone', 'length', 'max' => 30),
@@ -176,7 +176,7 @@ class Restaurants extends PlantEatersARMain {
         // class name for the relations automatically generated below.
         return array(
             'meals' => array(self::HAS_MANY, 'Meals', 'restaurant_id'),
-            'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+            'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
         );
     }
 

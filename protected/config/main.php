@@ -6,7 +6,7 @@
 // CWebApplication properties can be configured here.
 return array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
-    'defaultController'=>'api',
+    'defaultController' => 'api',
     'name' => 'PLANTEATERS',
     // preloading 'log' component
     'preload' => array('log'),
@@ -14,10 +14,11 @@ return array(
     /* 'aliases' => array(
       'user'=>'application.modules.user.user',
       ), */
-    // autoloading model and component classes
+// autoloading model and component classes
     'import' => array(
         'application.models.*',
         'application.components.*',
+        'application.controllers.*',
         //import user models from user module extension
         'application.modules.user.models.*',
         'application.extensions.googlePlaces',
@@ -25,7 +26,7 @@ return array(
         'application.extensions.components.*'
     ),
     'modules' => array(
-        //User Managment Module
+//User Managment Module
 
         'user' => array(
             'debug' => true,
@@ -40,6 +41,18 @@ return array(
     ),
     // application components
     'components' => array(
+        //authorization manager
+        'authManager' => array(
+            'class' => 'CDbAuthManager',
+            'connectionID' => 'db',
+        //'showErrors' => YII_DEBUG
+        ),
+        'mailer' => array(
+            'class' => 'application.extensions.mailer.EMailer',
+        ),
+        'usersManager' => array(
+            'class' => 'UsersManager',
+        ),
         'apiHelper' => array(
             'class' => 'application.components.ApiHelper'
         ),
@@ -70,12 +83,11 @@ return array(
             'urlFormat' => 'path',
             'showScriptName' => false,
             'rules' => array(
-                array('api/registration', 'pattern' => 'api/users/registration/<type:email|facebook>', 'verb' => 'GET'),
-                //REST patterns for user module
-                array('//user/rest/list', 'pattern' => 'api/<mode:users>', 'verb' => 'GET'),
-                array('//user/rest/view', 'pattern' => 'api/<mode:user>/<id:\d+>', 'verb' => 'GET'),
-                array('//user/rest/create', 'pattern' => 'api/<mode:user>', 'verb' => 'POST'),
-                array('//user/rest/update', 'pattern' => 'api/<mode:user>/<id:\d+>', 'verb' => 'PUT'),
+                //REST patterns for users part
+                array('users/join', 'pattern' => 'api/<format:json|xml>/user/join', 'verb' => 'POST'),
+                array('users/activation', 'pattern' => 'api/<format:json|xml>/user/activation/key/<key:\S+>/email/<email:\S+>', 'verb' => 'GET'),
+                array('users/signin', 'pattern' => 'api/<format:json|xml>/user/signin/', 'verb' => 'POST'),
+                array('users/signout', 'pattern' => 'api/<format:json|xml>/user/signout/', 'verb' => 'GET'),
                 //REST patterns
                 array(
                     'api/list',
@@ -86,23 +98,18 @@ return array(
                 //pattern to apply access filter for any model
                 array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<status:published|removed|pending|unpublished>', 'verb' => 'GET'),
                 array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'GET'),
-
-                array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+|\S+>', 'verb' => 'GET'),
+                array('api/view', 'pattern' => 'api/<format:json|xml>/<model:restaurants>/<id:\d+|\S+>', 'verb' => 'GET'),
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
-
-
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),
-
                 array('api/delete', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
-                
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
-                //Other controllers
-                //'<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+            //Other controllers
+//'<controller:\w+>/<action:\w+>' => '<controller>/<action>',
             ),
         ),
         //MySQL database configuration
         'errorHandler' => array(
-            // use 'site/error' action to display errors
+// use 'site/error' action to display errors
             'errorAction' => 'api/error',
         ),
         'log' => array(
@@ -122,10 +129,10 @@ return array(
         ),
     ),
     // application-level parameters that can be accessed
-    // using Yii::app()->params['paramName']
+// using Yii::app()->params['paramName']
     'params' => array(
-        // this is used in contact page
+// this is used in contact page
         'adminEmail' => 'webmaster@example.com',
-        'dummy_parameter'=>'dummy'
+        'dummy_parameter' => 'dummy'
     ),
 );

@@ -1,29 +1,13 @@
 <?php
 
-class ApiTest extends CDbTestCase {
+class ApiTest extends MainCTestCase {
 
-    private $_users = array(
-        'bad' => array(
-            'username' => 'bad_username',
-            'password' => 'bad_password',
-        ),
-        'good' => array(
-            'username' => 'demo',
-            'password' => 'demo',
-        ),
-        'super' => array(
-            'username' => 'admin',
-            'password' => '32232131',
-        ),
-    );
-    private $_wrong_model_name = 'abracadabra_model_name';
-    private $_not_found_message;
     private $_method = 'get';
     private $_headers = array();
     private $_skip_all_test_not_single = false;
 
     public function __construct($name = NULL, array $data = array(), $dataName = '') {
-        $this->_not_found_message = ApiHelper::CUSTOM_MESSAGE_404_BEGIN . ApiHelper::CUSTOM_MESSAGE_404_END;
+
         parent::__construct($name, $data, $dataName);
     }
 
@@ -43,7 +27,7 @@ class ApiTest extends CDbTestCase {
          * Looking at the root & check for not found message
          */
 
-        $this->assertContains($this->_not_found_message, $this->_sendRequest());
+        $this->assertContains(ApiHelper::CUSTOM_MESSAGE_404, $this->_sendRequest());
 
         /*
          * URL=rest_api_server_base_url/api
@@ -56,14 +40,14 @@ class ApiTest extends CDbTestCase {
         $this->assertArrayHasKey('results', $response);
 
         //check for not found message
-        $this->assertContains($this->_not_found_message, $response);
+        $this->assertContains(ApiHelper::CUSTOM_MESSAGE_404, $response);
 
         /*
          * URL=rest_api_server_base_url/api/json
          * check for not found message
          */
 
-        $this->assertContains($this->_not_found_message, $this->_sendRequest('api/json'));
+        $this->assertContains(ApiHelper::CUSTOM_MESSAGE_404, $this->_sendRequest('api/json'));
     }
 
     public function testAuth() {

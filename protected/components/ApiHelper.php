@@ -15,6 +15,7 @@ class ApiHelper extends CApplicationComponent {
     const CUSTOM_MESSAGE_401 = 'You must be authorized to view this page.';
 
     //CUSTOM message for 404
+    const CUSTOM_MESSAGE_404 = 'The requested URL was not found.';
     const CUSTOM_MESSAGE_404_BEGIN = 'The requested URL ';
     const CUSTOM_MESSAGE_404_END = 'was not found.';
     //CUSTOM message for 500
@@ -79,6 +80,13 @@ class ApiHelper extends CApplicationComponent {
         $body_return = array();
 
         /*
+         * If some errors happens, we must show it for users
+         */
+        if (isset($body['errors']) && !empty($body['errors'])) {
+            $body_return['errors'] = $body['errors'];
+        }
+
+        /*
          * next_page_token - variable , that needed on searching a restaurants
          * in Google Places Api
          */
@@ -105,8 +113,7 @@ class ApiHelper extends CApplicationComponent {
          * in a distributed network, and the server provides the execution environment
          * for the program.
          */
-        $body_return['server_signature'] = $this->getServerSignature();
-
+        //$body_return['server_signature'] = $this->getServerSignature();
         //at the end we need to encode data into json or xml based on $this->_format variable
         return $this->_encode($body_return);
     }

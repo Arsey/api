@@ -17,7 +17,7 @@
  * @property Meals $meal
  * @property Ratings[] $ratings
  */
-class Photos extends PlantEatersARMain
+class Photos extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
