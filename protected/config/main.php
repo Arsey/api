@@ -78,8 +78,8 @@ $main = array(
                 //REST patterns for users part
                 array('users/join', 'pattern' => 'api/<format:json|xml>/user/join', 'verb' => 'POST'),
                 array('users/activation', 'pattern' => 'api/<format:json|xml>/user/activation/key/<key:\S+>/email/<email:\S+>', 'verb' => 'GET'),
-                array('users/signin', 'pattern' => 'api/<format:json|xml>/user/signin/', 'verb' => 'POST'),
-                array('users/signout', 'pattern' => 'api/<format:json|xml>/user/signout/', 'verb' => 'GET'),
+                array('users/login', 'pattern' => 'api/<format:json|xml>/user/login/', 'verb' => 'POST'),
+                array('users/logout', 'pattern' => 'api/<format:json|xml>/user/logout/', 'verb' => 'GET'),
                 //REST patterns
                 array(
                     'api/list',

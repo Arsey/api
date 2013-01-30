@@ -5,7 +5,7 @@ class SignInOutTest extends MainCTestCase {
     function testSignIn() {
         $rest = helper::curlInit($this->_server);
         $response = $rest->post(
-                'api/json/user/signin', array(
+                'api/json/user/login', array(
             'username' => $this->_users['demo']['User']['username'],
             'password' => $this->_users['demo']['User']['password'],
                 )
@@ -29,7 +29,7 @@ class SignInOutTest extends MainCTestCase {
         $rest = helper::curlInit($this->_server);
         $rest->option(CURLOPT_COOKIE, "PHPSESSID=".$session_id);
 
-        $response = $rest->get('api/json/user/signout');
+        $response = $rest->get('api/json/user/logout');
         $response = helper::jsonDecode($response);
 
         if (!is_array($response)) {

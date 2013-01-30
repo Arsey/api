@@ -43,7 +43,7 @@ class UsersController extends ApiController {
      *
      * @return type
      */
-    public function actionSignIn() {
+    public function actionLogin() {
 
         if (!empty($_POST) && isset($_POST['username'], $_POST['password'])) {
 
@@ -62,7 +62,7 @@ class UsersController extends ApiController {
     /**
      * This action just sign out the user.
      */
-    public function actionSignOut() {
+    public function actionLogout() {
         // If the user is already logged out send them response with such message
         if (Yii::app()->user->isGuest)
             $this->_apiHelper->sendResponse(200, array('errors' => array('You are already logged out.')));
