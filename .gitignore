@@ -7,3 +7,6 @@
 /protected/config/test-config.php
 /protected/config/localinstance.php
 /protected/config/localinstance
+/protected/config/test-local.php
+/protected/config/db.php
+/protected/config/console-local.php

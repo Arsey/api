@@ -4,41 +4,28 @@
 // Yii::setPathOfAlias('local','path/to/local-folder');
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
-return array(
+$main = array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
     'defaultController' => 'api',
     'name' => 'PLANTEATERS',
     // preloading 'log' component
     'preload' => array('log'),
     //Additional aliases
-    /* 'aliases' => array(
-      'user'=>'application.modules.user.user',
-      ), */
+    'aliases' => array(
+    ),
 // autoloading model and component classes
     'import' => array(
         'application.models.*',
         'application.components.*',
         'application.controllers.*',
         //import user models from user module extension
-        'application.modules.user.models.*',
         'application.extensions.googlePlaces',
         //curl extension
-        'application.extensions.components.*'
+        'application.extensions.components.*',
+        //mail extension
+        'application.extensions.yii-mail.*',
     ),
-    'modules' => array(
-//User Managment Module
-
-        'user' => array(
-            'debug' => true,
-            'enableRESTapi' => true,
-        ),
-        'registration' => array(
-            'class' => 'application.modules.registration.RegistrationModule',
-        ),
-        'profile' => array(
-            'class' => 'application.modules.profile.ProfileModule',
-        ),
-    ),
+    'modules' => array(),
     // application components
     'components' => array(
         //authorization manager
@@ -50,6 +37,13 @@ return array(
         'mailer' => array(
             'class' => 'application.extensions.mailer.EMailer',
         ),
+        'mail' => array(
+            'class' => 'ext.yii-mail.YiiMail',
+            //'transportType' => 'smtp',
+            'viewPath'=>'application.views.mail',
+            'logging' => true,
+            'dryRun' => false
+        ),
         'usersManager' => array(
             'class' => 'UsersManager',
         ),
@@ -57,10 +51,8 @@ return array(
             'class' => 'application.components.ApiHelper'
         ),
         'user' => array(
-            'class' => 'application.modules.user.components.YumWebUser',
-            // enable cookie-based authentication
             'allowAutoLogin' => true,
-            'loginUrl' => array('//user/user/login'),
+            'loginUrl' => null,
         ),
         'cache' => array(
             'class' => 'CDummyCache',
@@ -136,3 +128,18 @@ return array(
         'dummy_parameter' => 'dummy'
     ),
 );
+
+/*
+ * Some parts of configuration may be secure or unique for specific developer.
+ * So this code will search for main-local.php file with configuration described before.
+ * And if main-local.php will be found, it's will merge configuration from $main array and in main-local.php.
+ *
+ */
+
+$local_conf_file = dirname(__FILE__) . '/main-local.php';
+
+if (file_exists($local_conf_file)) {
+    return CMap::mergeArray($main, require($local_conf_file));
+} else {
+    return $main;
+}

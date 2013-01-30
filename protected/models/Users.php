@@ -61,7 +61,7 @@ class Users extends CActiveRecord {
     }
 
     public function afterSave() {
-        if (Yii::app()->authManager->isAssigned('normal', $this->id)) {
+        if ($this->isNewRecord&&!Yii::app()->authManager->isAssigned('normal', $this->id)) {
             Yii::app()->authManager->assign('normal', $this->id);
         }
         return true;
@@ -178,6 +178,13 @@ class Users extends CActiveRecord {
                 ));
     }
 
+    public function logout(){
+        if(!Yii::app()->user->isGuest){
+            $this->lastaction=0;
+            $this->save('lastaction');
+        }
+    }
+
     public function setPassword($password, $salt = null) {
         if (!empty($password) && (string) $password) {
             $this->password = UsersManager::encrypt($password, $salt);
@@ -219,10 +226,12 @@ class Users extends CActiveRecord {
      */
     public function getActivationUrl() {
 
+        $format=isset($_GET['format']) ? $_GET['format'].'/' : '';
+
         return Yii::app()
                         ->controller
                         ->createAbsoluteUrl(
-                                'api/' . isset($_GET['format']) ? $_GET['format'] : '' . '/user/activation', array(
+                                "api/{$format}user/activation", array(
                             'key' => $this->activation_key,
                             'email' => $this->email,
                                 )

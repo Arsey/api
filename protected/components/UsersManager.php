@@ -75,16 +75,17 @@ class UsersManager extends CApplicationComponent {
         if (!isset($user->email))
             Yii::app()->apiHelper->sendResponse(403, 'Email is not set when trying to send Registration Email');
 
-        $mailer = Yii::app()->mailer;
-        $mailer->From = 'arsey_sensector@mail.ru';
-        $mailer->AddAddress($user->email);
-        $mailer->Body = strtr(
-                'Hello, {username}. Please activate your account with this url: {activation_url}', array(
-            '{username}' => $user->username,
-            '{activation_url}' => $user->getActivationUrl()));
 
-        $mailer->Subject = strtr('Please activate your account for {username}', array('{username}' => $user->username));
-        $mailer->Send();
+
+        $message = new YiiMailMessage;
+        $message->view = 'registration_email';
+
+        //userModel is passed to the view
+        $message->setBody(array('username' => $user->username, 'activation_url' => $user->getActivationUrl()), 'text/html');
+        $message->setSubject(strtr('Please activate your account for {username}', array('{username}' => $user->username)));
+        $message->addTo($user->email);
+        $message->from = Yii::app()->params['adminEmail'];
+        Yii::app()->mail->send($message);
 
         return;
     }

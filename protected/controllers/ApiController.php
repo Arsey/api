@@ -185,7 +185,8 @@ class ApiController extends Controller {
 
     public function actionError() {
         if ($error = Yii::app()->errorHandler->error) {
-            $this->_apiHelper->sendResponse(404, $error);
+
+            $this->_apiHelper->sendResponse($error['code'], array('errors'=>$error['message']));
         }
     }
 

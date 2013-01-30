@@ -2,7 +2,7 @@
 
 class UserRegistrationTest extends MainCTestCase {
 
-    function testRegistrationUrl() {
+    function testRegistration() {
 
         /* trancate tables with users */
         Yii::app()->db->createCommand()->truncateTable('users');
@@ -20,11 +20,15 @@ class UserRegistrationTest extends MainCTestCase {
 
         $this->assertNotContains(ApiHelper::CUSTOM_MESSAGE_404, $response);
         $this->assertNotContains(Constants::BAD_USER_CREDNTIALS, $response);
-        
+
 
         //ACTIVATION
         /* find registered user */
-        $model = Users::model()->findByPk(1);
+        $model=new Users;
+        $criteria=new CDbCriteria;
+        $criteria->select='max(id),status,activation_key,email';
+        $model = Users::model()->find($criteria);
+        
         /* is user still inactive */
 
         $this->assertEquals(Users::STATUS_INACTIVE, $model->status);

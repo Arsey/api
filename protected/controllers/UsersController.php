@@ -60,11 +60,18 @@ class UsersController extends ApiController {
     }
 
     /**
-     *
+     * This action just sign out the user.
      */
     public function actionSignOut() {
-        //Yii::app()->user->logout();
-        echo 'd';
+        // If the user is already logged out send them response with such message
+        if (Yii::app()->user->isGuest)
+            $this->_apiHelper->sendResponse(200, array('errors' => array('You are already logged out.')));
+
+        if ($user = Users::model()->findByPk(Yii::app()->user->id)) {
+            $user->logout();
+            Yii::app()->user->logout();
+            $this->_apiHelper->sendResponse(200);
+        }
     }
 
     /**
