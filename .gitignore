@@ -4,6 +4,7 @@
 /assets
 /protected/data
 /protected/runtime
+/protected/runtime/*.log
 /protected/config/test-config.php
 /protected/config/localinstance.php
 /protected/config/localinstance

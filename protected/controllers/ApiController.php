@@ -8,7 +8,16 @@ class ApiController extends Controller {
 
     const APPLICATION_ID = 'ASCCPE';
 
+    /*
+     * format - "application/json" or "application/xml"
+     */
+
     protected $_format;
+    /*
+     * format_url is for genereting url based on it's format.
+     * That's can be xml or json
+     */
+    protected $_format_url;
     protected $_apiHelper;
 
     public function __construct($id, $module = null) {
@@ -17,11 +26,11 @@ class ApiController extends Controller {
         $this->_format = Constants::APPLICATION_JSON;
 
         //if URL have format in query than we get it
-        $format = Yii::app()->request->getQuery('format', false);
+        $this->_format_url = Yii::app()->request->getQuery('format', '');
 
 
         //by default format is json, but if variable format in URL equal xml that change defaul json to xml
-        if ($format && $format === 'xml') {
+        if (!empty($this->_format_url) && $this->_format_url === 'xml') {
             $this->_format = Constants::APPLICATION_XML;
         }
 
@@ -41,19 +50,20 @@ class ApiController extends Controller {
         return array(
             array(
                 'allow',
-                'actions' => array('error', 'join', 'activation', 'signin'),
+                'actions' => array('error', 'join', 'activation', 'login','passwordrecovery'),
                 'users' => array('?'),
             ),
             array(
                 'deny',
-                'actions' => array('list', 'view', 'create', 'update', 'delete','signout'),
+                'actions' => array('list', 'view', 'create', 'update', 'delete', 'logout'),
                 'users' => array('?'),
             ),
             array(
                 'allow',
-                'actions' => array('signout'),
+                'actions' => array('logout'),
                 'users' => array('@'),
             ),
+           
         );
     }
 
@@ -183,10 +193,13 @@ class ApiController extends Controller {
         }
     }
 
+    /*
+     * This action for unknown URLs actions
+     */
+
     public function actionError() {
         if ($error = Yii::app()->errorHandler->error) {
-
-            $this->_apiHelper->sendResponse($error['code'], array('errors'=>$error['message']));
+            $this->_apiHelper->sendResponse($error['code'], array('errors' => $error['message']));
         }
     }
 

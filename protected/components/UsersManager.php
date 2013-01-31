@@ -1,6 +1,103 @@
 <?php
 
 class UsersManager extends CApplicationComponent {
+
+    /**
+     * Check if user exists with login or email
+     * @param string $login_or_email
+     * @return false or instance of /Users model
+     */
+    public static function checkexists($login_or_email = null) {
+
+        if (!is_null($login_or_email) && !empty($login_or_email)) {
+            //if variable $login_or_email have string with @
+            if (
+                    (strpos($login_or_email, "@")) &&
+                    $user = Users::model()->findByAttributes(array('email' => $login_or_email))
+            ) {
+                return $user;
+            } elseif ($user = Users::model()->findByAttributes(array('username' => $login_or_email))) {
+                return $user;
+            }
+        }
+        //user was not found by username or email
+        return false;
+    }
+
+    // This function tries to generate a as human-readable password as possible
+    public static function generatePassword() {
+        $consonants = array("b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "x", "y", "z");
+        $vocals = array("a", "e", "i", "o", "u");
+
+        $password = '';
+
+        srand((double) microtime() * 1000000);
+        for ($i = 1; $i <= 4; $i++) {
+            $password .= $consonants[rand(0, 19)];
+            $password .= $vocals[rand(0, 4)];
+        }
+        $password .= rand(0, 9);
+
+        return $password;
+    }
+
+    // Send the Email to the given user object.
+    // $user->email needs to be set.
+    public function sendRegistrationEmail($user) {
+        if (!isset($user->email))
+            Yii::app()->apiHelper->sendResponse(403, 'Email is not set when trying to send Registration Email');
+
+        $message = new YiiMailMessage;
+        $message->view = 'registration_email';
+        //userModel is passed to the view
+        $message->setBody(
+                array(
+            'username' => $user->username,
+            'activation_url' => $user->getActivationUrl(),
+                ), 'text/html');
+
+        $message->setSubject(strtr('Please activate your account for {username}', array('{username}' => $user->username)));
+        $message->addTo($user->email);
+        $message->from = Yii::app()->params['adminEmail'];
+        Yii::app()->mail->send($message);
+
+        return;
+    }
+
+    public function sendPasswordRecoveryEmail($user, $recovery_url) {
+        $message = new YiiMailMessage;
+        $message->view = 'password_recovery_email';
+        //userModel is passed to the view
+        $message->setBody(
+                array(
+            'username' => $user->username,
+            'recovery_url' => $recovery_url,
+                ), 'text/html');
+
+        $message->setSubject(strtr('Password recovery for {username}', array('{username}' => $user->username)));
+        $message->addTo($user->email);
+        $message->from = Yii::app()->params['adminEmail'];
+        Yii::app()->mail->send($message);
+        return;
+    }
+
+    public function sendNewPassword($user, $new_password) {
+        $message = new YiiMailMessage;
+        $message->view = 'new_password';
+        //userModel is passed to the view
+        $message->setBody(
+                array(
+            'username' => $user->username,
+            'new_password' => $new_password,
+                ), 'text/html');
+
+        $message->setSubject(strtr('New password for {username}', array('{username}' => $user->username)));
+        $message->addTo($user->email);
+        $message->from = Yii::app()->params['adminEmail'];
+        Yii::app()->mail->send($message);
+        return;
+    }
+
     /*
      * PBKDF2 key derivation function as defined by RSA's PKCS #5: https://www.ietf.org/rfc/rfc2898.txt
      * $algorithm - The hash algorithm to use. Recommended: SHA256
@@ -67,27 +164,6 @@ class UsersManager extends CApplicationComponent {
         if (!$salt)
             $salt = self::generateSalt();
         return self::pbkdf2($string, $salt);
-    }
-
-    // Send the Email to the given user object.
-    // $user->email needs to be set.
-    public function sendRegistrationEmail($user) {
-        if (!isset($user->email))
-            Yii::app()->apiHelper->sendResponse(403, 'Email is not set when trying to send Registration Email');
-
-
-
-        $message = new YiiMailMessage;
-        $message->view = 'registration_email';
-
-        //userModel is passed to the view
-        $message->setBody(array('username' => $user->username, 'activation_url' => $user->getActivationUrl()), 'text/html');
-        $message->setSubject(strtr('Please activate your account for {username}', array('{username}' => $user->username)));
-        $message->addTo($user->email);
-        $message->from = Yii::app()->params['adminEmail'];
-        Yii::app()->mail->send($message);
-
-        return;
     }
 
     // Compares two strings $a and $b in length-constant time.

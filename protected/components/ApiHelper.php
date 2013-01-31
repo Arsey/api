@@ -80,6 +80,14 @@ class ApiHelper extends CApplicationComponent {
         $body_return = array();
 
         /*
+         * If some message exists, we must show it for users
+         */
+        if (isset($body['message']) && !empty($body['message'])) {
+            $body_return['message'] = $body['message'];
+        }
+
+
+        /*
          * If some errors happens, we must show it for users
          */
         if (isset($body['errors']) && !empty($body['errors'])) {
@@ -97,14 +105,20 @@ class ApiHelper extends CApplicationComponent {
         /*
          * Results for request. It also can be an empty.
          */
-        $body_return['results'] = (isset($body['results']) && !empty($body['results'])) ? $body['results'] : '';
+        if (isset($body['results']) && !empty($body['results'])) {
+            $body_return['results'] = (isset($body['results']) && !empty($body['results'])) ? $body['results'] : '';
+        }
 
         /*
          * friendly_status is familiar with status and relying on status codes(200,400, etc.) too.
          * With this status we can shows to users friendly statuses of response from server.
          */
-        $body_return['friendly_status'] = (isset($body['friendly_status']) && !empty($body['friendly_status'])) ? $body['friendly_status'] : $this->getFriendlyStatusCodeMessage($status);
+        if (isset($body['friendly_status']) && !empty($body['friendly_status'])) {
+            $body_return['friendly_status'] = (isset($body['friendly_status']) && !empty($body['friendly_status'])) ? $body['friendly_status'] : $this->getFriendlyStatusCodeMessage($status);
+        }
+
         $body_return['status'] = $this->getStatusCodeMessage($status);
+
 
 
         /*

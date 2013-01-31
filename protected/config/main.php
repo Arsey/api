@@ -40,7 +40,7 @@ $main = array(
         'mail' => array(
             'class' => 'ext.yii-mail.YiiMail',
             //'transportType' => 'smtp',
-            'viewPath'=>'application.views.mail',
+            'viewPath' => 'application.views.mail',
             'logging' => true,
             'dryRun' => false
         ),
@@ -75,11 +75,31 @@ $main = array(
             'urlFormat' => 'path',
             'showScriptName' => false,
             'rules' => array(
-                //REST patterns for users part
+                //REST patterns for USERS
+                /*
+                 * Join
+                 */
                 array('users/join', 'pattern' => 'api/<format:json|xml>/user/join', 'verb' => 'POST'),
+                /*
+                 * Account Activation
+                 */
                 array('users/activation', 'pattern' => 'api/<format:json|xml>/user/activation/key/<key:\S+>/email/<email:\S+>', 'verb' => 'GET'),
+                /*
+                 * Login 
+                 */
                 array('users/login', 'pattern' => 'api/<format:json|xml>/user/login/', 'verb' => 'POST'),
-                array('users/logout', 'pattern' => 'api/<format:json|xml>/user/logout/', 'verb' => 'GET'),
+                /*
+                 * Logout
+                 */
+                array('users/logout', 'pattern' => 'api/<format:json|xml>/user/logout/'),
+                /*
+                 * Password Recovery
+                 */
+                array('/users/passwordrecovery', 'pattern' => 'api/<format:json|xml>/user/password_recovery', 'verb' => 'POST'),
+                /*
+                 * Password Recovery Confirmation
+                 */
+                array('/users/passwordrecovery', 'pattern' => 'api/<format:json|xml>/user/password_recovery/key/<key:\S+>/email/<email:\S+>', 'verb' => 'GET'),
                 //REST patterns
                 array(
                     'api/list',

@@ -61,7 +61,7 @@ class Users extends CActiveRecord {
     }
 
     public function afterSave() {
-        if ($this->isNewRecord&&!Yii::app()->authManager->isAssigned('normal', $this->id)) {
+        if ($this->isNewRecord && !Yii::app()->authManager->isAssigned('normal', $this->id)) {
             Yii::app()->authManager->assign('normal', $this->id);
         }
         return true;
@@ -178,9 +178,9 @@ class Users extends CActiveRecord {
                 ));
     }
 
-    public function logout(){
-        if(!Yii::app()->user->isGuest){
-            $this->lastaction=0;
+    public function logout() {
+        if (!Yii::app()->user->isGuest) {
+            $this->lastaction = 0;
             $this->save('lastaction');
         }
     }
@@ -226,7 +226,7 @@ class Users extends CActiveRecord {
      */
     public function getActivationUrl() {
 
-        $format=isset($_GET['format']) ? $_GET['format'].'/' : '';
+        $format = isset($_GET['format']) ? $_GET['format'] . '/' : '';
 
         return Yii::app()
                         ->controller
@@ -269,6 +269,16 @@ class Users extends CActiveRecord {
                 return -2;
         }
         return false;
+    }
+
+    public function changeUserPassword($new_password = null) {
+        if (is_null($new_password)) {
+            $new_password = UsersManager::generatePassword();
+            $this->password = UsersManager::encrypt($new_password, $this->salt);
+            $this->activation_key = UsersManager::encrypt(microtime() . $new_password, $this->salt);
+            $this->save();
+            return $new_password;
+        }
     }
 
 }
