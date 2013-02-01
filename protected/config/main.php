@@ -28,18 +28,22 @@ $main = array(
     'modules' => array(),
     // application components
     'components' => array(
+        'session'=>array(
+            'class'=>'CDbHttpSession',
+            'connectionID'=>'db',
+            'sessionTableName'=>'db_session',
+            'timeout'=>30*3600*24,
+            'sessionName'=>'auth_token',
+        ),
         //authorization manager
         'authManager' => array(
             'class' => 'CDbAuthManager',
             'connectionID' => 'db',
         //'showErrors' => YII_DEBUG
         ),
-        'mailer' => array(
-            'class' => 'application.extensions.mailer.EMailer',
-        ),
         'mail' => array(
             'class' => 'ext.yii-mail.YiiMail',
-            //'transportType' => 'smtp',
+            'transportType' => 'php',
             'viewPath' => 'application.views.mail',
             'logging' => true,
             'dryRun' => false
@@ -51,6 +55,7 @@ $main = array(
             'class' => 'application.components.ApiHelper'
         ),
         'user' => array(
+            //'class'=>'WebUser',
             'allowAutoLogin' => true,
             'loginUrl' => null,
         ),
@@ -85,7 +90,7 @@ $main = array(
                  */
                 array('users/activation', 'pattern' => 'api/<format:json|xml>/user/activation/key/<key:\S+>/email/<email:\S+>', 'verb' => 'GET'),
                 /*
-                 * Login 
+                 * Login
                  */
                 array('users/login', 'pattern' => 'api/<format:json|xml>/user/login/', 'verb' => 'POST'),
                 /*

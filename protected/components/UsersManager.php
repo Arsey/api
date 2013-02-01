@@ -149,7 +149,7 @@ class UsersManager extends CApplicationComponent {
      */
     public static function generateSalt() {
         if (function_exists('mcrypt_create_iv')) {
-            $sHash = base64_encode(mcrypt_create_iv(64, MCRYPT_DEV_RANDOM));
+            $sHash = base64_encode(mcrypt_create_iv(64, MCRYPT_DEV_URANDOM));
         } else {
             $sHash = hash('sha256', mt_rand() . uniqid());
         }

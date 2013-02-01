@@ -27,17 +27,8 @@ class UserIdentity extends CUserIdentity {
     public function authenticate($without_password = false) {
         $user = Users::model()->find('username = :username', array(':username' => $this->username));
 
-        // try to authenticate via email
-        /* if (!$user && (Yum::module()->loginType & 2) && Yum::hasModule('profile')) {
-          if ($profile = YumProfile::model()->find('email = :email', array(
-          ':email' => $this->username)))
-          if ($profile->user)
-          $user = $profile->user;
-          } */
-
         if (!$user)
             return self::ERROR_STATUS_USER_DOES_NOT_EXIST;
-
         if ($without_password)
             $this->credentialsConfirmed($user);
         else if (!UsersManager::validate_password($this->password, $user->password, $user->salt))
@@ -51,21 +42,6 @@ class UserIdentity extends CUserIdentity {
         else
             $this->credentialsConfirmed($user);
         return !$this->errorCode;
-
-
-
-        /* $users = array(
-          // username => password
-          'demo' => 'demo',
-          'admin' => 'admin',
-          );
-          if (!isset($users[$this->username]))
-          $this->errorCode = self::ERROR_USERNAME_INVALID;
-          elseif ($users[$this->username] !== $this->password)
-          $this->errorCode = self::ERROR_PASSWORD_INVALID;
-          else
-          $this->errorCode = self::ERROR_NONE;
-          return !$this->errorCode; */
     }
 
     function credentialsConfirmed($user) {

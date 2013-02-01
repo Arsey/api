@@ -7,26 +7,21 @@ class UsersController extends ApiController {
      * when client go with POST to api/<format>/user/activation.
      */
     public function actionJoin() {
-        /* if User array isset in POST */
-        if (isset($_POST['User'])) {
-            $model = new Users;
-            $model->attributes = $_POST['User'];
+        $model = new Users;
+        $this->_assignModelAttributes($model);
 
-            /* validating post fields */
-            if ($model->validate()) {
-                if ($model->save()) {
-                    /* sending registration email with activation url to user */
-                    UsersManager::sendRegistrationEmail($model);
-                    //send response to a client
-                    $this->_apiHelper->sendResponse(200, array('message' => Constants::THANK_YOU));
-                }
-            } elseif ($model->errors) {
+        /* validating post fields */
+        if ($model->validate()) {
+            if ($model->save()) {
+                /* sending registration email with activation url to user */
+                UsersManager::sendRegistrationEmail($model);
                 //send response to a client
-                $this->_apiHelper->sendResponse(400, array('errors' => $model->errors));
+                $this->_apiHelper->sendResponse(200, array('message' => Constants::THANK_YOU));
             }
+        } elseif ($model->errors) {
+            //send response to a client
+            $this->_apiHelper->sendResponse(200, array('errors' => $model->errors));
         }
-        //send response to a client
-        $this->_apiHelper->sendResponse(400, array('errors' => Constants::BAD_POST_DATA_FOR_JOIN));
     }
 
     /**
@@ -48,13 +43,22 @@ class UsersController extends ApiController {
      */
     public function actionLogin() {
 
-        if (!empty($_POST) && isset($_POST['username'], $_POST['password'])) {
 
-            $user = Users::model()->find('username=:username', array(':username' => $_POST['username']));
+
+        if (!empty($this->_parsed_attributes) && isset($this->_parsed_attributes['username'], $this->_parsed_attributes['password'])) {
+
+            $user = Users::model()->find('username=:username', array(':username' => $this->_parsed_attributes['username']));
+
+            // try to authenticate via email
+            if (!$user && (strpos($this->_parsed_attributes['username'], "@"))) {
+                if ($user_by_email = Users::model()->find('email = :email', array(':email' => $this->_parsed_attributes['username'])))
+                    if ($user_by_email)
+                        $user = $user_by_email;
+            }
+
             if ($user) {
-                if ($this->authenticate($user, $_POST['password'])) {
-                    //send response to a client
-                    $this->_apiHelper->sendResponse(200, array('results' => array('session_id' => Yii::app()->session->sessionID)));
+                if ($this->authenticate($user, $this->_parsed_attributes['password'])) {
+                    $this->_apiHelper->sendResponse(200, array('results' => array('auth_token' => Yii::app()->session->sessionID)));
                 }
             } else {
                 //send response to a client
@@ -62,7 +66,7 @@ class UsersController extends ApiController {
             }
         }
         //send response to a client
-        $this->_apiHelper->sendResponse(401, array('errors' => array(Constants::BAD_USER_CREDNTIALS)));
+        $this->_apiHelper->sendResponse(401, array('errors' => array('Username and password are required!')));
     }
 
     /**
@@ -134,7 +138,7 @@ class UsersController extends ApiController {
 
         switch ($identity->errorCode) {
             case UserIdentity::ERROR_NONE:
-                Yii::app()->user->login($identity);
+                Yii::app()->user->login($identity, 3600 * 24 * 30);
                 return $user;
                 break;
             case UserIdentity::ERROR_EMAIL_INVALID:

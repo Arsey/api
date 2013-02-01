@@ -46,7 +46,7 @@ class Users extends CActiveRecord {
                 $this->salt = UsersManager::generateSalt();
         }
 
-        return true;
+        return parent::beforeValidate();
     }
 
     public function beforeSave() {
@@ -57,14 +57,14 @@ class Users extends CActiveRecord {
             // Users stay banned until they confirm their email address.
             $this->status = self::STATUS_INACTIVE;
         }
-        return true;
+        return parent::beforeSave();
     }
 
     public function afterSave() {
         if ($this->isNewRecord && !Yii::app()->authManager->isAssigned('normal', $this->id)) {
             Yii::app()->authManager->assign('normal', $this->id);
         }
-        return true;
+        return parent::afterSave();
     }
 
     public function delete() {
@@ -178,6 +178,9 @@ class Users extends CActiveRecord {
                 ));
     }
 
+    /**
+     *
+     */
     public function logout() {
         if (!Yii::app()->user->isGuest) {
             $this->lastaction = 0;
@@ -185,6 +188,12 @@ class Users extends CActiveRecord {
         }
     }
 
+    /**
+     *
+     * @param type $password
+     * @param type $salt
+     * @return \Users
+     */
     public function setPassword($password, $salt = null) {
         if (!empty($password) && (string) $password) {
             $this->password = UsersManager::encrypt($password, $salt);
@@ -271,6 +280,11 @@ class Users extends CActiveRecord {
         return false;
     }
 
+    /**
+     *
+     * @param type $new_password
+     * @return type
+     */
     public function changeUserPassword($new_password = null) {
         if (is_null($new_password)) {
             $new_password = UsersManager::generatePassword();

@@ -9,7 +9,7 @@
  * www: https://defuse.ca/php-pbkdf2.htm
 
  **/
-class YumEncrypt 
+class YumEncrypt
 {
 	/**
 	 * This function is used for password encryption.
@@ -19,7 +19,7 @@ class YumEncrypt
 	{
 		if(!$salt)
 			$salt = YumEncrypt::generateSalt();
-		return YumEncrypt::pbkdf2($string, $salt);		
+		return YumEncrypt::pbkdf2($string, $salt);
 	}
 	/**
 	 * This function is used for generating the salt.
@@ -35,7 +35,7 @@ class YumEncrypt
         {
             $sHash = hash('sha256', mt_rand() . uniqid());
         }
-        
+
         return $sHash;
     }
 	/**
@@ -46,7 +46,7 @@ class YumEncrypt
 	{
 		$enc_pwd = YumEncrypt::encrypt($password, $salt);
 		return YumEncrypt::slow_equals($enc_pwd, $good_hash);
-	}	
+	}
 
 	// Compares two strings $a and $b in length-constant time.
 	private static function slow_equals($a, $b)
@@ -56,7 +56,7 @@ class YumEncrypt
 	    {
 	        $diff |= ord($a[$i]) ^ ord($b[$i]);
 	    }
-	    return $diff === 0; 
+	    return $diff === 0;
 	}
 	/*
 	 * PBKDF2 key derivation function as defined by RSA's PKCS #5: https://www.ietf.org/rfc/rfc2898.txt
@@ -80,10 +80,10 @@ class YumEncrypt
 	        die('PBKDF2 ERROR: Invalid hash algorithm.');
 	    if($count <= 0 || $key_length <= 0)
 	        die('PBKDF2 ERROR: Invalid parameters.');
-	
+
 	    $hash_length = strlen(hash($algorithm, "", true));
 	    $block_count = ceil($key_length / $hash_length);
-	
+
 	    $output = "";
 	    for($i = 1; $i <= $block_count; $i++) {
 	        // $i encoded as 4 bytes, big endian.
@@ -96,11 +96,11 @@ class YumEncrypt
 	        }
 	        $output .= $xorsum;
 	    }
-	
+
 	    if($raw_output)
 	        return substr($output, 0, $key_length);
 	    else
 	        return bin2hex(substr($output, 0, $key_length));
 	}
-}	
+}
 ?>

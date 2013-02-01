@@ -84,5 +84,7 @@ class Constants {
     const ACCOUNT_BLOCKED = 'This account is blocked.';
     const ACCOUNT_DELETED = 'Your account has been deleted.';
     const PASSWORD_INVALID_FOR_USER = 'Password invalid for user {username} (Ip-Address: {ip})';
+    const INVALID_TOKEN='Invalid Token';
+
 
 }

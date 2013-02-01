@@ -11,3 +11,4 @@
 /protected/config/test-local.php
 /protected/config/db.php
 /protected/config/console-local.php
+/protected/extensions/wrest-master/

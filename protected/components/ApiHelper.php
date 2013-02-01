@@ -119,15 +119,6 @@ class ApiHelper extends CApplicationComponent {
 
         $body_return['status'] = $this->getStatusCodeMessage($status);
 
-
-
-        /*
-         * The server signature can be used for software monitoring.
-         * Application server signatures apply to an application program loaded on a server
-         * in a distributed network, and the server provides the execution environment
-         * for the program.
-         */
-        //$body_return['server_signature'] = $this->getServerSignature();
         //at the end we need to encode data into json or xml based on $this->_format variable
         return $this->_encode($body_return);
     }
@@ -196,21 +187,6 @@ class ApiHelper extends CApplicationComponent {
         $params = CMap::mergeArray($_GET_params, $_SERVER_params);
 
         return (empty($params) ) ? false : $params;
-    }
-
-    /**
-     * Servers don't always have a signature turned on (this is an apache directive "ServerSignature On")
-     * @return string
-     */
-    public function getServerSignature() {
-        if (isset($_SERVER['SERVER_SIGNATURE'])) {
-            return ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] .
-                    ' Server at ' .
-                    $_SERVER['SERVER_NAME'] .
-                    ' Port ' .
-                    $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
-        }
-        return;
     }
 
     /**

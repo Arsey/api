@@ -19,8 +19,15 @@ class ApiController extends Controller {
      */
     protected $_format_url;
     protected $_apiHelper;
+    protected $_parsed_attributes = array();
 
     public function __construct($id, $module = null) {
+
+        $rest_http_request = new RestHttpRequest();
+        $rest_http_request->parseJsonParams();
+        $this->_parsed_attributes = $rest_http_request->getAllRestParams();
+
+
         // Default response format either 'json' or 'xml'
 
         $this->_format = Constants::APPLICATION_JSON;
@@ -42,7 +49,7 @@ class ApiController extends Controller {
 
     public function filters() {
         return array(
-            'accessControl'
+                // 'accessControl'
         );
     }
 
@@ -50,7 +57,7 @@ class ApiController extends Controller {
         return array(
             array(
                 'allow',
-                'actions' => array('error', 'join', 'activation', 'login','passwordrecovery'),
+                'actions' => array('error', 'join', 'activation', 'login', 'passwordrecovery'),
                 'users' => array('?'),
             ),
             array(
@@ -63,7 +70,6 @@ class ApiController extends Controller {
                 'actions' => array('logout'),
                 'users' => array('@'),
             ),
-           
         );
     }
 
@@ -82,14 +88,14 @@ class ApiController extends Controller {
             $models = $model_name::model()->findAllByAttributes(array('access_status' => helper::translateAccessStatus($status)));
         } else {
             /* Model not implemented error */
-            $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf(Constants::MODE_LIST_NOT_IMPLEMENTED, $_GET['model'])));
+            $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_LIST_NOT_IMPLEMENTED, $_GET['model'])));
         }
 
 
         /* If got some results */
         if (empty($models)) {
             /* No */
-            $this->_apiHelper->sendResponse(200, array('friendly_status', sprintf(Constants::ZERO_RESULTS, $_GET['model'])));
+            $this->_apiHelper->sendResponse(200, array('errors', sprintf(Constants::ZERO_RESULTS, $_GET['model'])));
         } elseif (Yii::app()->request->getQuery('searchtype')) {
             $this->_apiHelper->sendResponse(200, $models);
         } else {
@@ -106,68 +112,64 @@ class ApiController extends Controller {
 
         /* Check if id was submitted via GET */
         if (!isset($_GET['id']))
-            $this->_apiHelper->sendResponse(500, array('friendly_status' => Constants::MISSING_PARAMETER));
+            $this->_apiHelper->sendResponse(500, array('errors' => Constants::MISSING_PARAMETER));
 
         if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = $model_name::model()->findByPk($_GET['id']);
         } else {
-            $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf(Constants::MODE_VIEW_NOT_IMPLEMENTED, $_GET['model'])));
+            $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_VIEW_NOT_IMPLEMENTED, $_GET['model'])));
         }
 
 
         /* Did we find the requested model? If not, raise an error */
         if (is_null($model))
-            $this->_apiHelper->sendResponse(404, array('friendly_status' => sprintf(Constants::ZERO_RESULTS_BY_ID, $_GET['id'])));
+            $this->_apiHelper->sendResponse(404, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $_GET['id'])));
         else
             $this->_apiHelper->sendResponse(200, array('results' => $model));
     }
 
     public function actionCreate() {
+
         if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = new $model_name;
         } else {
-            $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf(Constants::MODE_CREATE_NOT_IMPLEMENTED, $_GET['model'])));
+            $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_CREATE_NOT_IMPLEMENTED, $_GET['model'])));
         }
 
         // Try to assign POST values to attributes
-        $this->_assignModelAttributes($_POST, $model);
+        $this->_assignModelAttributes($model);
 
         //Try to save the model
         if ($model->save()) {
             $this->_apiHelper->sendResponse(200, array('results' => $model));
         } else {
             //Errorss occured
-            $this->_apiHelper->sendResponse(500, array('friendly_status' => sprintf(Constants::COUNLDNT_CREATE_ITEM, $_GET['model'])));
+            $this->_apiHelper->sendResponse(500, array('errors' => $model->errors));
         }
     }
 
     public function actionUpdate() {
-        //Parse the PUT parameters. This didn't work:
-        //parse_str(file_get_content('php://input'), $put_vars);
-
-        $json = file_get_contents('php://input'); //$GLOBALS['HTTP_RAW_POST_DATA'] is not preferred http://www.php.net/manual/en/ini.core.php#ini.always-populate-raw-post-data
-        $put_vars = CJSON::decode($json, true); //true means use associative array
 
         if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = $model_name->findByPk($_GET['id']);
         } else {
-            $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf(Constants::MODE_UPDATE_NOT_IMPLEMENTED, $_GET['model'])));
+            $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_UPDATE_NOT_IMPLEMENTED, $_GET['model'])));
         }
 
         //Dod we find the requested model? If not, raise an arror
         if (is_null($model)) {
-            $this->_apiHelper->sendResponse(400, array('friendly_status' => sprintf(Constants::ZERO_RESULTS_ON_UPDATE, $_GET['model'], $_GET['id'])));
+            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_ON_UPDATE, $_GET['model'], $_GET['id'])));
         }
 
         //Try to assign PUT parameters to attributes
-        $this->_assignModelAttributes($put_vars, $model);
+        $this->_assignModelAttributes($model);
 
         //Try to save the model
         if ($model->save()) {
             $this->_apiHelper->sendResponse(200, array('results' => ($model)));
         } else {
             //Errorss occured
-            $this->_apiHelper->sendResponse(500, array('friendly_status' => sprintf(Constants::MODEL_CREATE_ERROR, $_GET['model'])));
+            $this->_apiHelper->sendResponse(500, array('errors' => $model->errors));
         }
     }
 
@@ -176,12 +178,12 @@ class ApiController extends Controller {
         if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = $model_name::model()->findByPk($_GET['id']);
         } else {
-            $this->_apiHelper->sendResponse(501, array('friendly_status' => sprintf("Mode delete is not implemented for model %s", $_GET['model'])));
+            $this->_apiHelper->sendResponse(501, array('errors' => sprintf("Mode delete is not implemented for model %s", $_GET['model'])));
         }
 
         //Was a model found? If not, raise an error
         if (is_null($model)) {
-            $this->_apiHelper->sendResponse(400, array('friendly_status' => sprintf("Didn't find any model %s with ID %s", $_GET['model'], $_GET['id'])));
+            $this->_apiHelper->sendResponse(400, array('errors' => sprintf("Didn't find any model %s with ID %s", $_GET['model'], $_GET['id'])));
         }
 
         //Delete the model
@@ -189,7 +191,7 @@ class ApiController extends Controller {
         if ($num > 0) {
             $this->_apiHelper->sendResponse(200, $num); //this is the only way to work with backbone
         } else {
-            $this->_apiHelper->sendResponse(500, array('friendly_status' => sprintf(Constants::MODEL_DELETE_ERROR, $_GET['model'], $_GET['id'])));
+            $this->_apiHelper->sendResponse(500, array('errors' => sprintf(Constants::MODEL_DELETE_ERROR, $_GET['model'], $_GET['id'])));
         }
     }
 
@@ -208,16 +210,19 @@ class ApiController extends Controller {
      * @param array $vars
      * @param object $model
      */
-    private function _assignModelAttributes($vars, &$model) {
-        /* Try to assgin variables values in $vars to attributes of model */
-        foreach ($vars as $var => $value) {
+    protected function _assignModelAttributes(&$model) {
 
-            /* Does the model have this attribute? If not raise an error */
-            if ($model->hasAttribute($var))
-                $model->$var = $value;
-            else
-                $this->_apiHelper->sendResponse(500, sprintf(Constants::NOT_ALLOWED_MODEL_PARAMETER, $var, $_GET['model']));
+        $paramsList = $model->attributes;
+
+        $attributes = array();
+        foreach ($paramsList as $key => $value) {
+            if (isset($this->_parsed_attributes[$key])) {
+                $attributes[$key] = $this->_parsed_attributes[$key];
+            }
         }
+
+        $model->attributes = $attributes;
+        return;
     }
 
 }
