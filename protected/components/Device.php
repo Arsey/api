@@ -43,7 +43,7 @@ class Device extends CApplicationComponent {
      * @return boolean
      */
     public function isDevice($device) {
-        if ($device === $this->_device)
+        if (preg_match("/{$device}/", $this->_device))
             return true;
         return false;
     }
@@ -53,13 +53,7 @@ class Device extends CApplicationComponent {
      * @return boolean
      */
     public function isMobile() {
-        if (
-                $this->_device === self::DEV_IPOD ||
-                $this->_device === self::DEV_IPHONE ||
-                $this->_device === self::DEV_IPAD ||
-                $this->_device === self::DEV_ANDROID ||
-                $this->_device === self::DEV_WEBOS
-        )
+        if (preg_match("/" . self::DEV_IPOD . "|" . self::DEV_IPHONE . "|" . self::DEV_IPAD . "|" . self::DEV_ANDROID . "|" . self::DEV_WEBOS . "/", $this->_device))
             return true;
         return false;
     }

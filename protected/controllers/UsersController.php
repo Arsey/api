@@ -20,7 +20,7 @@ class UsersController extends ApiController {
             UsersManager::sendRegistrationEmail($model, $this->is_mobile_client_device);
 
             //send response to a client
-            $this->_apiHelper->sendResponse(200, array('message' => Constants::THANK_YOU));
+            $this->_apiHelper->sendResponse(200, array('message' =>$this->is_mobile_client_device? Constants::THANK_YOU:Constants::THANK_YOU_WITH_ACITVATION_URL));
         } elseif ($model->errors) {
             //send response to a client
             $this->_apiHelper->sendResponse(200, array('errors' => $model->errors));
