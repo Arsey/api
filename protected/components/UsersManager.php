@@ -67,12 +67,12 @@ class UsersManager extends CApplicationComponent {
 
     // Send the Email to the given user object.
     // $user->email needs to be set.
-    public function sendRegistrationEmail($user) {
+    public function sendRegistrationEmail($user, $mobile = true) {
         if (!isset($user->email))
             Yii::app()->apiHelper->sendResponse(403, 'Email is not set when trying to send Registration Email');
 
         $message = new YiiMailMessage;
-        $message->view = 'registration_email';
+        $message->view =$mobile? 'registration_email':'registration_email_with_activation';
         //userModel is passed to the view
         $message->setBody(
                 array(
@@ -80,9 +80,16 @@ class UsersManager extends CApplicationComponent {
             'activation_url' => $user->getActivationUrl(),
                 ), 'text/html');
 
-        $message->setSubject("Welcome to PlantEaters!");
+
+        $message->setSubject(
+                $mobile ?
+                        "Welcome to PlantEaters!" :
+                        strtr('Please activate your account for {username}', array('{username}' => $user->username))
+        );
+
+
         $message->addTo($user->email);
-        $message->from = helper::yiiparam('adminEmail');
+        $message->from = helper::yiiparam('sendFrom');
         Yii::app()->mail->send($message);
 
         return;
@@ -106,7 +113,7 @@ class UsersManager extends CApplicationComponent {
 
         $message->setSubject(strtr('Password recovery for {username}', array('{username}' => $user->username)));
         $message->addTo($user->email);
-        $message->from = helper::yiiparam('adminEmail');
+        $message->from = helper::yiiparam('sendFrom');
         Yii::app()->mail->send($message);
         return;
     }
@@ -129,7 +136,7 @@ class UsersManager extends CApplicationComponent {
 
         $message->setSubject(strtr('New password for {username}', array('{username}' => $user->username)));
         $message->addTo($user->email);
-        $message->from = helper::yiiparam('adminEmail');
+        $message->from = helper::yiiparam('sendFrom');
         Yii::app()->mail->send($message);
         return;
     }

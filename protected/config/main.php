@@ -28,6 +28,9 @@ $main = array(
     'modules' => array(),
     // application components
     'components' => array(
+        'device' => array(
+            'class' => 'Device',
+        ),
         'session' => array(
             'class' => 'CDbHttpSession',
             'connectionID' => 'db',

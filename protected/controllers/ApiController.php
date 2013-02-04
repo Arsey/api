@@ -2,6 +2,7 @@
 
 class ApiController extends Controller {
 
+    public $is_mobile_client_device;
     public $layout = 'empty';
 
     // Key which has to be in HTTP USERNAME and PASSWORD headers
@@ -21,8 +22,11 @@ class ApiController extends Controller {
     protected $_apiHelper;
     protected $_parsed_attributes = array();
 
-    public function __construct($id, $module = null) {
+    public function beforeAction($action) {
+        //set is mobile client device
+        $this->is_mobile_client_device = Yii::app()->device->isMobile();
 
+        //fill request params
         $rest_http_request = new RestHttpRequest();
         $rest_http_request->parseJsonParams();
         $this->_parsed_attributes = $rest_http_request->getAllRestParams();
@@ -44,7 +48,7 @@ class ApiController extends Controller {
         //creating instanse of apiHelper and setting the format
         $this->_apiHelper = Yii::app()->apiHelper->setFormat($this->_format);
 
-        parent::__construct($id, $module);
+        return parent::beforeAction($action);
     }
 
     public function filters() {
@@ -72,11 +76,6 @@ class ApiController extends Controller {
             ),
         );
     }
-
-    /* public function beforeAction($action) {
-      echo $action->id;
-      parent::beforeAction($action);
-      } */
 
     /* Actions */
 
@@ -222,7 +221,6 @@ class ApiController extends Controller {
         }
 
         $model->attributes = $attributes;
-        return;
     }
 
 }

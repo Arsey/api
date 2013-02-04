@@ -31,6 +31,7 @@ class Users extends CActiveRecord {
 
     //user role
     protected $_role = 'normal';
+    private $_join_with_email_activation = false;
 
     //User statuses
 
@@ -177,10 +178,11 @@ class Users extends CActiveRecord {
     public function beforeSave() {
         if ($this->isNewRecord) {
             $this->setPassword($this->password, $this->salt);
-            $this->activation_key = 1;
+
+            $this->activation_key = $this->_join_with_email_activation ? $this->generateActivationKey(false) : 1;
 
             // Users stay banned until they confirm their email address.
-            $this->status = self::STATUS_ACTIVE;
+            $this->status = $this->_join_with_email_activation ? self::STATUS_INACTIVE : self::STATUS_ACTIVE;
         }
         return parent::beforeSave();
     }
@@ -209,6 +211,15 @@ class Users extends CActiveRecord {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+
+    /**
+     * Setter for _join_with_email_activation,
+     * that create new user with activated account or not;
+     * @param type $boolean
+     */
+    public function setJoinWithEmailActivation($boolean) {
+        $this->_join_with_email_activation = $boolean;
+    }
 
     /**
      * Setter for user role variable
@@ -286,7 +297,7 @@ class Users extends CActiveRecord {
         $format = isset($_GET['format']) ? $_GET['format'] . '/' : '';
         isset($_SERVER['SERVER_NAME']) ? false : $_SERVER['SERVER_NAME'] = helper::yiiparam('server_name');
 
-        return "https://" . $_SERVER['SERVER_NAME'] . "/api/{$format}user/activation/key" . $this->activation_key . "email/" . $this->email;
+        return "https://" . $_SERVER['SERVER_NAME'] . "/api/{$format}user/activation/key/" . $this->activation_key . "/email/" . $this->email;
     }
 
     /**

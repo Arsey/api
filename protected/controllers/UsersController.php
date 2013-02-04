@@ -8,13 +8,17 @@ class UsersController extends ApiController {
      */
     public function actionJoin() {
         $model = new Users;
+        $model->setJoinWithEmailActivation(!$this->is_mobile_client_device);
+
         $this->_assignModelAttributes($model);
 
         /* validating post fields */
         if ($model->validate()) {
             $model->save();
             /* sending registration email with activation url to user */
-            UsersManager::sendRegistrationEmail($model);
+
+            UsersManager::sendRegistrationEmail($model, $this->is_mobile_client_device);
+
             //send response to a client
             $this->_apiHelper->sendResponse(200, array('message' => Constants::THANK_YOU));
         } elseif ($model->errors) {
