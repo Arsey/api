@@ -12,12 +12,11 @@ class UsersController extends ApiController {
 
         /* validating post fields */
         if ($model->validate()) {
-            if ($model->save()) {
-                /* sending registration email with activation url to user */
-                UsersManager::sendRegistrationEmail($model);
-                //send response to a client
-                $this->_apiHelper->sendResponse(200, array('message' => Constants::THANK_YOU));
-            }
+            $model->save();
+            /* sending registration email with activation url to user */
+            UsersManager::sendRegistrationEmail($model);
+            //send response to a client
+            $this->_apiHelper->sendResponse(200, array('message' => Constants::THANK_YOU));
         } elseif ($model->errors) {
             //send response to a client
             $this->_apiHelper->sendResponse(200, array('errors' => $model->errors));
@@ -45,13 +44,20 @@ class UsersController extends ApiController {
 
 
 
-        if (!empty($this->_parsed_attributes) && isset($this->_parsed_attributes['username'], $this->_parsed_attributes['password'])) {
+        if (
+                !empty($this->_parsed_attributes) &&
+                (
+                isset($this->_parsed_attributes['username']) ||
+                isset($this->_parsed_attributes['email'])
+                ) &&
+                isset($this->_parsed_attributes['password'])
+        ) {
 
             $user = Users::model()->find('username=:username', array(':username' => $this->_parsed_attributes['username']));
 
             // try to authenticate via email
-            if (!$user && (strpos($this->_parsed_attributes['username'], "@"))) {
-                if ($user_by_email = Users::model()->find('email = :email', array(':email' => $this->_parsed_attributes['username'])))
+            if (!$user && (strpos($this->_parsed_attributes['email'], "@"))) {
+                if ($user_by_email = Users::model()->find('email = :email', array(':email' => $this->_parsed_attributes['email'])))
                     if ($user_by_email)
                         $user = $user_by_email;
             }
@@ -66,7 +72,7 @@ class UsersController extends ApiController {
             }
         }
         //send response to a client
-        $this->_apiHelper->sendResponse(401, array('errors' => array('Username and password are required!')));
+        $this->_apiHelper->sendResponse(401, array('errors' => array('User email/name and password are required!')));
     }
 
     /**

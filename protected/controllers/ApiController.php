@@ -49,7 +49,7 @@ class ApiController extends Controller {
 
     public function filters() {
         return array(
-                // 'accessControl'
+            'accessControl'
         );
     }
 

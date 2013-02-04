@@ -16,11 +16,9 @@ class MainCTestCase extends CTestCase {
             'password' => '32232131',
         ),
         'demo' => array(
-            'User' => array(
-                'username' => 'demoUser',
-                'password' => 'password',
-                'email' => 'arseysensector@gmail.com',
-            )
+            'username' => 'demoUser',
+            'password' => 'password',
+            'email' => 'arseysensector@gmail.com',
         )
     );
     protected $_server;

@@ -29,53 +29,19 @@
  */
 class Users extends CActiveRecord {
 
+    //user role
+    protected $_role = 'normal';
+
+    //User statuses
+
     const STATUS_INACTIVE = 0;
     const STATUS_ACTIVE = 1;
     const STATUS_BANNED = -1;
     const STATUS_REMOVED = -2;
 
-    public function beforeValidate() {
-
-        if ($this->isNewRecord) {
-
-            //createtime for user profile
-            $this->createtime = time();
-
-            //if salt doesn't exists, generate it
-            if (!$this->salt)
-                $this->salt = UsersManager::generateSalt();
-        }
-
-        return parent::beforeValidate();
-    }
-
-    public function beforeSave() {
-        if ($this->isNewRecord) {
-            $this->setPassword($this->password, $this->salt);
-            $this->activation_key = $this->generateActivationKey(false);
-
-            // Users stay banned until they confirm their email address.
-            $this->status = self::STATUS_INACTIVE;
-        }
-        return parent::beforeSave();
-    }
-
-    public function afterSave() {
-        if ($this->isNewRecord && !Yii::app()->authManager->isAssigned('normal', $this->id)) {
-            Yii::app()->authManager->assign('normal', $this->id);
-        }
-        return parent::afterSave();
-    }
-
-    public function delete() {
-        $this->status = self::STATUS_REMOVED;
-        return $this->save(false, array('status'));
-    }
-
-    public function isOnline() {
-        return $this->lastaction > time() - helper::yiiparam('offlineIndicationTime', 60);
-    }
-
+    //////////////////////////////
+    //BASE METHODS CREATED BY GII
+    //////////////////////////////
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
@@ -104,7 +70,7 @@ class Users extends CActiveRecord {
             array('password, salt, activation_key', 'length', 'max' => 128),
             array('email, city, country, avatar', 'length', 'max' => 255),
             array('password', 'length', 'min' => 6),
-            array('email', 'unique'),
+            array('email, username', 'unique'),
             array('email', 'CEmailValidator'),
             array('username', 'length', 'max' => 20),
             array('role', 'length', 'max' => 45),
@@ -178,8 +144,90 @@ class Users extends CActiveRecord {
                 ));
     }
 
+    ////////////////////////////////
+    //CUSTOM OVERLOAD METHODS OF RA
+    ////////////////////////////////
+
     /**
-     *
+     * Before Users model validating.
+     * That need for generating salt and time if user is new
+     * @return parent::beforeValidate()
+     */
+    public function beforeValidate() {
+
+        if ($this->isNewRecord) {
+
+            //createtime for user profile
+            $this->createtime = time();
+
+            //if salt doesn't exists, generate it
+            if (!$this->salt)
+                $this->salt = UsersManager::generateSalt();
+        }
+
+        return parent::beforeValidate();
+    }
+
+    /**
+     * Before saving to database and after model validating.
+     * Using for encoding password, generationg activation key and user status inactive,
+     * if user is new.
+     * @return parent::beforeSave()
+     */
+    public function beforeSave() {
+        if ($this->isNewRecord) {
+            $this->setPassword($this->password, $this->salt);
+            $this->activation_key = 1;
+
+            // Users stay banned until they confirm their email address.
+            $this->status = self::STATUS_ACTIVE;
+        }
+        return parent::beforeSave();
+    }
+
+    /**
+     * After user saved we must assgin RBAC role to user.
+     * @return type
+     */
+    public function afterSave() {
+        if ($this->isNewRecord && !Yii::app()->authManager->isAssigned($this->_role, $this->id)) {
+            Yii::app()->authManager->assign($this->_role, $this->id);
+        }
+        return parent::afterSave();
+    }
+
+    /**
+     * We should not allow deletion of records actually,
+     * so we just update such records and mark it with removed status.
+     * @return type
+     */
+    public function delete() {
+        $this->status = self::STATUS_REMOVED;
+        return $this->save(false, array('status'));
+    }
+
+    //////////////////////////////
+    //CUSTOM NOT RA MODEL METHODS
+    //////////////////////////////
+
+    /**
+     * Setter for user role variable
+     * @param type $role
+     */
+    public function setRole($role) {
+        $this->_role = $role;
+    }
+
+    /**
+     * Check is user online
+     * @return type
+     */
+    public function isOnline() {
+        return $this->lastaction > time() - helper::yiiparam('offlineIndicationTime', 60);
+    }
+
+    /**
+     * Set user offline
      */
     public function logout() {
         if (!Yii::app()->user->isGuest) {
@@ -236,15 +284,9 @@ class Users extends CActiveRecord {
     public function getActivationUrl() {
 
         $format = isset($_GET['format']) ? $_GET['format'] . '/' : '';
+        isset($_SERVER['SERVER_NAME']) ? false : $_SERVER['SERVER_NAME'] = helper::yiiparam('server_name');
 
-        return Yii::app()
-                        ->controller
-                        ->createAbsoluteUrl(
-                                "api/{$format}user/activation", array(
-                            'key' => $this->activation_key,
-                            'email' => $this->email,
-                                )
-        );
+        return "https://" . $_SERVER['SERVER_NAME'] . "/api/{$format}user/activation/key" . $this->activation_key . "email/" . $this->email;
     }
 
     /**

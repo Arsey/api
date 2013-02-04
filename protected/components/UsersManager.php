@@ -3,6 +3,30 @@
 class UsersManager extends CApplicationComponent {
 
     /**
+     * Create manually user. With email confirmation
+     * @param string $email
+     * @param string $username
+     * @param string $password
+     */
+    public static function createUser($email, $username, $password, $role = 'normal') {
+
+        $model = new Users;
+        echo $model->username = $username;
+        echo $model->password = $password;
+        echo $model->email = $email;
+
+        if ($model->validate()) {
+            $model->setRole($role);
+            $model->save();
+            /* sending registration email with activation url to user */
+            UsersManager::sendRegistrationEmail($model);
+        } else {
+            helper::p($model->errors);
+        }
+        Yii::app()->end();
+    }
+
+    /**
      * Check if user exists with login or email
      * @param string $login_or_email
      * @return false or instance of /Users model
@@ -56,14 +80,20 @@ class UsersManager extends CApplicationComponent {
             'activation_url' => $user->getActivationUrl(),
                 ), 'text/html');
 
-        $message->setSubject(strtr('Please activate your account for {username}', array('{username}' => $user->username)));
+        $message->setSubject("Welcome to PlantEaters!");
         $message->addTo($user->email);
-        $message->from = Yii::app()->params['adminEmail'];
+        $message->from = helper::yiiparam('adminEmail');
         Yii::app()->mail->send($message);
 
         return;
     }
 
+    /**
+     * Send email with password recovery instructions
+     * @param type $user
+     * @param type $recovery_url
+     * @return type
+     */
     public function sendPasswordRecoveryEmail($user, $recovery_url) {
         $message = new YiiMailMessage;
         $message->view = 'password_recovery_email';
@@ -76,11 +106,17 @@ class UsersManager extends CApplicationComponent {
 
         $message->setSubject(strtr('Password recovery for {username}', array('{username}' => $user->username)));
         $message->addTo($user->email);
-        $message->from = Yii::app()->params['adminEmail'];
+        $message->from = helper::yiiparam('adminEmail');
         Yii::app()->mail->send($message);
         return;
     }
 
+    /**
+     * Send email to user with new password
+     * @param type $user
+     * @param type $new_password
+     * @return type
+     */
     public function sendNewPassword($user, $new_password) {
         $message = new YiiMailMessage;
         $message->view = 'new_password';
@@ -93,7 +129,7 @@ class UsersManager extends CApplicationComponent {
 
         $message->setSubject(strtr('New password for {username}', array('{username}' => $user->username)));
         $message->addTo($user->email);
-        $message->from = Yii::app()->params['adminEmail'];
+        $message->from = helper::yiiparam('adminEmail');
         Yii::app()->mail->send($message);
         return;
     }

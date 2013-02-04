@@ -49,7 +49,7 @@ class Constants {
      * Action Join
      */
     //after successfully user registration
-    const THANK_YOU = 'Thank you for your registration. Please check your email.';
+    const THANK_YOU = 'Thank you for your registration. Now you can signin with your credentials.';
     //if required POST fields are empty
     const BAD_POST_DATA_FOR_JOIN = 'No User POST data was found.';
     /*

@@ -28,12 +28,12 @@ $main = array(
     'modules' => array(),
     // application components
     'components' => array(
-        'session'=>array(
-            'class'=>'CDbHttpSession',
-            'connectionID'=>'db',
-            'sessionTableName'=>'db_session',
-            'timeout'=>30*3600*24,
-            'sessionName'=>'auth_token',
+        'session' => array(
+            'class' => 'CDbHttpSession',
+            'connectionID' => 'db',
+            'sessionTableName' => 'db_session',
+            'timeout' => 30 * 3600 * 24,
+            'sessionName' => 'auth_token',
         ),
         //authorization manager
         'authManager' => array(
@@ -148,9 +148,7 @@ $main = array(
     // application-level parameters that can be accessed
 // using Yii::app()->params['paramName']
     'params' => array(
-// this is used in contact page
-        'adminEmail' => 'webmaster@example.com',
-        'dummy_parameter' => 'dummy'
+    // this is used in contact page
     ),
 );
 
