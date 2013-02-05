@@ -32,103 +32,9 @@ class Restaurants extends PlantEatersARMain {
 
     protected $_search_results = null;
 
-    public function findByPk($pk, $condition = '', $params = array()) {
-
-        if (is_numeric($pk)) {
-
-            Yii::trace(get_class($this) . '.findByPk()', 'system.db.ar.CActiveRecord');
-            $prefix = $this->getTableAlias(true) . '.';
-            $criteria = $this->getCommandBuilder()->createPkCriteria($this->getTableSchema(), $pk, $condition, $params, $prefix);
-            return $this->query($criteria);
-        } elseif ((string) $pk) {
-
-            $googlePlaces = new googlePlaces(helper::yiiparam('googleApiKey'));
-            $googlePlaces->setCurloptSslVerifypeer(false);
-            $googlePlaces->setReference($pk);
-            return $googlePlaces->details();
-        }
-    }
-
-    /**
-     *
-     * @param array $params
-     * @return results from Google Places API textsearch request
-     */
-    public function searchByText($params) {
-
-        if (isset($params['nextpagetoken'])) {
-            $this->_search_results = Yii::app()->gp->textsearchNextpage($params['nextpagetoken']);
-        } elseif (isset($params['query'])) {
-            $this->_search_results = Yii::app()
-                    ->gp
-                    ->setRadius(self::_getRadius($params))
-                    ->textsearch($params['query']);
-        }
-        return $this->decide();
-    }
-
-    /**
-     *
-     * @param array $params
-     * @return results from Google Places API textsearch request
-     */
-    public function searchByNearby($params) {
-        if (isset($params['nextpagetoken'])) {
-            $this->_search_results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
-        } elseif (isset($params['location'])) {
-            $this->_search_results = Yii::app()
-                    ->gp
-                    ->setRadius(self::_getRadius($params))
-                    ->nearbysearch($params['location']);
-        }
-        return $this->decide();
-    }
-
-    protected function decide() {
-        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OK')
-            $this->_filterRequiredData($this->_search_results);
-
-        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'ZERO_RESULTS')
-            $this->_search_results = array('message' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
-
-        return $this->_search_results;
-    }
-
-    protected static function _getRadius($params) {
-        return (isset($params['radius']) && (int) $params['radius']) ? $params['radius'] : 5000;
-    }
-
-    /**
-     *
-     * @param type $searchtype
-     * @param type $data
-     */
-    protected function _filterRequiredData(&$data) {
-
-        $new_data = array();
-
-        if (isset($data['next_page_token']))
-            $new_data['next_page_token'] = $data['next_page_token'];
-
-        $new_data['status'] = $data['status'];
-
-        if (!empty($data['results'])) {
-            $i = 0;
-            foreach ($data['results'] as $result) {
-                $new_data['results'][$i]['id'] = $result['id'];
-                $new_data['results'][$i]['reference'] = $result['reference'];
-                $new_data['results'][$i]['name'] = $result['name'];
-                $new_data['results'][$i]['latitude'] = $result['geometry']['location']['lat'];
-                $new_data['results'][$i]['longitude'] = $result['geometry']['location']['lng'];
-                $i++;
-            }
-        }
-
-        if (!empty($new_data)) {
-            $data = $new_data;
-        }
-    }
-
+    //////////////////////////////
+    //BASE METHODS CREATED BY GII
+    //////////////////////////////
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
@@ -238,6 +144,120 @@ class Restaurants extends PlantEatersARMain {
         return new CActiveDataProvider($this, array(
                     'criteria' => $criteria,
                 ));
+    }
+
+    ////////////////////////////////
+    //CUSTOM OVERLOAD METHODS OF RA
+    ////////////////////////////////
+
+    public function findByPk($pk, $condition = '', $params = array()) {
+
+        if (is_numeric($pk)) {
+
+            Yii::trace(get_class($this) . '.findByPk()', 'system.db.ar.CActiveRecord');
+            $prefix = $this->getTableAlias(true) . '.';
+            $criteria = $this->getCommandBuilder()->createPkCriteria($this->getTableSchema(), $pk, $condition, $params, $prefix);
+            return $this->query($criteria);
+        } elseif ((string) $pk) {
+
+            $googlePlaces = new googlePlaces(helper::yiiparam('googleApiKey'));
+            $googlePlaces->setCurloptSslVerifypeer(false);
+            $googlePlaces->setReference($pk);
+            return $googlePlaces->details();
+        }
+    }
+
+    //////////////////////////////
+    //CUSTOM NOT RA MODEL METHODS
+    //////////////////////////////
+
+    /**
+     *
+     * @param array $params
+     * @return results from Google Places API textsearch request
+     */
+    public function searchByText($params) {
+
+        if (isset($params['nextpagetoken'])) {
+            $this->_search_results = Yii::app()->gp->textsearchNextpage($params['nextpagetoken']);
+        } elseif (isset($params['query'])) {
+            $this->_search_results = Yii::app()
+                    ->gp
+                    ->setRadius(self::_getRadius($params))
+                    ->textsearch($params['query']);
+        }
+        return $this->decide();
+    }
+
+    /**
+     *
+     * @param array $params
+     * @return results from Google Places API textsearch request
+     */
+    public function searchByNearby($params) {
+        if (isset($params['nextpagetoken'])) {
+            $this->_search_results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
+        } elseif (isset($params['location'])) {
+            $this->_search_results = Yii::app()
+                    ->gp
+                    ->setRadius(self::_getRadius($params))
+                    ->nearbysearch($params['location']);
+        }
+        return $this->decide();
+    }
+
+    /**
+     * This method decides what to do with results form Google Places API response
+     * @return type
+     */
+    protected function decide() {
+        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OK')
+            $this->_filterRequiredData($this->_search_results);
+
+        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'ZERO_RESULTS')
+            $this->_search_results = array('message' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
+
+        return $this->_search_results;
+    }
+
+    /**
+     *
+     * @param type $params
+     * @return type
+     */
+    protected static function _getRadius($params) {
+        return (isset($params['radius']) && (int) $params['radius']) ? $params['radius'] : 5000;
+    }
+
+    /**
+     *
+     * @param type $searchtype
+     * @param type $data
+     */
+    protected function _filterRequiredData(&$data) {
+
+        $new_data = array();
+
+        if (isset($data['next_page_token']))
+            $new_data['next_page_token'] = $data['next_page_token'];
+
+        $new_data['status'] = $data['status'];
+
+        if (!empty($data['results'])) {
+            $i = 0;
+            foreach ($data['results'] as $result) {
+                $new_data['results'][$i]['id'] = $result['id'];
+                $new_data['results'][$i]['reference'] = $result['reference'];
+                $new_data['results'][$i]['name'] = $result['name'];
+                $new_data['results'][$i]['latitude'] = $result['geometry']['location']['lat'];
+                $new_data['results'][$i]['longitude'] = $result['geometry']['location']['lng'];
+                $i++;
+            }
+        }
+
+        if (!empty($new_data)) {
+            $data = $new_data;
+        }
     }
 
 }
