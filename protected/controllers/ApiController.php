@@ -5,7 +5,9 @@ class ApiController extends Controller {
     public $is_mobile_client_device;
     public $layout = 'empty';
 
-    // Key which has to be in HTTP USERNAME and PASSWORD headers
+    /*
+     *  Key which has to be in HTTP USERNAME and PASSWORD headers
+     */
 
     const APPLICATION_ID = 'ASCCPE';
 
@@ -23,29 +25,41 @@ class ApiController extends Controller {
     protected $_parsed_attributes = array();
 
     public function beforeAction($action) {
-        //set is mobile client device
+        /*
+         * set is mobile client device
+         */
         $this->is_mobile_client_device = Yii::app()->device->isMobile();
 
-        //fill request params
+        /*
+         * fill request params
+         */
         $rest_http_request = new RestHttpRequest();
         $rest_http_request->parseJsonParams();
         $this->_parsed_attributes = $rest_http_request->getAllRestParams();
 
 
-        // Default response format either 'json' or 'xml'
+        /*
+         * Default response format either 'json' or 'xml'
+         */
 
         $this->_format = Constants::APPLICATION_JSON;
 
-        //if URL have format in query than we get it
+        /*
+         * if URL have format in query than we get it
+         */
         $this->_format_url = Yii::app()->request->getQuery('format', '');
 
 
-        //by default format is json, but if variable format in URL equal xml that change defaul json to xml
+        /*
+         * by default format is json, but if variable format in URL equal xml that change defaul json to xml
+         */
         if (!empty($this->_format_url) && $this->_format_url === 'xml') {
             $this->_format = Constants::APPLICATION_XML;
         }
 
-        //creating instanse of apiHelper and setting the format
+        /*
+         * creating instanse of apiHelper and setting the format
+         */
         $this->_apiHelper = Yii::app()->apiHelper->setFormat($this->_format);
 
         return parent::beforeAction($action);
@@ -61,7 +75,7 @@ class ApiController extends Controller {
         return array(
             array(
                 'allow',
-                'actions' => array('error', 'join', 'activation', 'login', 'passwordrecovery'),
+                'actions' => array('error', 'join', 'activation', 'login', 'passwordrecovery', 'nearbysearch','textsearch'),
                 'users' => array('?'),
             ),
             array(
@@ -81,7 +95,9 @@ class ApiController extends Controller {
 
     public function actionList($status = 'published') {
 
-        //if model exists
+        /*
+         * if model exists
+         */
         if ($model_name = helper::getModelExists($_GET['model'])) {
             /* Get the respective model instance */
             $models = $model_name::model()->findAllByAttributes(array('access_status' => helper::translateAccessStatus($status)));
@@ -89,14 +105,10 @@ class ApiController extends Controller {
             /* Model not implemented error */
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_LIST_NOT_IMPLEMENTED, $_GET['model'])));
         }
-
-
         /* If got some results */
         if (empty($models)) {
             /* No */
             $this->_apiHelper->sendResponse(200, array('errors', sprintf(Constants::ZERO_RESULTS, $_GET['model'])));
-        } elseif (Yii::app()->request->getQuery('searchtype')) {
-            $this->_apiHelper->sendResponse(200, $models);
         } else {
             /* Prepare response */
             $rows = array();
@@ -135,14 +147,14 @@ class ApiController extends Controller {
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_CREATE_NOT_IMPLEMENTED, $_GET['model'])));
         }
 
-        // Try to assign POST values to attributes
+// Try to assign POST values to attributes
         $this->_assignModelAttributes($model);
 
-        //Try to save the model
+//Try to save the model
         if ($model->save()) {
             $this->_apiHelper->sendResponse(200, array('results' => $model));
         } else {
-            //Errorss occured
+//Errorss occured
             $this->_apiHelper->sendResponse(500, array('errors' => $model->errors));
         }
     }
@@ -155,19 +167,19 @@ class ApiController extends Controller {
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_UPDATE_NOT_IMPLEMENTED, $_GET['model'])));
         }
 
-        //Dod we find the requested model? If not, raise an arror
+//Dod we find the requested model? If not, raise an arror
         if (is_null($model)) {
             $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_ON_UPDATE, $_GET['model'], $_GET['id'])));
         }
 
-        //Try to assign PUT parameters to attributes
+//Try to assign PUT parameters to attributes
         $this->_assignModelAttributes($model);
 
-        //Try to save the model
+//Try to save the model
         if ($model->save()) {
             $this->_apiHelper->sendResponse(200, array('results' => ($model)));
         } else {
-            //Errorss occured
+//Errorss occured
             $this->_apiHelper->sendResponse(500, array('errors' => $model->errors));
         }
     }
@@ -180,12 +192,12 @@ class ApiController extends Controller {
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf("Mode delete is not implemented for model %s", $_GET['model'])));
         }
 
-        //Was a model found? If not, raise an error
+//Was a model found? If not, raise an error
         if (is_null($model)) {
             $this->_apiHelper->sendResponse(400, array('errors' => sprintf("Didn't find any model %s with ID %s", $_GET['model'], $_GET['id'])));
         }
 
-        //Delete the model
+//Delete the model
         $num = $model->delete();
         if ($num > 0) {
             $this->_apiHelper->sendResponse(200, $num); //this is the only way to work with backbone

@@ -103,14 +103,14 @@ $main = array(
                 /*
                  * Password Recovery
                  */
-                array('/users/passwordrecovery', 'pattern' => 'api/<format:json|xml>/user/password_recovery', 'verb' => 'POST'),
+                array('/users/passwordrecovery', 'pattern' => 'api/<format:json|xml>/user/password_recovery'),
                 /*
                  * Password Recovery Confirmation
                  */
                 array('/users/passwordrecovery', 'pattern' => 'api/<format:json|xml>/user/password_recovery/key/<key:\S+>/email/<email:\S+>', 'verb' => 'GET'),
-                //REST patterns
+                //REST patterns for Restaurants searching
                 array(
-                    'api/list',
+                    'restaurants/<searchtype>',
                     //pattern for search restaurants with Google Places API
                     'pattern' => 'api/<format:json|xml>/<model:restaurants>/<searchtype:nearbysearch|textsearch>',
                     'verb' => 'GET'
@@ -151,7 +151,8 @@ $main = array(
     // application-level parameters that can be accessed
 // using Yii::app()->params['paramName']
     'params' => array(
-    // this is used in contact page
+        //using on restaurants search throught Google Places API
+        'restaurants_keywords'=>'restaurant bar caffe vegan vegetarian'
     ),
 );
 

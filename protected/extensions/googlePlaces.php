@@ -19,6 +19,7 @@ class googlePlaces {
     protected $_accuracy;
     protected $_pageToken;
     protected $_curloptSslVerifypeer = true; // option CURLOPT_SSL_VERIFYPEER with true value working not always
+    protected $_keyword; //A term to be matched against all content that Google has indexed for this Place, including but not limited to name, type, and address, as well as customer reviews and other third-party content.
 
     public function __construct($apiKey) {
         $this->_apiKey = $apiKey;
@@ -118,6 +119,10 @@ class googlePlaces {
         $this->_curloptSslVerifypeer = $curloptSslVerifypeer;
     }
 
+    public function setKeyword($keyword) {
+        $this->_keyword = $keyword;
+    }
+
     protected function _checkErrors() {
         if (empty($this->_apiCallType)) {
             $this->_errors[] = 'API Call Type is required but is missing.';
@@ -163,11 +168,11 @@ class googlePlaces {
 
         switch ($this->_apiCallType) {
             case('search'):
-                $URLparams = 'location=' . $this->_location . '&radius=' . $this->_radius . '&types=' . urlencode($this->_types) . '&language=' . $this->_language . '&name=' . $this->_name . '&sensor=' . $this->_sensor;
+                $URLparams = 'location=' . $this->_location . '&radius=' . $this->_radius . '&types=' . urlencode($this->_types) . '&language=' . $this->_language . '&name=' . $this->_name . '&sensor=' . $this->_sensor . '&keyword=' . $this->_keyword;
                 break;
 
             case ('textsearch'):
-                $URLparams = 'query=' . $this->_query . '&location=' . $this->_location . '&radius=' . $this->_radius . '&types=' . urlencode($this->_types) . '&language=' . $this->_language . '&sensor=' . $this->_sensor;
+                $URLparams = 'query=' . $this->_query . '&location=' . $this->_location . '&radius=' . $this->_radius . '&types=' . urlencode($this->_types) . '&language=' . $this->_language . '&sensor=' . $this->_sensor . '&keyword=' . $this->_keyword;
                 break;
 
             case('details'):

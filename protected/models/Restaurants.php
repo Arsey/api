@@ -30,6 +30,8 @@
  */
 class Restaurants extends PlantEatersARMain {
 
+    protected $_search_results = null;
+
     public function findByPk($pk, $condition = '', $params = array()) {
 
         if (is_numeric($pk)) {
@@ -47,21 +49,53 @@ class Restaurants extends PlantEatersARMain {
         }
     }
 
-    public function findAllByAttributes($attributes, $condition = '', $params = array()) {
+    /**
+     *
+     * @param array $params
+     * @return results from Google Places API textsearch request
+     */
+    public function searchByText($params) {
 
-        //get a search type for properly Google Places Api request
-        //if search type was found in URL or headers
-        if ($searchtype = parent::getSearchType()) {
-            //now we need some variables
-            $parsed_params = Yii::app()->apiHelper->getParsedQueryParams();
-
-            return $this->_sendRequestToGooglePlacesApi($searchtype, $parsed_params);
-        } else {
-            Yii::trace(get_class($this) . '.findAllByAttributes()', 'system.db.ar.CActiveRecord');
-            $prefix = $this->getTableAlias(true) . '.';
-            $criteria = $this->getCommandBuilder()->createColumnCriteria($this->getTableSchema(), $attributes, $condition, $params, $prefix);
-            return $this->query($criteria, true);
+        if (isset($params['nextpagetoken'])) {
+            $this->_search_results = Yii::app()->gp->textsearchNextpage($params['nextpagetoken']);
+        } elseif (isset($params['query'])) {
+            $this->_search_results = Yii::app()
+                    ->gp
+                    ->setRadius(self::_getRadius($params))
+                    ->textsearch($params['query']);
         }
+        return $this->decide();
+    }
+
+    /**
+     *
+     * @param array $params
+     * @return results from Google Places API textsearch request
+     */
+    public function searchByNearby($params) {
+        if (isset($params['nextpagetoken'])) {
+            $this->_search_results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
+        } elseif (isset($params['location'])) {
+            $this->_search_results = Yii::app()
+                    ->gp
+                    ->setRadius(self::_getRadius($params))
+                    ->nearbysearch($params['location']);
+        }
+        return $this->decide();
+    }
+
+    protected function decide() {
+        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OK')
+            $this->_filterRequiredData($this->_search_results);
+
+        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'ZERO_RESULTS')
+            $this->_search_results = array('message' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
+
+        return $this->_search_results;
+    }
+
+    protected static function _getRadius($params) {
+        return (isset($params['radius']) && (int) $params['radius']) ? $params['radius'] : 5000;
     }
 
     /**
@@ -93,42 +127,6 @@ class Restaurants extends PlantEatersARMain {
         if (!empty($new_data)) {
             $data = $new_data;
         }
-    }
-
-    /**
-     * Returns the date from Google Places API Request relying on type of search and given parameters
-     * @param string $searchtype
-     * @param array $params
-     * @return array
-     */
-    protected function _sendRequestToGooglePlacesApi($searchtype, $params) {
-
-        $radius = (isset($params['radius']) && (int) $params['radius']) ? $params['radius'] : 5000;
-
-        $results = null;
-
-        if ($searchtype === Constants::SEARCHTYPE_TEXT) {
-            if (isset($params['nextpagetoken'])) {
-                $results = Yii::app()->gp->textsearchNextpage($params['nextpagetoken']);
-            } elseif (isset($params['query'])) {
-                $results = Yii::app()->gp->setRadius($radius)->textsearch($params['query']);
-            }
-        } elseif ($searchtype === Constants::SEARCHTYPE_NEARBY) {
-            if (isset($params['nextpagetoken'])) {
-                $results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
-            } elseif (isset($params['location'])) {
-                $results = Yii::app()->gp->setRadius($radius)->nearbysearch($params['location']);
-            }
-        }
-
-
-        if (isset($results['status']) && $results['status'] === 'OK')
-            $this->_filterRequiredData($results);
-
-        if (isset($results['status']) && $results['status'] === 'ZERO_RESULTS')
-            $results = array('friendly_status' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
-
-        return $results;
     }
 
     /**

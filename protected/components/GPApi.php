@@ -2,7 +2,7 @@
 
 /*
  * This class component is for googlePlaces extension, and it's simple to use
- * 
+ *
  */
 
 class GPApi extends CApplicationComponent {
@@ -36,19 +36,21 @@ class GPApi extends CApplicationComponent {
         $this->_googlePlaces = new googlePlaces($this->_googleApiKey);
         $this->_googlePlaces->setCurloptSslVerifypeer($this->_SslVerifypeer);
         $this->_googlePlaces->setRadius($this->_radius);
+        $this->_googlePlaces->setTypes(helper::yiiparam('googlePlacesTypes'));
+        $this->_googlePlaces->setName(helper::yiiparam('googlePlacesName'));
+        $this->_googlePlaces->setKeyword(helper::yiiparam('googlePlacesKeywords'));
     }
 
     public function textsearch($query) {
         $this->_intializeGooglePlaces(); //initialize google places
         $this->_googlePlaces->setQuery($query);
+
         return $this->_googlePlaces->textSearch();
     }
 
     public function nearbysearch($location) {
         $this->_intializeGooglePlaces(); //initialize google places
         $this->_googlePlaces->setLocation($location);
-        $this->_googlePlaces->setTypes(helper::yiiparam('googlePlacesTypes'));
-        $this->_googlePlaces->setName(helper::yiiparam('googlePlacesName'));
         return $this->_googlePlaces->Search();
     }
 

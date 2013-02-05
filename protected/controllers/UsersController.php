@@ -20,7 +20,7 @@ class UsersController extends ApiController {
             UsersManager::sendRegistrationEmail($model, $this->is_mobile_client_device);
 
             //send response to a client
-            $this->_apiHelper->sendResponse(200, array('message' =>$this->is_mobile_client_device? Constants::THANK_YOU:Constants::THANK_YOU_WITH_ACITVATION_URL));
+            $this->_apiHelper->sendResponse(200, array('message' => $this->is_mobile_client_device ? Constants::THANK_YOU : Constants::THANK_YOU_WITH_ACITVATION_URL));
         } elseif ($model->errors) {
             //send response to a client
             $this->_apiHelper->sendResponse(200, array('errors' => $model->errors));
@@ -96,12 +96,25 @@ class UsersController extends ApiController {
         }
     }
 
+    /**
+     * Action Passwrod Recovery is using to recover user password if he lost it or forget if.
+     * This action can be used only one time for 24 hours.
+     * Not authenticated users can't use it.
+     *
+     * @param string $key
+     * @param string $email
+     */
     public function actionPasswordRecovery($key = null, $email = null) {
-        if (!Yii::app()->user->isGuest) {
-            //send response to a client
+        /*
+         * Authorized users can't be here
+         */
+        if (!Yii::app()->user->isGuest)
             $this->_apiHelper->sendResponse(403, array('errors' => Constants::AUTHORIZED));
-        }
 
+
+        /*
+         *
+         */
         if (!is_null($key) && !is_null($email)) {
             if ($user = Users::model()->find('email=:email', array(':email' => $email))) {
                 if ($user->activation_key == $key) {
@@ -121,19 +134,23 @@ class UsersController extends ApiController {
             }
         }
 
-        if (isset($_POST['login_or_email']) && Yii::app()->user->isGuest) {
 
-            if ($user = UsersManager::checkexists($_POST['login_or_email'])) {
+        /*
+         *
+         */
+        if (
+                isset($this->_parsed_attributes['login_or_email']) &&
+                ($user = UsersManager::checkexists($this->_parsed_attributes['login_or_email']))
+        ) {
 
-
-                $user->generateActivationKey();
-
-                $recovery_url = $this->createAbsoluteUrl("api/" . $this->_format_url . "/user/password_recovery", array('key' => $user->activation_key, 'email' => $user->email));
-
-                Yii::app()->usersManager->sendPasswordRecoveryEmail($user, $recovery_url);
-                //send response to a client
-                $this->_apiHelper->sendResponse(200, array('message' => Constants::INSTRUCTIONS_SENT));
-            }
+            //generate new activation key
+            $user->generateActivationKey();
+            //create activation url
+            $recovery_url = $this->createAbsoluteUrl("api/" . $this->_format_url . "/user/password_recovery", array('key' => $user->activation_key, 'email' => $user->email));
+            
+            Yii::app()->usersManager->sendPasswordRecoveryEmail($user, $recovery_url);
+            //send response to a client
+            $this->_apiHelper->sendResponse(200, array('message' => Constants::INSTRUCTIONS_SENT));
         }
     }
 
