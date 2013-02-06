@@ -2,6 +2,8 @@
 
 class UsersManager extends CApplicationComponent {
 
+   
+
     /**
      * Create manually user. With email confirmation
      * @param string $email
@@ -72,7 +74,7 @@ class UsersManager extends CApplicationComponent {
             Yii::app()->apiHelper->sendResponse(403, 'Email is not set when trying to send Registration Email');
 
         $message = new YiiMailMessage;
-        $message->view =$mobile? 'registration_email':'registration_email_with_activation';
+        $message->view = $mobile ? 'registration_email' : 'registration_email_with_activation';
         //userModel is passed to the view
         $message->setBody(
                 array(
@@ -101,7 +103,7 @@ class UsersManager extends CApplicationComponent {
      * @param type $recovery_url
      * @return type
      */
-    public function sendPasswordRecoveryEmail($user, $recovery_url) {
+    public static function sendResetPasswordEmail($user, $recovery_url) {
         $message = new YiiMailMessage;
         $message->view = 'password_recovery_email';
         //userModel is passed to the view
@@ -111,7 +113,7 @@ class UsersManager extends CApplicationComponent {
             'recovery_url' => $recovery_url,
                 ), 'text/html');
 
-        $message->setSubject(strtr('Password recovery for {username}', array('{username}' => $user->username)));
+        $message->setSubject('Reset your PlantEaters password');
         $message->addTo($user->email);
         $message->from = helper::yiiparam('sendFrom');
         Yii::app()->mail->send($message);

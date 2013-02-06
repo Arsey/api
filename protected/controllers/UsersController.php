@@ -97,61 +97,61 @@ class UsersController extends ApiController {
     }
 
     /**
-     * Action Passwrod Recovery is using to recover user password if he lost it or forget if.
-     * This action can be used only one time for 24 hours.
-     * Not authenticated users can't use it.
-     *
-     * @param string $key
-     * @param string $email
+     * 
+     * @param type $token
      */
-    public function actionPasswordRecovery($key = null, $email = null) {
-        /*
-         * Authorized users can't be here
-         */
-        if (!Yii::app()->user->isGuest)
-            $this->_apiHelper->sendResponse(403, array('errors' => Constants::AUTHORIZED));
+    public function actionResetPassword($token = null) {
+        $errors = array();
+        $form = new UserResetPasswordForm;
 
 
-        /*
-         *
-         */
-        if (!is_null($key) && !is_null($email)) {
-            if ($user = Users::model()->find('email=:email', array(':email' => $email))) {
-                if ($user->activation_key == $key) {
-                    $new_password = $user->changeUserPassword();
-                    Yii::app()->usersManager->sendNewPassword($user, $new_password);
-                    //send response to a client
-                    $this->_apiHelper->sendResponse(200, array('message' => Constants::PASSWORD_WAS_CHANGED));
-                } else {
-                    //send response to a client
-                    //keys are mismatch
-                    $this->_apiHelper->sendResponse(403, array('errors' => Constants::WRONG_ACTIVATION_KEY));
+        if (!is_null($token)) {
+            $password_reset_token = PasswordResetTokens::model()->findByAttributes(array('token' => $token));
+
+            if (
+                    $password_reset_token &&
+                    $password_reset_token->isValidToken($errors)
+            ) {
+                if (isset($_POST['UserResetPasswordForm'])) {
+                    $form->attributes = $_POST['UserResetPasswordForm'];
+                    if ($form->validate()) {
+                        $password_reset_token->status = PasswordResetTokens::TOKEN_USED;
+                        $password_reset_token->save(false, array('status'));
+
+                        if ($user = Users::model()->findByPk($password_reset_token->user_id)) {
+                            $user->changeUserPassword($form->password);
+                            Yii::app()->user->setFlash('success', 'Your password was changed successfully!');
+                        }
+                    }
                 }
-            } else {
-                //send response to a client
-                //account by given email was not found
-                $this->_apiHelper->sendResponse(403, array('errors' => strtr(Constants::ACCOUNT_WITH_GIVEN_EMAIL_NOT_FOUND, array('{email}' => $email))));
+            }
+            else{
+                $errors[]='Wrong token!';
             }
         }
 
+        $this->render('resetpassword', array('form' => $form, 'errors' => $errors));
+    }
 
-        /*
-         *
-         */
-        if (
-                isset($this->_parsed_attributes['login_or_email']) &&
-                ($user = UsersManager::checkexists($this->_parsed_attributes['login_or_email']))
-        ) {
+    /**
+     * 
+     */
+    public function actionTryResetPassword() {
+        if (isset($this->_parsed_attributes['login_or_email']) && ($user = UsersManager::checkexists($this->_parsed_attributes['login_or_email']))) {
 
-            //generate new activation key
-            $user->generateActivationKey();
-            //create activation url
-            $recovery_url = $this->createAbsoluteUrl("api/" . $this->_format_url . "/user/password_recovery", array('key' => $user->activation_key, 'email' => $user->email));
-            
-            Yii::app()->usersManager->sendPasswordRecoveryEmail($user, $recovery_url);
-            //send response to a client
-            $this->_apiHelper->sendResponse(200, array('message' => Constants::INSTRUCTIONS_SENT));
+            if (!PasswordResetTokens::isCanResetPassword($user->id)) {
+                $this->_apiHelper->sendResponse(400, array('message' => 'You can try to reset your password once per 24 hours. Maybe you tried to make recovery password? Please check your email first.'));
+            }
+
+            $model = new PasswordResetTokens;
+            $model->createResetToken($user);
+            if (!$model->errors) {
+                $recovery_url = $this->createAbsoluteUrl("api/" . $this->_format_url . "/user/resetpassword/" . $model->token);
+                UsersManager::sendResetPasswordEmail($user, $recovery_url);
+                $this->_apiHelper->sendResponse(200, array('message' => Constants::INSTRUCTIONS_SENT));
+            }
         }
+        $this->_apiHelper->sendResponse(400, array('message' => 'User not found'));
     }
 
     /**
@@ -159,7 +159,7 @@ class UsersController extends ApiController {
      * @param type $user
      * @return boolean
      */
-    public function authenticate($user, $password) {
+    protected function authenticate($user, $password) {
         $identity = new UserIdentity($user->username, $password);
         $identity->authenticate();
 

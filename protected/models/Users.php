@@ -282,8 +282,10 @@ class Users extends CActiveRecord {
         } else
             $this->activation_key = UsersManager::encrypt(microtime() . $this->password, $this->salt);
 
-        if (!$this->isNewRecord)
-            $this->save(false, array('activation_key'));
+        if (!$this->isNewRecord) {
+            $this->lastaction = time();
+            $this->save(false, array('activation_key', 'lastaction'));
+        }
 
         return $this->activation_key;
     }
@@ -339,13 +341,12 @@ class Users extends CActiveRecord {
      * @return type
      */
     public function changeUserPassword($new_password = null) {
-        if (is_null($new_password)) {
-            $new_password = UsersManager::generatePassword();
-            $this->password = UsersManager::encrypt($new_password, $this->salt);
-            $this->activation_key = UsersManager::encrypt(microtime() . $new_password, $this->salt);
-            $this->save();
-            return $new_password;
-        }
+
+        $new_password = (is_null($new_password)) ? UsersManager::generatePassword() : $new_password;
+        $this->password = UsersManager::encrypt($new_password, $this->salt);
+        $this->activation_key = 1;
+        $this->save();
+        return $new_password;
     }
 
 }

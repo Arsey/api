@@ -75,8 +75,11 @@ class ApiController extends Controller {
         return array(
             array(
                 'allow',
-                'actions' => array('error', 'join', 'activation', 'login', 'passwordrecovery', 'nearbysearch','textsearch'),
+                'actions' => array('error', 'join', 'activation', 'login', 'passwordrecovery', 'nearbysearch', 'textsearch'),
                 'users' => array('?'),
+            //'expression',
+            //'message',
+            //'ips',
             ),
             array(
                 'deny',
@@ -88,6 +91,7 @@ class ApiController extends Controller {
                 'actions' => array('logout'),
                 'users' => array('@'),
             ),
+            array('deny')
         );
     }
 

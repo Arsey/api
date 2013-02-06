@@ -101,9 +101,10 @@ $main = array(
                  */
                 array('users/logout', 'pattern' => 'api/<format:json|xml>/user/logout/'),
                 /*
-                 * Password Recovery
+                 * Reset Password
                  */
-                array('/users/passwordrecovery', 'pattern' => 'api/<format:json|xml>/user/password_recovery'),
+                array('/users/tryresetpassword', 'pattern' => 'api/<format:json|xml>/user/tryresetpassword','verb'=>'POST'),
+                array('/users/resetpassword', 'pattern' => 'api/<format:json|xml>/user/resetpassword/<token:\S+>'),
                 /*
                  * Password Recovery Confirmation
                  */
