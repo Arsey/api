@@ -99,7 +99,7 @@ class ApiHelper extends CApplicationComponent {
          * in Google Places Api
          */
         if (isset($body['next_page_token']) && !empty($body['next_page_token'])) {
-            $body_return['resnext_page_tokenults'] = $body['next_page_token'];
+            $body_return['next_page_token'] = $body['next_page_token'];
         }
 
         /*

@@ -23,7 +23,7 @@ class RestaurantsController extends ApiController {
     }
 
     protected function isInvalidRequest() {
-        if ($this->_google_search_results['status'] === 'INVALID_REQUEST')
+        if (!isset($this->_google_search_results['status'])||$this->_google_search_results['status'] === 'INVALID_REQUEST')
             $this->_apiHelper->sendResponse(400);
 
         $this->_apiHelper->sendResponse(200, $this->_google_search_results);

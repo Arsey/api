@@ -31,6 +31,8 @@
 class Restaurants extends PlantEatersARMain {
 
     protected $_search_results = null;
+    private $_current_lat = null;
+    private $_current_long = null;
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -195,6 +197,8 @@ class Restaurants extends PlantEatersARMain {
      * @return results from Google Places API textsearch request
      */
     public function searchByNearby($params) {
+
+
         if (isset($params['nextpagetoken'])) {
             $this->_search_results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
         } elseif (isset($params['location'])) {
@@ -203,16 +207,28 @@ class Restaurants extends PlantEatersARMain {
                     ->setRadius(self::_getRadius($params))
                     ->nearbysearch($params['location']);
         }
-        return $this->decide();
+        return $this->decide($params);
     }
 
     /**
      * This method decides what to do with results form Google Places API response
      * @return type
      */
-    protected function decide() {
+    protected function decide($params) {
+
+
+        if (isset($params['location'])) {
+            $location = explode(',', $params['location']);
+            $this->_current_lat = $location[0];
+            $this->_current_long = $location[1];
+        }
+
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OK')
             $this->_filterRequiredData($this->_search_results);
+
+        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OVER_QUERY_LIMIT')
+            $this->_search_results = array('message' => 'OVER_QUERY_LIMIT');
+
 
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'ZERO_RESULTS')
             $this->_search_results = array('message' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
@@ -238,8 +254,10 @@ class Restaurants extends PlantEatersARMain {
 
         $new_data = array();
 
-        if (isset($data['next_page_token']))
+        if (isset($data['next_page_token'])) {
             $new_data['next_page_token'] = $data['next_page_token'];
+        }
+
 
         $new_data['status'] = $data['status'];
 
@@ -251,12 +269,32 @@ class Restaurants extends PlantEatersARMain {
                 $new_data['results'][$i]['name'] = $result['name'];
                 $new_data['results'][$i]['latitude'] = $result['geometry']['location']['lat'];
                 $new_data['results'][$i]['longitude'] = $result['geometry']['location']['lng'];
+                if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
+                    $new_data['results'][$i]['meters'] = $this->distance($this->_current_lat, $this->_current_long, $result['geometry']['location']['lat'], $result['geometry']['location']['lng'], "K") * 1000;
+                }
                 $i++;
             }
         }
 
         if (!empty($new_data)) {
             $data = $new_data;
+        }
+    }
+
+    private function distance($lat1, $lon1, $lat2, $lon2, $unit) {
+        $theta = $lon1 - $lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $unit = strtoupper($unit);
+
+        if ($unit == "K") {
+            return ($miles * 1.609344);
+        } else if ($unit == "N") {
+            return ($miles * 0.8684);
+        } else {
+            return $miles;
         }
     }
 

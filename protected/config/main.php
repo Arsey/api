@@ -103,7 +103,7 @@ $main = array(
                 /*
                  * Reset Password
                  */
-                array('/users/tryresetpassword', 'pattern' => 'api/<format:json|xml>/user/tryresetpassword','verb'=>'POST'),
+                array('/users/tryresetpassword', 'pattern' => 'api/<format:json|xml>/user/tryresetpassword', 'verb' => 'POST'),
                 array('/users/resetpassword', 'pattern' => 'api/<format:json|xml>/user/resetpassword/<token:\S+>'),
                 /*
                  * Password Recovery Confirmation
@@ -153,7 +153,7 @@ $main = array(
 // using Yii::app()->params['paramName']
     'params' => array(
         //using on restaurants search throught Google Places API
-        'restaurants_keywords'=>'restaurant bar caffe vegan vegetarian'
+        'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian'
     ),
 );
 
