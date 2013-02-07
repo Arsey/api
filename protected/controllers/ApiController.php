@@ -37,7 +37,6 @@ class ApiController extends Controller {
         $rest_http_request->parseJsonParams();
         $this->_parsed_attributes = $rest_http_request->getAllRestParams();
 
-
         /*
          * Default response format either 'json' or 'xml'
          */
@@ -75,7 +74,7 @@ class ApiController extends Controller {
         return array(
             array(
                 'allow',
-                'actions' => array('error', 'join', 'activation', 'login', 'passwordrecovery', 'nearbysearch', 'textsearch'),
+                'actions' => array('error', 'join', 'activation', 'login', 'tryresetpassword','resetpassword', 'nearbysearch', 'textsearch'),
                 'users' => array('?'),
             //'expression',
             //'message',

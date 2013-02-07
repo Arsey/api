@@ -1,0 +1,26 @@
+"path":"/user/login",
+"description":"This page allows the user to login and get auth_token for other actions",
+"operations":[
+    {
+        "httpMethod":"POST",
+        "nickname":"LoginUser",
+        "parameters":[
+            {
+                "name":"email, password",
+                "required":"true",
+                "description":"List of required parameters for user login",
+                "allowMultiple":"false",
+                "dataType":"user_login",
+                "paramType":"body"
+            }
+        ],
+        "summary":"User Login",
+        "notes": "This page allows the user to login",
+        "errorResponses":[
+            {
+                "code":"401",
+                "reason":"Email/password invalid or user with such credentials not found."
+            }
+        ]
+    }
+]

@@ -1,0 +1,26 @@
+"path":"/user/join",
+"description":"This page allows the user to join PlantEaters",
+"operations":[
+    {
+        "httpMethod":"POST",
+        "nickname":"JoinUser",
+        "parameters":[
+            {
+                "name":"username, password, email",
+                "required":"true",
+                "description":"List of required parameters for user",
+                "allowMultiple":"false",
+                "dataType":"user_join",
+                "paramType":"body"
+            }
+        ],
+        "summary":"Register new user",
+        "notes": "This page allows the user to join PlantEaters",
+        "errorResponses":[
+            {
+                "code":"400",
+                "reason":"Some errors happen on registration"
+            }
+        ]
+    }
+]

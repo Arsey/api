@@ -23,7 +23,7 @@ class UsersController extends ApiController {
             $this->_apiHelper->sendResponse(200, array('message' => $this->is_mobile_client_device ? Constants::THANK_YOU : Constants::THANK_YOU_WITH_ACITVATION_URL));
         } elseif ($model->errors) {
             //send response to a client
-            $this->_apiHelper->sendResponse(200, array('errors' => $model->errors));
+            $this->_apiHelper->sendResponse(400, array('errors' => $model->errors));
         }
     }
 
@@ -57,12 +57,15 @@ class UsersController extends ApiController {
                 isset($this->_parsed_attributes['password'])
         ) {
 
-            $user = Users::model()->find('username=:username', array(':username' => $this->_parsed_attributes['username']));
+            $user = false;
+
+            if (isset($this->_parsed_attributes['username'])) {
+                $user = Users::model()->find('username=:username', array(':username' => $this->_parsed_attributes['username']));
+            }
 
             // try to authenticate via email
-            if (!$user && (strpos($this->_parsed_attributes['email'], "@"))) {
+            if (!$user && isset($this->_parsed_attributes['username'])) {
                 if ($user_by_email = Users::model()->find('email = :email', array(':email' => $this->_parsed_attributes['email'])))
-                    if ($user_by_email)
                         $user = $user_by_email;
             }
 
@@ -97,7 +100,7 @@ class UsersController extends ApiController {
     }
 
     /**
-     * 
+     *
      * @param type $token
      */
     public function actionResetPassword($token = null) {
@@ -124,9 +127,8 @@ class UsersController extends ApiController {
                         }
                     }
                 }
-            }
-            else{
-                $errors[]='Wrong token!';
+            } else {
+                $errors[] = 'Wrong token!';
             }
         }
 
@@ -134,7 +136,7 @@ class UsersController extends ApiController {
     }
 
     /**
-     * 
+     *
      */
     public function actionTryResetPassword() {
         if (isset($this->_parsed_attributes['login_or_email']) && ($user = UsersManager::checkexists($this->_parsed_attributes['login_or_email']))) {

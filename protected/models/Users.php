@@ -71,9 +71,30 @@ class Users extends CActiveRecord {
             array('password, salt, activation_key', 'length', 'max' => 128),
             array('email, city, country, avatar', 'length', 'max' => 255),
             array('password', 'length', 'min' => 6),
-            array('email, username', 'unique'),
             array('email', 'CEmailValidator'),
-            array('username', 'length', 'max' => 20),
+            array(
+                'username',
+                'length',
+                'max' => 20,
+                'min' => 3,
+                'message' => 'Username length needs to be between 3 and 20 characters'
+            ),
+            array(
+                'username',
+                'unique',
+                'message' => 'This user\'s name already exists.'
+            ),
+            array(
+                'username',
+                'match',
+                'pattern'=>'/^[A-Za-z0-9_]+$/u',
+                'message'=>'Incorrect symbol\'s. (A-z0-9)'
+            ),
+            array(
+                'email',
+                'unique',
+                'message' => 'This email already exists.'
+            ),
             array('role', 'length', 'max' => 45),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.

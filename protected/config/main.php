@@ -105,10 +105,6 @@ $main = array(
                  */
                 array('/users/tryresetpassword', 'pattern' => 'api/<format:json|xml>/user/tryresetpassword', 'verb' => 'POST'),
                 array('/users/resetpassword', 'pattern' => 'api/<format:json|xml>/user/resetpassword/<token:\S+>'),
-                /*
-                 * Password Recovery Confirmation
-                 */
-                array('/users/passwordrecovery', 'pattern' => 'api/<format:json|xml>/user/password_recovery/key/<key:\S+>/email/<email:\S+>', 'verb' => 'GET'),
                 //REST patterns for Restaurants searching
                 array(
                     'restaurants/<searchtype>',
