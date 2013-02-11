@@ -1,0 +1,29 @@
+"path":"/restaurants/textsearch",
+"description":"This page allows the user to search restaurants by text",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"Textsearch",
+        "parameters":[
+            {
+                "name":"query",
+                "required":"true",
+                "description":"Query string like New York Makke",
+                "allowMultiple":"false",
+                "dataType":"String",
+                "paramType":"query"
+            },
+            {
+                "name":"radius",
+
+                "description":"raduis is simple digit like 200 that equals 200 meters. Maximum is 50 000",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            }
+        ],
+        "summary":"Text searching",
+        "notes": "This page allows the user to search restaurants by text"
+
+    }
+]

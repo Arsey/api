@@ -50,10 +50,7 @@ class UsersController extends ApiController {
 
         if (
                 !empty($this->_parsed_attributes) &&
-                (
-                isset($this->_parsed_attributes['username']) ||
-                isset($this->_parsed_attributes['email'])
-                ) &&
+                ( isset($this->_parsed_attributes['username']) || isset($this->_parsed_attributes['email'])) &&
                 isset($this->_parsed_attributes['password'])
         ) {
 
@@ -64,9 +61,9 @@ class UsersController extends ApiController {
             }
 
             // try to authenticate via email
-            if (!$user && isset($this->_parsed_attributes['username'])) {
+            if (!$user && isset($this->_parsed_attributes['email'])) {
                 if ($user_by_email = Users::model()->find('email = :email', array(':email' => $this->_parsed_attributes['email'])))
-                        $user = $user_by_email;
+                    $user = $user_by_email;
             }
 
             if ($user) {

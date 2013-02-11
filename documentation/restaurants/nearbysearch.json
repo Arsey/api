@@ -1,0 +1,41 @@
+"path":"/restaurants/nearbysearch",
+"description":"This page allows the user to search restaurants by current location: latitude, longitude",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"Nearbysearch",
+        "parameters":[
+             {
+                "name":"location",
+                "description":"location is string, that contains latitude ang longitude values, implodes with coma: -33.8670522,151.1957362 . Location is required field by default, but if you're using valid nextpagetoken, than location not required",
+                "allowMultiple":"false",
+                "dataType":"String",
+                "paramType":"query"
+            },
+             {
+                "name":"nextpagetoken",
+                "description":"The token to get next page of results from searching. Token can be given with search results if there is more than 20. If you using nextpagetoken, that's don't need to use other parameters like location, query, radius",
+                "allowMultiple":"false",
+                "dataType":"String",
+                "paramType":"query"
+            },
+            {
+                "name":"query",
+                "description":"Query string like New York Makke",
+                "allowMultiple":"false",
+                "dataType":"String",
+                "paramType":"query"
+            },
+            {
+                "name":"radius",
+                "description":"raduis is simple digit like 200 that equals 200 meters. Maximum is 50 000",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            }
+        ],
+        "summary":"Nearby searching",
+        "notes": "This page allows the user to search restaurants by current location: latitude, longitude"
+
+    }
+]

@@ -101,11 +101,11 @@ $main = array(
                  */
                 array('users/logout', 'pattern' => 'api/<format:json|xml>/user/logout/'),
                 /*
-                 * Reset Password
+                 * RESET PASSWORD PATTERNS
                  */
                 array('/users/tryresetpassword', 'pattern' => 'api/<format:json|xml>/user/tryresetpassword', 'verb' => 'POST'),
                 array('/users/resetpassword', 'pattern' => 'api/<format:json|xml>/user/resetpassword/<token:\S+>'),
-                //REST patterns for Restaurants searching
+                //REST patterns for RESTAURANTS SEARCHING
                 array(
                     'restaurants/<searchtype>',
                     //pattern for search restaurants with Google Places API
@@ -115,13 +115,13 @@ $main = array(
                 //pattern to apply access filter for any model
                 array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<status:published|removed|pending|unpublished>', 'verb' => 'GET'),
                 array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'GET'),
-                array('api/view', 'pattern' => 'api/<format:json|xml>/<model:restaurants>/<id:\d+|\S+>', 'verb' => 'GET'),
+                //PATTERNS TO GET INFO ABOUT SINGLE OBJECT
+                array('restaurants/viewrestaurant', 'pattern' => 'api/<format:json|xml>/<model:restaurant>/<id:\S+>', 'verb' => 'GET'),
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
+                ////
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),
                 array('api/delete', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
-            //Other controllers
-//'<controller:\w+>/<action:\w+>' => '<controller>/<action>',
             ),
         ),
         //MySQL database configuration

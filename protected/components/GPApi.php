@@ -32,7 +32,7 @@ class GPApi extends CApplicationComponent {
 
     //for every request to Google Places API we need set few options at first
     //this method using for textsearch, nearbysearch, nextpage methods
-    protected function _intializeGooglePlaces() {
+    protected function _initializeGooglePlaces() {
         $this->_googlePlaces = new googlePlaces($this->_googleApiKey);
         $this->_googlePlaces->setCurloptSslVerifypeer($this->_SslVerifypeer);
         $this->_googlePlaces->setRadius($this->_radius);
@@ -42,28 +42,34 @@ class GPApi extends CApplicationComponent {
     }
 
     public function textsearch($query) {
-        $this->_intializeGooglePlaces(); //initialize google places
+        $this->_initializeGooglePlaces(); //initialize google places
         $this->_googlePlaces->setQuery($query);
 
         return $this->_googlePlaces->textSearch();
     }
 
     public function nearbysearch($location) {
-        $this->_intializeGooglePlaces(); //initialize google places
+        $this->_initializeGooglePlaces(); //initialize google places
         $this->_googlePlaces->setLocation($location);
         return $this->_googlePlaces->Search();
     }
 
     //request to Google Places API for next page if it was the nearbysearch type
     public function nearbyNextpage($next_page_token) {
-        $this->_intializeGooglePlaces(); //initialize google places
+        $this->_initializeGooglePlaces(); //initialize google places
         return $this->_googlePlaces->repeat($next_page_token); //sending request
     }
 
     //request to Google Places API for next page if it was the textsearch type
     public function textsearchNextpage($next_page_token) {
-        $this->_intializeGooglePlaces(); //initialize google places
+        $this->_initializeGooglePlaces(); //initialize google places
         return $this->_googlePlaces->textsearchRepeat($next_page_token); //sending request
+    }
+
+    public function getDetails($reference){
+        $this->_initializeGooglePlaces();
+        $this->_googlePlaces->setReference($reference);
+        return $this->_googlePlaces->details();
     }
 
 }

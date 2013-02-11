@@ -74,7 +74,17 @@ class ApiController extends Controller {
         return array(
             array(
                 'allow',
-                'actions' => array('error', 'join', 'activation', 'login', 'tryresetpassword','resetpassword', 'nearbysearch', 'textsearch'),
+                'actions' => array(
+                    'error',
+                    'join',
+                    'activation',
+                    'login',
+                    'tryresetpassword',
+                    'resetpassword',
+                    'nearbysearch',
+                    'textsearch',
+                    'viewrestaurant'
+                ),
                 'users' => array('?'),
             //'expression',
             //'message',
@@ -90,7 +100,7 @@ class ApiController extends Controller {
                 'actions' => array('logout'),
                 'users' => array('@'),
             ),
-            array('deny')
+            //array('deny')
         );
     }
 
@@ -122,6 +132,10 @@ class ApiController extends Controller {
         }
     }
 
+    /**
+     * This is standard REST single view Action for any model by default.
+     * This action require GET type of request and mode id
+     */
     public function actionView() {
 
         /* Check if id was submitted via GET */
@@ -142,6 +156,9 @@ class ApiController extends Controller {
             $this->_apiHelper->sendResponse(200, array('results' => $model));
     }
 
+    /**
+     *
+     */
     public function actionCreate() {
 
         if ($model_name = helper::getModelExists($_GET['model'])) {
@@ -150,14 +167,14 @@ class ApiController extends Controller {
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_CREATE_NOT_IMPLEMENTED, $_GET['model'])));
         }
 
-// Try to assign POST values to attributes
+        /* Try to assign POST values to attributes */
         $this->_assignModelAttributes($model);
 
-//Try to save the model
+        /* Try to save the model */
         if ($model->save()) {
             $this->_apiHelper->sendResponse(200, array('results' => $model));
         } else {
-//Errorss occured
+            /* Errorss occured */
             $this->_apiHelper->sendResponse(500, array('errors' => $model->errors));
         }
     }

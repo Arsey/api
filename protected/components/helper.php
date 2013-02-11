@@ -112,4 +112,14 @@ class helper extends CApplicationComponent {
         return $data;
     }
 
+    public static function getFieldsList($array, $fieldname) {
+        $list = array();
+        foreach ($array as $el) {
+            if (isset($el[$fieldname])) {
+                $list[] = $el[$fieldname];
+            }
+        }
+        return $list;
+    }
+
 }

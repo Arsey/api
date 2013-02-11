@@ -6,8 +6,8 @@
  * The followings are the available columns in table 'restaurants':
  * @property string $id
  * @property string $external_id
- * @property string $user_id
  * @property string $latitude
+ * @property string $reference
  * @property string $longitude
  * @property string $name
  * @property string $street_address
@@ -33,6 +33,9 @@ class Restaurants extends PlantEatersARMain {
     protected $_search_results = null;
     private $_current_lat = null;
     private $_current_long = null;
+    private static $_table_name = 'restaurants';
+    private $_external_ids_not_in_db = null;
+    private $_external_ids = null;
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -50,7 +53,7 @@ class Restaurants extends PlantEatersARMain {
      * @return string the associated database table name
      */
     public function tableName() {
-        return 'restaurants';
+        return self::$_table_name;
     }
 
     /**
@@ -60,17 +63,17 @@ class Restaurants extends PlantEatersARMain {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('user_id, latitude, longitude, name, street_address', 'required'),
+            array(' latitude, longitude, name', 'required'),
             array('vegan, createtime, modifiedtime, access_status', 'numerical', 'integerOnly' => true),
             array('external_id, name, street_address, street_address_2, email, website', 'length', 'max' => 255),
-            array('user_id, state', 'length', 'max' => 20),
+            array('state', 'length', 'max' => 20),
             array('latitude, longitude', 'length', 'max' => 18),
             array('city, country', 'length', 'max' => 100),
             array('phone', 'length', 'max' => 30),
             array('rating', 'length', 'max' => 4),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, external_id, user_id, latitude, longitude, name, street_address, street_address_2, city, state, country, phone, email, website, vegan, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
+            array('id, external_id, latitude, longitude, name, street_address, street_address_2, city, state, country, phone, email, website, vegan, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
         );
     }
 
@@ -82,7 +85,6 @@ class Restaurants extends PlantEatersARMain {
         // class name for the relations automatically generated below.
         return array(
             'meals' => array(self::HAS_MANY, 'Meals', 'restaurant_id'),
-            'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
         );
     }
 
@@ -93,7 +95,6 @@ class Restaurants extends PlantEatersARMain {
         return array(
             'id' => 'ID',
             'external_id' => 'External',
-            'user_id' => 'User',
             'latitude' => 'Latitude',
             'longitude' => 'Longitude',
             'name' => 'Name',
@@ -125,7 +126,7 @@ class Restaurants extends PlantEatersARMain {
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('external_id', $this->external_id, true);
-        $criteria->compare('user_id', $this->user_id, true);
+
         $criteria->compare('latitude', $this->latitude, true);
         $criteria->compare('longitude', $this->longitude, true);
         $criteria->compare('name', $this->name, true);
@@ -152,6 +153,17 @@ class Restaurants extends PlantEatersARMain {
     //CUSTOM OVERLOAD METHODS OF RA
     ////////////////////////////////
 
+    public function behaviors() {
+        return array(
+            'timestamps' => array(
+                'class' => 'zii.behaviors.CTimestampBehavior',
+                'createAttribute' => 'createtime',
+                'updateAttribute' => 'modifiedtime',
+                'setUpdateOnCreate' => true,
+            ),
+        );
+    }
+
     public function findByPk($pk, $condition = '', $params = array()) {
 
         if (is_numeric($pk)) {
@@ -160,12 +172,9 @@ class Restaurants extends PlantEatersARMain {
             $prefix = $this->getTableAlias(true) . '.';
             $criteria = $this->getCommandBuilder()->createPkCriteria($this->getTableSchema(), $pk, $condition, $params, $prefix);
             return $this->query($criteria);
-        } elseif ((string) $pk) {
-
-            $googlePlaces = new googlePlaces(helper::yiiparam('googleApiKey'));
-            $googlePlaces->setCurloptSslVerifypeer(false);
-            $googlePlaces->setReference($pk);
-            return $googlePlaces->details();
+        } else {
+            //helper::p(Yii::app()->gp->getDetails($pk));
+            return Yii::app()->gp->getDetails($pk);
         }
     }
 
@@ -188,7 +197,7 @@ class Restaurants extends PlantEatersARMain {
                     ->setRadius(self::_getRadius($params))
                     ->textsearch($params['query']);
         }
-        return $this->decide();
+        return $this->decide($params);
     }
 
     /**
@@ -217,6 +226,7 @@ class Restaurants extends PlantEatersARMain {
     protected function decide($params) {
 
 
+
         if (isset($params['location'])) {
             $location = explode(',', $params['location']);
             $this->_current_lat = $location[0];
@@ -224,7 +234,7 @@ class Restaurants extends PlantEatersARMain {
         }
 
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OK')
-            $this->_filterRequiredData($this->_search_results);
+            $this->_filterRequiredData();
 
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OVER_QUERY_LIMIT')
             $this->_search_results = array('message' => 'OVER_QUERY_LIMIT');
@@ -232,6 +242,8 @@ class Restaurants extends PlantEatersARMain {
 
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'ZERO_RESULTS')
             $this->_search_results = array('message' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
+
+
 
         return $this->_search_results;
     }
@@ -250,37 +262,133 @@ class Restaurants extends PlantEatersARMain {
      * @param type $searchtype
      * @param type $data
      */
-    protected function _filterRequiredData(&$data) {
+    protected function _filterRequiredData() {
+
+
 
         $new_data = array();
 
-        if (isset($data['next_page_token'])) {
-            $new_data['next_page_token'] = $data['next_page_token'];
+        $this->_external_ids = helper::getFieldsList($this->_search_results['results'], 'id');
+
+        $this->_external_ids_not_in_db = Restaurants::getListIdNotInDB($this->_external_ids, 'id');
+
+        $this->addRestaurantsFromSearch();
+
+        if (isset($this->_search_results['next_page_token'])) {
+            $new_data['next_page_token'] = $this->_search_results['next_page_token'];
         }
+        $new_data['status'] = $this->_search_results['status'];
 
-
-        $new_data['status'] = $data['status'];
-
-        if (!empty($data['results'])) {
-            $i = 0;
-            foreach ($data['results'] as $result) {
-                $new_data['results'][$i]['id'] = $result['id'];
-                $new_data['results'][$i]['reference'] = $result['reference'];
-                $new_data['results'][$i]['name'] = $result['name'];
-                $new_data['results'][$i]['latitude'] = $result['geometry']['location']['lat'];
-                $new_data['results'][$i]['longitude'] = $result['geometry']['location']['lng'];
-                if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
-                    $new_data['results'][$i]['meters'] = $this->distance($this->_current_lat, $this->_current_long, $result['geometry']['location']['lat'], $result['geometry']['location']['lng'], "K") * 1000;
-                }
-                $i++;
-            }
-        }
+        $new_data['results'] = $this->getBaseRestaurantsByExternalIds();
 
         if (!empty($new_data)) {
-            $data = $new_data;
+            $this->_search_results = $new_data;
         }
     }
 
+    public function getBaseRestaurantsByExternalIds() {
+        if (!is_null($this->_external_ids)) {
+            return Yii::app()->db->createCommand()
+                            ->select(array('id', 'latitude', 'longitude', 'name'))
+                            ->from(self::$_table_name)
+                            ->where(array('in', 'external_id', $this->_external_ids))
+                            ->queryAll();
+        }
+    }
+
+    /**
+     * 
+     */
+    public function addRestaurantsFromSearch() {
+        if (!empty($this->_search_results['results'])) {
+
+            foreach ($this->_search_results['results'] as $result) {
+
+                $this->addRestaurantBaseFromSearch($result);
+
+                /* $new_data['results'][$i]['id'] = $result['id'];
+                  //$new_data['results'][$i]['reference'] = $result['reference'];
+                  $new_data['results'][$i]['name'] = $result['name'];
+                  $new_data['results'][$i]['latitude'] = $result['geometry']['location']['lat'];
+                  $new_data['results'][$i]['longitude'] = $result['geometry']['location']['lng'];
+                  if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
+                  $new_data['results'][$i]['meters'] = $this->distance($this->_current_lat, $this->_current_long, $result['geometry']['location']['lat'], $result['geometry']['location']['lng'], "K") * 1000;
+                  }
+                 */
+            }
+        }
+    }
+
+    /**
+     *
+     * @param array() $restaurant
+     */
+    public function addRestaurantBaseFromSearch($restaurant) {
+        if (in_array($restaurant['id'], $this->_external_ids_not_in_db)) {
+
+            $model = new Restaurants;
+            $model->external_id = $restaurant['id'];
+            $model->reference = $restaurant['reference'];
+            $model->latitude = $restaurant['geometry']['location']['lat'];
+            $model->longitude = $restaurant['geometry']['location']['lng'];
+            $model->name = $restaurant['name'];
+            $model->rating = 0;
+            if (
+                    isset($restaurant['formatted_address']) &&
+                    $parsed_address = GoogleGeocode::parseAddress($restaurant['formatted_address'])
+            ) {
+                $model->street_address = GoogleGeocode::getStreet($parsed_address);
+                $model->city = GoogleGeocode::getCity($parsed_address);
+                $model->state = GoogleGeocode::getState($parsed_address);
+                $model->country = GoogleGeocode::getCountry($parsed_address);
+            }
+
+            if ($model->validate()) {
+                $model->save();
+            } else {
+                helper::p($model->errors);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param type $list
+     * @param type $field
+     * @return type
+     */
+    public static function getListIdNotInDB($list) {
+        $in = Yii::app()->db->createCommand()
+                ->select('external_id')
+                ->from(self::$_table_name)
+                ->where(array('in', 'external_id', $list))
+                ->queryAll(false);
+
+
+        $in = array_map(function($e) {
+                    return $e[0];
+                }, $in);
+
+        $not_in = array();
+
+        foreach ($list as $external) {
+            if (!in_array($external, $in)) {
+                $not_in[] = $external;
+            }
+        }
+
+        return $not_in;
+    }
+
+    /**
+     * 
+     * @param type $lat1
+     * @param type $lon1
+     * @param type $lat2
+     * @param type $lon2
+     * @param type $unit
+     * @return type
+     */
     private function distance($lat1, $lon1, $lat2, $lon2, $unit) {
         $theta = $lon1 - $lon2;
         $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));

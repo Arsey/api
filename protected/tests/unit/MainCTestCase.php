@@ -23,9 +23,11 @@ class MainCTestCase extends CTestCase {
     );
     protected $_server;
     protected $_wrong_model_name = 'abracadabra_model_name';
+    protected $_rest;
 
     public function __construct() {
         $this->_server = helper::yiiparam('rest_api_server_base_url');
+        $this->_rest=helper::curlInit($this->_server);
     }
 
 }
