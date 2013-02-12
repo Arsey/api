@@ -25,6 +25,10 @@
  */
 class Meals extends CActiveRecord {
 
+    const NON_VEG = 0;
+    const VEGAN = 1;
+    const VEGETARIAN = 2;
+
     public function behaviors() {
         return array(
             'timestamps' => array(

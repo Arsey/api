@@ -45,9 +45,6 @@ class UsersController extends ApiController {
      * @return encoded server response with http code
      */
     public function actionLogin() {
-
-
-
         if (
                 !empty($this->_parsed_attributes) &&
                 ( isset($this->_parsed_attributes['username']) || isset($this->_parsed_attributes['email'])) &&
@@ -68,7 +65,8 @@ class UsersController extends ApiController {
 
             if ($user) {
                 if ($this->authenticate($user, $this->_parsed_attributes['password'])) {
-                    $this->_apiHelper->sendResponse(200, array('results' => array('auth_token' => Yii::app()->session->sessionID)));
+                    $auth_token = Yii::app()->session->sessionID;
+                    $this->_apiHelper->sendResponse(200, array('results' => array('auth_token' => $auth_token)));
                 }
             } else {
                 //send response to a client

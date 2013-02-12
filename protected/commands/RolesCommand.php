@@ -13,10 +13,10 @@ class RolesCommand extends CConsoleCommand {
         $task = $auth->createTask('updateOwnData', 'User can update own data', $bizRule);
         $task->addChild('updateUser');
 
-        $role=$auth->createRole('normal');
+        $role=$auth->createRole(Users::ROLE_NORMAL);
         $role->addChild('updateOwnData');
 
-        $role=$auth->createRole('super');
+        $role=$auth->createRole(Users::ROLE_SUPER);
         $role->addChild('updateOwnData');
 
         $auth->save();

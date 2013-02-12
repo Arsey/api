@@ -1,0 +1,21 @@
+"path":"/restaurant/{id}",
+"description":"This page allows the user to see restaurant information(based on role) by it's id",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"RestaurantView",
+        "parameters":[
+            {
+                "name":"id",
+                "required":"true",
+                "description":"This is an id of restaurant",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            }
+        ],
+        "summary":"View Restaurant Information",
+        "notes": "This page allows the user to see restaurant information(based on role) by it's id"
+
+    }
+]

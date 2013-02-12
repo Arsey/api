@@ -2,21 +2,26 @@
 
 class RestaurantsTest extends MainCTestCase {
 
+    /**
+     * Testing Google Places textsearch
+     */
     function testTextsearch() {
         $this->markTestSkipped();
         $response = $this->_rest->get('api/json/restaurants/textsearch', array('query' => 'oil'));
         $response = helper::jsonDecode($response);
-
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertTrue(isset($response['results']));
         $this->assertNotEmpty($response['results']);
     }
 
+    /**
+     * Testing Google Places nearbysearch
+     * @return type
+     */
     function testNearbysearch() {
-        //$this->markTestSkipped();
+        $this->markTestSkipped();
         $response = $this->_rest->get('api/json/restaurants/nearbysearch', array('location' => '-33.8670522,151.1957362'));
         $response = helper::jsonDecode($response);
-
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertTrue(isset($response['results']));
         $this->assertNotEmpty($response['results']);
@@ -29,12 +34,26 @@ class RestaurantsTest extends MainCTestCase {
      * and relying in role information must be a little different
      */
     function testGetInfoAboutRestaurantByID($response) {
-        $reference = $response['results'][0]['reference'];
-
-echo $reference;
         $rest = helper::curlInit($this->_server);
-        $response = $rest->get('api/json/restaurant/'.$reference);
-        helper::p($response);
+        $response = $rest->get('api/json/restaurant/' . $response['results'][0]['id']);
+        $response = helper::jsonDecode($response);
+        $this->assertTrue(isset($response['results']) && !empty($response['results']));
+        $this->assertNotEmpty($response['results']['id']);
+        $this->assertNotEmpty($response['results']['name']);
+        $this->assertNotEmpty($response['results']['latitude']);
+        $this->assertNotEmpty($response['results']['longitude']);
+        $this->assertNotEmpty($response['results']['rating']);
+    }
+
+    /**
+     * Check response for unexisting restaurant
+     */
+    function testGetInfoAboutRrestaurantWhichNotExists() {
+        $max_restaurant_id = Yii::app()->db->createCommand()->select('max(id)')->from('restaurants')->queryScalar();
+        $rest = helper::curlInit($this->_server);
+        $response = $rest->get('api/json/restaurant/' . ($max_restaurant_id + 1));
+        $response = helper::jsonDecode($response);
+        $this->assertEquals(ApiHelper::MESSAGE_404, $response['status']);
     }
 
 }

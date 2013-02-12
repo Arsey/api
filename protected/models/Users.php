@@ -29,6 +29,10 @@
  */
 class Users extends CActiveRecord {
 
+    const ROLE_NORMAL='normal';
+    const ROLE_SUPER='super';
+    const GUEST='guest';
+
     //user role
     protected $_role = 'normal';
     private $_join_with_email_activation = false;

@@ -22,4 +22,28 @@ class PlantEatersARMain extends CActiveRecord {
             throw new CDbException(Yii::t('yii', 'The active record cannot be deleted because it is new.'));
     }
 
+    private function _notPublicAttributes($model_name, $role) {
+        $npa = array(
+            'restaurants' => array(
+                'guest' => array('reference', 'external_id', 'access_status', 'phone', 'email'),
+                'normal' => array('reference', 'external_id', 'access_status')
+            )
+        );
+        return $npa[$model_name][$role];
+    }
+
+    protected function filterByRole($model, $user_role) {
+        if ($user_role !== Users::ROLE_SUPER) {
+            $attributes = array();
+            $not_public_attributes = $this->_notPublicAttributes($model->tableName(), $user_role);
+            foreach ($model->attributes as $key => $val) {
+                if (!in_array($key, $not_public_attributes)) {
+                    $attributes[$key] = $val;
+                }
+            }
+            return $attributes;
+        }
+        return $model;
+    }
+
 }

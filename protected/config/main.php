@@ -58,7 +58,7 @@ $main = array(
             'class' => 'application.components.ApiHelper'
         ),
         'user' => array(
-            //'class'=>'WebUser',
+            'class'=>'WebUser',
             'allowAutoLogin' => true,
             'loginUrl' => null,
         ),
@@ -116,7 +116,7 @@ $main = array(
                 array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<status:published|removed|pending|unpublished>', 'verb' => 'GET'),
                 array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'GET'),
                 //PATTERNS TO GET INFO ABOUT SINGLE OBJECT
-                array('restaurants/viewrestaurant', 'pattern' => 'api/<format:json|xml>/<model:restaurant>/<id:\S+>', 'verb' => 'GET'),
+                array('restaurants/viewrestaurant', 'pattern' => 'api/<format:json|xml>/<model:restaurant>/<id:\d+>', 'verb' => 'GET'),
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 ////
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),

@@ -30,12 +30,17 @@
  */
 class Restaurants extends PlantEatersARMain {
 
+    const NON_VEG = 0;
+    const VEGAN = 1;
+    const VEGETARIAN = 2;
+
     protected $_search_results = null;
     private $_current_lat = null;
     private $_current_long = null;
     private static $_table_name = 'restaurants';
     private $_external_ids_not_in_db = null;
     private $_external_ids = null;
+    public $role_based_attributes = array();
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -126,7 +131,6 @@ class Restaurants extends PlantEatersARMain {
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('external_id', $this->external_id, true);
-
         $criteria->compare('latitude', $this->latitude, true);
         $criteria->compare('longitude', $this->longitude, true);
         $criteria->compare('name', $this->name, true);
@@ -164,23 +168,13 @@ class Restaurants extends PlantEatersARMain {
         );
     }
 
-    public function findByPk($pk, $condition = '', $params = array()) {
-
-        if (is_numeric($pk)) {
-
-            Yii::trace(get_class($this) . '.findByPk()', 'system.db.ar.CActiveRecord');
-            $prefix = $this->getTableAlias(true) . '.';
-            $criteria = $this->getCommandBuilder()->createPkCriteria($this->getTableSchema(), $pk, $condition, $params, $prefix);
-            return $this->query($criteria);
-        } else {
-            //helper::p(Yii::app()->gp->getDetails($pk));
-            return Yii::app()->gp->getDetails($pk);
-        }
-    }
-
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+
+    public function filterByRole($user_role) {
+        return parent::filterByRole($this, $user_role);
+    }
 
     /**
      *
@@ -206,8 +200,6 @@ class Restaurants extends PlantEatersARMain {
      * @return results from Google Places API textsearch request
      */
     public function searchByNearby($params) {
-
-
         if (isset($params['nextpagetoken'])) {
             $this->_search_results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
         } elseif (isset($params['location'])) {
@@ -224,9 +216,6 @@ class Restaurants extends PlantEatersARMain {
      * @return type
      */
     protected function decide($params) {
-
-
-
         if (isset($params['location'])) {
             $location = explode(',', $params['location']);
             $this->_current_lat = $location[0];
@@ -239,11 +228,8 @@ class Restaurants extends PlantEatersARMain {
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OVER_QUERY_LIMIT')
             $this->_search_results = array('message' => 'OVER_QUERY_LIMIT');
 
-
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'ZERO_RESULTS')
             $this->_search_results = array('message' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
-
-
 
         return $this->_search_results;
     }
@@ -263,9 +249,6 @@ class Restaurants extends PlantEatersARMain {
      * @param type $data
      */
     protected function _filterRequiredData() {
-
-
-
         $new_data = array();
 
         $this->_external_ids = helper::getFieldsList($this->_search_results['results'], 'id');
@@ -288,33 +271,35 @@ class Restaurants extends PlantEatersARMain {
 
     public function getBaseRestaurantsByExternalIds() {
         if (!is_null($this->_external_ids)) {
-            return Yii::app()->db->createCommand()
-                            ->select(array('id', 'latitude', 'longitude', 'name'))
-                            ->from(self::$_table_name)
-                            ->where(array('in', 'external_id', $this->_external_ids))
-                            ->queryAll();
+            $restaurants = Yii::app()->db->createCommand()
+                    ->select(array('id', 'latitude', 'longitude', 'name'))
+                    ->from(self::$_table_name)
+                    ->where(array('in', 'external_id', $this->_external_ids))
+                    ->queryAll();
+
+            $this->addDistance($restaurants);
+            return $restaurants;
+        }
+    }
+
+    protected function addDistance(&$restaurants) {
+        if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
+            $restaurants_with_distance = array();
+            foreach ($restaurants as $restaurant) {
+                $restaurant['meters'] = $this->distance($this->_current_lat, $this->_current_long, $restaurant['latitude'], $restaurant['longitude'], "M");
+                $restaurants_with_distance[] = $restaurant;
+            }
+            $restaurants = $restaurants_with_distance;
         }
     }
 
     /**
-     * 
+     *
      */
     public function addRestaurantsFromSearch() {
         if (!empty($this->_search_results['results'])) {
-
             foreach ($this->_search_results['results'] as $result) {
-
                 $this->addRestaurantBaseFromSearch($result);
-
-                /* $new_data['results'][$i]['id'] = $result['id'];
-                  //$new_data['results'][$i]['reference'] = $result['reference'];
-                  $new_data['results'][$i]['name'] = $result['name'];
-                  $new_data['results'][$i]['latitude'] = $result['geometry']['location']['lat'];
-                  $new_data['results'][$i]['longitude'] = $result['geometry']['location']['lng'];
-                  if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
-                  $new_data['results'][$i]['meters'] = $this->distance($this->_current_lat, $this->_current_long, $result['geometry']['location']['lat'], $result['geometry']['location']['lng'], "K") * 1000;
-                  }
-                 */
             }
         }
     }
@@ -381,7 +366,7 @@ class Restaurants extends PlantEatersARMain {
     }
 
     /**
-     * 
+     *
      * @param type $lat1
      * @param type $lon1
      * @param type $lat2
@@ -401,6 +386,8 @@ class Restaurants extends PlantEatersARMain {
             return ($miles * 1.609344);
         } else if ($unit == "N") {
             return ($miles * 0.8684);
+        } else if ($unit == "M") {
+            return round(($miles * 1.609344 * 1000), 2);
         } else {
             return $miles;
         }

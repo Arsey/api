@@ -31,15 +31,14 @@ class RestaurantsController extends ApiController {
      * Get information about restaurant by id
      */
     public function actionViewRestaurant() {
-        echo $this->_parsed_attributes['id'];
         /* Did we found the requested restaurant? If not, raise an error */
-        if ($model = Restaurants::model()->findByPk($this->_parsed_attributes['id']))
+
+        if (!$restaurant = Restaurants::model()->findByPk($this->_parsed_attributes['id']))
             $this->_apiHelper->sendResponse(404, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $this->_parsed_attributes['id'])));
-        else
-            $this->_apiHelper->sendResponse(200, array('results' => $model));
+        else {
+            $this->_apiHelper->sendResponse(200, array('results' => $restaurant->filterByRole($this->_user_role)));
+        }
     }
-    
- 
 
     protected function _isInvalidRequest() {
         if (!isset($this->_google_search_results['status']) || $this->_google_search_results['status'] === 'INVALID_REQUEST')

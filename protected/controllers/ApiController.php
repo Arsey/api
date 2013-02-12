@@ -24,7 +24,15 @@ class ApiController extends Controller {
     protected $_apiHelper;
     protected $_parsed_attributes = array();
 
+    /**
+     * User role
+     * @var string
+     */
+    protected $_user_role;
+
     public function beforeAction($action) {
+
+        $this->_user_role = Yii::app()->user->role;
         /*
          * set is mobile client device
          */
@@ -100,7 +108,7 @@ class ApiController extends Controller {
                 'actions' => array('logout'),
                 'users' => array('@'),
             ),
-            //array('deny')
+                //array('deny')
         );
     }
 
