@@ -58,7 +58,7 @@ $main = array(
             'class' => 'application.components.ApiHelper'
         ),
         'user' => array(
-            'class'=>'WebUser',
+            'class' => 'WebUser',
             'allowAutoLogin' => true,
             'loginUrl' => null,
         ),
@@ -109,18 +109,22 @@ $main = array(
                 array(
                     'restaurants/<searchtype>',
                     //pattern for search restaurants with Google Places API
-                    'pattern' => 'api/<format:json|xml>/<model:restaurants>/<searchtype:nearbysearch|textsearch>',
+                    'pattern' => 'api/<format:json|xml>/<model:restaurants>/<searchtype:(nearbysearch|textsearch)>',
                     'verb' => 'GET'
                 ),
                 //pattern to apply access filter for any model
-                array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<status:published|removed|pending|unpublished>', 'verb' => 'GET'),
-                array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'GET'),
+
+
+                array('meals/restaurantmeals', 'pattern' => 'api/<format:json|xml>/restaurant/<id:\d+>/meals(/<status:published|removed|pending|unpublished>)?', 'verb' => 'GET'),
+                array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>(/<status:published|removed|pending|unpublished>)?', 'verb' => 'GET'),
                 //PATTERNS TO GET INFO ABOUT SINGLE OBJECT
                 array('restaurants/viewrestaurant', 'pattern' => 'api/<format:json|xml>/<model:restaurant>/<id:\d+>', 'verb' => 'GET'),
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 ////
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),
                 array('api/delete', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
+                //CREATE
+                array('meals/addmealinrestaurant', 'pattern' => 'api/<format:json|xml>/restaurant/<id:\d+>/meal', 'verb' => 'POST'),
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
             ),
         ),

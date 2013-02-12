@@ -7,7 +7,6 @@ class PlantEatersARMain extends CActiveRecord {
      */
 
     public function delete() {
-
         if (!$this->getIsNewRecord()) {
             Yii::trace(get_class($this) . '.delete()', 'system.db.ar.CActiveRecord');
             if ($this->beforeDelete()) {
@@ -22,16 +21,32 @@ class PlantEatersARMain extends CActiveRecord {
             throw new CDbException(Yii::t('yii', 'The active record cannot be deleted because it is new.'));
     }
 
+    /**
+     * This function using in filterByRole method
+     * @param string $model_name
+     * @param string $role
+     * @return array
+     */
     private function _notPublicAttributes($model_name, $role) {
         $npa = array(
             'restaurants' => array(
                 'guest' => array('reference', 'external_id', 'access_status', 'phone', 'email'),
-                'normal' => array('reference', 'external_id', 'access_status')
-            )
+                'normal' => array('reference', 'external_id', 'access_status'),
+            ),
+            'meals' => array(
+                'guest' => array('access_status', 'user_id', 'restaurant_id'),
+                'normal' => array('access_status'),
+            ),
         );
         return $npa[$model_name][$role];
     }
 
+    /**
+     *
+     * @param model object $model
+     * @param string $user_role
+     * @return model attributes
+     */
     protected function filterByRole($model, $user_role) {
         if ($user_role !== Users::ROLE_SUPER) {
             $attributes = array();

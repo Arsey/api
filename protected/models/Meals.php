@@ -26,20 +26,18 @@
 class Meals extends CActiveRecord {
 
     const NON_VEG = 0;
+    /* vegan/vegetarian constants */
     const VEGAN = 1;
-    const VEGETARIAN = 2;
+    const VEGAN_ON_REQUEST = 2;
+    const VEGETARIAN = 3;
+    const VEGETARIAN_ON_REQUEST = 4;
+    /* gluten constants */
+    const NOT_GLUTEN_FREE = 0;
+    const IS_GLUTEN_FREE = 1;
 
-    public function behaviors() {
-        return array(
-            'timestamps' => array(
-                'class' => 'zii.behaviors.CTimestampBehavior',
-                'createAttribute' => 'createtime',
-                'updateAttribute' => 'modifiedtime',
-                'setUpdateOnCreate' => true,
-            ),
-        );
-    }
-
+    //////////////////////////////
+    //BASE METHODS CREATED BY GII
+    //////////////////////////////
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
@@ -67,6 +65,12 @@ class Meals extends CActiveRecord {
             array('vegan, gluten_free, createtime, modifiedtime, access_status', 'numerical', 'integerOnly' => true),
             array('restaurant_id, user_id', 'length', 'max' => 20),
             array('name', 'length', 'max' => 100),
+            array(
+                'name',
+                'match',
+                'pattern' => '/^[A-Za-z0-9_]+$/u',
+                'message' => 'Incorrect symbol\'s. (A-z0-9)'
+            ),
             array('rating', 'length', 'max' => 4),
             array('description', 'safe'),
             // The following rule is used by search().
@@ -134,6 +138,33 @@ class Meals extends CActiveRecord {
         return new CActiveDataProvider($this, array(
                     'criteria' => $criteria,
                 ));
+    }
+
+    ////////////////////////////////
+    //CUSTOM OVERLOAD METHODS OF RA
+    ////////////////////////////////
+
+    public function behaviors() {
+        return array(
+            'timestamps' => array(
+                'class' => 'zii.behaviors.CTimestampBehavior',
+                'createAttribute' => 'createtime',
+                'updateAttribute' => 'modifiedtime',
+                'setUpdateOnCreate' => true,
+            ),
+        );
+    }
+
+    //////////////////////////////
+    //CUSTOM NOT RA MODEL METHODS
+    //////////////////////////////
+    /**
+     * This method need for filtering data by user role
+     * @param string $user_role
+     * @return model attributes
+     */
+    public function filterByRole($user_role) {
+        return parent::filterByRole($this, $user_role);
     }
 
 }

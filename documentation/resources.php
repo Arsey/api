@@ -13,5 +13,9 @@ echo '{
      {
       "path": "/restaurants"
     }
+    ,
+     {
+      "path": "/meals"
+    }
   ]
 }';

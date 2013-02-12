@@ -1,0 +1,27 @@
+"path":"/restaurant/{id}/meal",
+"description":"This page allows the user create meal in choosen restaurant",
+"operations":[
+    {
+        "httpMethod":"POST",
+        "nickname":"addrestaurantmeal",
+        "parameters":[
+            {
+                "name":"id",
+                "required":"true",
+                "description":"Id of existing restaurant",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            },
+            {
+                "name":"name, rating,veg,comment, gluten_free",
+                "required":"true",
+                "allowMultiple":"false",
+                "dataType":"addrestaurantmeal_required",
+                "paramType":"body"
+            }
+        ],
+        "summary":"Add Restaurant Meal",
+        "notes": "This page allows the user create meal in choosen restaurant"
+    }
+]

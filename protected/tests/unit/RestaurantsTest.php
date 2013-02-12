@@ -6,7 +6,7 @@ class RestaurantsTest extends MainCTestCase {
      * Testing Google Places textsearch
      */
     function testTextsearch() {
-        $this->markTestSkipped();
+        //$this->markTestSkipped();
         $response = $this->_rest->get('api/json/restaurants/textsearch', array('query' => 'oil'));
         $response = helper::jsonDecode($response);
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
@@ -19,7 +19,7 @@ class RestaurantsTest extends MainCTestCase {
      * @return type
      */
     function testNearbysearch() {
-        $this->markTestSkipped();
+        //$this->markTestSkipped();
         $response = $this->_rest->get('api/json/restaurants/nearbysearch', array('location' => '-33.8670522,151.1957362'));
         $response = helper::jsonDecode($response);
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);

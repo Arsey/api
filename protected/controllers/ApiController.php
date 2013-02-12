@@ -80,6 +80,7 @@ class ApiController extends Controller {
 
     public function accessRules() {
         return array(
+
             array(
                 'allow',
                 'actions' => array(
@@ -91,7 +92,8 @@ class ApiController extends Controller {
                     'resetpassword',
                     'nearbysearch',
                     'textsearch',
-                    'viewrestaurant'
+                    'viewrestaurant',
+                    'restaurantmeals',
                 ),
                 'users' => array('?'),
             //'expression',
@@ -105,10 +107,9 @@ class ApiController extends Controller {
             ),
             array(
                 'allow',
-                'actions' => array('logout'),
+                'actions' => array('logout','addmeal'),
                 'users' => array('@'),
             ),
-                //array('deny')
         );
     }
 

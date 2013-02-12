@@ -171,7 +171,11 @@ class Restaurants extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
-
+    /**
+     * This method need for filtering data by user role
+     * @param string $user_role
+     * @return model attributes
+     */
     public function filterByRole($user_role) {
         return parent::filterByRole($this, $user_role);
     }

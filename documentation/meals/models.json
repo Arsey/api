@@ -1,0 +1,26 @@
+"models":{
+    "addrestaurantmeal_required":{
+        "properties":{
+            "name":{
+                "type":"string",
+                "description":"Any A-Za-z0-9_ characters please. Also name length needs to be between 3 and 100 characters"
+            },
+            "rating":{
+                "type":"string",
+                "description":"Numbers from 1 to 5"
+            },
+             "veg":{
+                "type":"integer",
+                "description":"Numbers from 1 to 4: 1 - VEGAN; 2 - VEGAN_ON_REQUEST; 3 - VEGETARIAN; 4 - VEGETARIAN_ON_REQUEST"
+            },
+            "comment":{
+                "type":"string",
+                "description":"Comment(optional) is text"
+            },
+            "gluten_free":{
+                "type":"string",
+                "description":"Numbers: 1 - IS_GLUTEN_FREE or 0 - NOT_GLUTEN_FREE. By default it's equals 0"
+            }
+        }
+    }
+}
