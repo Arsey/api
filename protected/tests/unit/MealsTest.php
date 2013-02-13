@@ -14,11 +14,14 @@ class MealsTest extends MainCTestCase {
         $this->assertEquals(sprintf(Constants::ZERO_RESULTS_BY_RESTAURANT_ID, $this->_restaurant_id), $response['errors']);
     }
 
-    function testAddMeal(){
-        $response = $this->_rest->post('api/json/restaurant/' . $this->_restaurant_id . '/meal');
+    function testAddMeal() {
+        $login_response = $this->login();
+        $this->_rest->option(CURLOPT_COOKIE, "auth_token=" . $login_response['results']['auth_token']);
+        $response = $this->_rest->post('api/json/restaurant/' . $this->_restaurant_id . '/meal', $this->_meal);
         $response = helper::jsonDecode($response);
-        helper::p($response);
-
+        $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
+        $this->assertTrue(is_numeric($response['results']['meal_id']));
     }
 
 }
+

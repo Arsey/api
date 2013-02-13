@@ -11,14 +11,16 @@
  * @property integer $createtime
  * @property integer $rating
  * @property string $comment
+ * @property integer $veg
+ * @property integer $gluten_free
  * @property integer $access_status
  *
  * The followings are the available model relations:
- * @property Photos $photo
  * @property Meals $meal
  * @property Users $user
+ * @property Photos $photo
  */
-class Ratings extends CActiveRecord {
+class Ratings extends PlantEatersARMain {
 
     const HATED_ID = '1';
     const DIDNT_LIKE_IT = '2';
@@ -49,13 +51,13 @@ class Ratings extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('meal_id, user_id, photo_id', 'required'),
-            array('createtime, rating, access_status', 'numerical', 'integerOnly' => true),
+            array('meal_id, user_id, veg, gluten_free', 'required'),
+            array('createtime, rating, veg, gluten_free, access_status', 'numerical', 'integerOnly' => true),
             array('meal_id, user_id, photo_id', 'length', 'max' => 20),
             array('comment', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, meal_id, user_id, photo_id, createtime, rating, comment, access_status', 'safe', 'on' => 'search'),
+            array('id, meal_id, user_id, photo_id, createtime, rating, comment, veg, gluten_free, access_status', 'safe', 'on' => 'search'),
         );
     }
 
@@ -66,7 +68,6 @@ class Ratings extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
-            'photo' => array(self::BELONGS_TO, 'Photos', 'photo_id'),
             'meal' => array(self::BELONGS_TO, 'Meals', 'meal_id'),
             'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
         );
@@ -84,6 +85,8 @@ class Ratings extends CActiveRecord {
             'createtime' => 'Createtime',
             'rating' => 'Rating',
             'comment' => 'Comment',
+            'veg' => 'Vegetarian/Vegan',
+            'gluten_free' => 'Gluten Free',
             'access_status' => 'Access Status',
         );
     }
@@ -105,6 +108,8 @@ class Ratings extends CActiveRecord {
         $criteria->compare('createtime', $this->createtime);
         $criteria->compare('rating', $this->rating);
         $criteria->compare('comment', $this->comment, true);
+        $criteria->compare('veg', $this->veg);
+        $criteria->compare('gluten_free', $this->gluten_free);
         $criteria->compare('access_status', $this->access_status);
 
         return new CActiveDataProvider($this, array(

@@ -82,9 +82,10 @@ class UsersController extends ApiController {
      */
     public function actionLogout() {
         // If the user is already logged out send them response with such message
-        if (Yii::app()->user->isGuest)
+        if (Yii::app()->user->isGuest){
         //send response to a client
             $this->_apiHelper->sendResponse(200, array('errors' => Constants::ALREADY_LOGGED_OUT));
+        }
 
         if ($user = Users::model()->findByPk(Yii::app()->user->id)) {
             $user->logout();

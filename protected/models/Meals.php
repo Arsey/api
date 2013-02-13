@@ -23,7 +23,7 @@
  * @property Ratings[] $ratings
  * @property Reports[] $reports
  */
-class Meals extends CActiveRecord {
+class Meals extends PlantEatersARMain {
 
     const NON_VEG = 0;
     /* vegan/vegetarian constants */
@@ -68,7 +68,7 @@ class Meals extends CActiveRecord {
             array(
                 'name',
                 'match',
-                'pattern' => '/^[A-Za-z0-9_]+$/u',
+                'pattern' => '/^[A-Za-z0-9_\s\']+$/u',
                 'message' => 'Incorrect symbol\'s. (A-z0-9)'
             ),
             array('rating', 'length', 'max' => 4),

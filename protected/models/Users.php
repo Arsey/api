@@ -29,9 +29,9 @@
  */
 class Users extends CActiveRecord {
 
-    const ROLE_NORMAL='normal';
-    const ROLE_SUPER='super';
-    const GUEST='guest';
+    const ROLE_NORMAL = 'normal';
+    const ROLE_SUPER = 'super';
+    const GUEST = 'guest';
 
     //user role
     protected $_role = 'normal';
@@ -91,8 +91,8 @@ class Users extends CActiveRecord {
             array(
                 'username',
                 'match',
-                'pattern'=>'/^[A-Za-z0-9_]+$/u',
-                'message'=>'Incorrect symbol\'s. (A-z0-9)'
+                'pattern' => '/^[A-Za-z0-9_]+$/u',
+                'message' => 'Incorrect symbol\'s. (A-z0-9)'
             ),
             array(
                 'email',
@@ -236,6 +236,16 @@ class Users extends CActiveRecord {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+    /**
+     * Static function that returns user by pk without AR model
+     * @param integer $pk
+     * @return object
+     */
+    public static function getUserFastByPk($pk) {
+        if (is_numeric($pk)) {
+            return Yii::app()->db->createCommand("SELECT * FROM `users` WHERE `id`=" . $pk)->queryRow();
+        }
+    }
 
     /**
      * Setter for _join_with_email_activation,

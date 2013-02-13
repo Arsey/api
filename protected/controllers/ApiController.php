@@ -29,10 +29,12 @@ class ApiController extends Controller {
      * @var string
      */
     protected $_user_role;
+    protected $_user_info;
 
     public function beforeAction($action) {
 
-        $this->_user_role = Yii::app()->user->role;
+
+        $this->_fillUserRequiredData();
         /*
          * set is mobile client device
          */
@@ -80,7 +82,6 @@ class ApiController extends Controller {
 
     public function accessRules() {
         return array(
-
             array(
                 'allow',
                 'actions' => array(
@@ -102,12 +103,12 @@ class ApiController extends Controller {
             ),
             array(
                 'deny',
-                'actions' => array('list', 'view', 'create', 'update', 'delete', 'logout'),
+                'actions' => array('addmealtorestaurant','list', 'view', 'create', 'update', 'delete', 'logout'),
                 'users' => array('?'),
             ),
             array(
                 'allow',
-                'actions' => array('logout','addmeal'),
+                'actions' => array('logout', 'addmealtorestaurant'),
                 'users' => array('@'),
             ),
         );
@@ -253,15 +254,23 @@ class ApiController extends Controller {
     protected function _assignModelAttributes(&$model) {
 
         $paramsList = $model->attributes;
-
         $attributes = array();
         foreach ($paramsList as $key => $value) {
             if (isset($this->_parsed_attributes[$key])) {
                 $attributes[$key] = $this->_parsed_attributes[$key];
             }
         }
-
         $model->attributes = $attributes;
+    }
+
+    /**
+     *
+     */
+    protected function _fillUserRequiredData() {
+        $this->_user_role = Yii::app()->user->role;
+        if ($this->_user_role !== Users::GUEST) {
+            $this->_user_info = Users::getUserFastByPk(Yii::app()->user->id);
+        }
     }
 
 }
