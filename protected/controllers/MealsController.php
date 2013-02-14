@@ -57,7 +57,7 @@ class MealsController extends ApiController {
         $meal->rating = 0;
         $meal->gluten_free = 0;
         $meal->rating = 0;
-        $meal->access_status=  Constants::ACCESS_STATUS_PENDING;
+        $meal->access_status = Constants::ACCESS_STATUS_PENDING;
         /**
          * Validate meal
          */
@@ -71,9 +71,7 @@ class MealsController extends ApiController {
         $rating->meal_id = 1;
         $rating->photo_id = 0;
         $rating->user_id = $this->_user_info['id'];
-        $rating->gluten_free != Meals::IS_GLUTEN_FREE ?
-                        $rating->gluten_free = Meals::NOT_GLUTEN_FREE :
-                        $rating->gluten_free == Meals::IS_GLUTEN_FREE;
+        ($rating->gluten_free === '' ) ? $rating->gluten_free = Meals::NOT_GLUTEN_FREE : '';
 
 
         /**

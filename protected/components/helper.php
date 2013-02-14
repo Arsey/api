@@ -122,4 +122,8 @@ class helper extends CApplicationComponent {
         return $list;
     }
 
+    public static function getMealsUploadDirectory() {
+        return realpath(Yii::app()->basePath.'/../uploads/'.Photos::MEALS_UPLOAD_DIRECTORY);
+    }
+
 }

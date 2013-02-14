@@ -52,9 +52,34 @@ class Ratings extends PlantEatersARMain {
         // will receive user inputs.
         return array(
             array('meal_id, user_id, veg, gluten_free', 'required'),
-            array('createtime, rating, veg, gluten_free, access_status', 'numerical', 'integerOnly' => true),
+            array('createtime, access_status, gluten_free', 'numerical', 'integerOnly' => true),
             array('meal_id, user_id, photo_id', 'length', 'max' => 20),
             array('comment', 'safe'),
+            array(
+                'rating',
+                'numerical',
+                'integerOnly' => true,
+                'min' => 1,
+                'max' => 5,
+                'tooSmall' => 'Rating must be not less than 1',
+                'tooBig' => 'Maximum value for rating is 5',
+            ),
+            array(
+                'veg',
+                'numerical',
+                'integerOnly' => true,
+                'min' => 1,
+                'max' => 4,
+                'tooSmall' => 'Rating must be not less than 1 and to bigger than 4 (1 - vegan, 2 - vegan on request, 3 - vegetarian, 4 - vegetarian on request)',
+                'tooBig' => 'Rating must be not less than 1 and to bigger than 4 (1 - vegan, 2 - vegan on request, 3 - vegetarian, 4 - vegetarian on request)',
+            ),
+            array(
+                'gluten_free',
+                'in',
+                'range'=>array(0,1),
+                'allowEmpty'=>false,
+                'message' => 'Gluten free can be 1(gluten free) or 0(not gluten free)'
+            ),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, meal_id, user_id, photo_id, createtime, rating, comment, veg, gluten_free, access_status', 'safe', 'on' => 'search'),

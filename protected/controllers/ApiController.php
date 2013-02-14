@@ -103,12 +103,12 @@ class ApiController extends Controller {
             ),
             array(
                 'deny',
-                'actions' => array('addmealtorestaurant','list', 'view', 'create', 'update', 'delete', 'logout'),
+                'actions' => array('addmealtorestaurant','addmealphoto','list', 'view', 'create', 'update', 'delete', 'logout'),
                 'users' => array('?'),
             ),
             array(
                 'allow',
-                'actions' => array('logout', 'addmealtorestaurant'),
+                'actions' => array('logout'),
                 'users' => array('@'),
             ),
         );

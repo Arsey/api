@@ -6,7 +6,7 @@
                 "description":"Any A-Za-z0-9_ characters please. Also name length needs to be between 3 and 100 characters"
             },
             "rating":{
-                "type":"string",
+                "type":"integer",
                 "description":"Numbers from 1 to 5"
             },
              "veg":{
@@ -18,7 +18,7 @@
                 "description":"Comment(optional) is text"
             },
             "gluten_free":{
-                "type":"string",
+                "type":"integer",
                 "description":"Numbers: 1 - IS_GLUTEN_FREE or 0 - NOT_GLUTEN_FREE. By default it's equals 0"
             }
         }

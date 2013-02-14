@@ -49,4 +49,9 @@ class MainCTestCase extends CTestCase {
         return $response;
     }
 
+    protected function setLoginCookie() {
+        $login_response = $this->login();
+        $this->_rest->option(CURLOPT_COOKIE, "auth_token=" . $login_response['results']['auth_token']);
+    }
+
 }

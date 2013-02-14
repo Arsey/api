@@ -125,6 +125,7 @@ $main = array(
                 array('api/delete', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
                 //CREATE
                 array('meals/addmealtorestaurant', 'pattern' => 'api/<format:json|xml>/restaurant/<id:\d+>/meal', 'verb' => 'POST'),
+                array('images/addmealphoto', 'pattern' => 'api/<format:json|xml>/meal/<id:\d+>/addphoto', 'verb' => 'POST'),
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
             ),
         ),
@@ -153,7 +154,9 @@ $main = array(
 // using Yii::app()->params['paramName']
     'params' => array(
         //using on restaurants search throught Google Places API
-        'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian'
+        'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian',
+        'upload_directory'
+
     ),
 );
 

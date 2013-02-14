@@ -40,4 +40,3 @@ class RestHttpRequest extends CHttpRequest {
     }
 
 }
-//curl https://api.planteaters.loc/api/json/feedbacks -d '{"user_id":"1","text":"text"}' --header "Content-type: application/json"
