@@ -10,100 +10,96 @@
  * @property integer $createtime
  * @property integer $report_code
  * @property string $text
- * @property integer $access_status
+ * @property string $access_status
  *
  * The followings are the available model relations:
  * @property Users $user
  * @property Meals $meal
  */
-class Reports extends CActiveRecord
-{
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @param string $className active record class name.
-	 * @return Reports the static model class
-	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
+class Reports extends CActiveRecord {
 
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName()
-	{
-		return 'reports';
-	}
+    /**
+     * Returns the static model of the specified AR class.
+     * @param string $className active record class name.
+     * @return Reports the static model class
+     */
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('meal_id, user_id, report_code', 'required'),
-			array('createtime, report_code, access_status', 'numerical', 'integerOnly'=>true),
-			array('meal_id, user_id', 'length', 'max'=>20),
-			array('text', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, meal_id, user_id, createtime, report_code, text, access_status', 'safe', 'on'=>'search'),
-		);
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName() {
+        return 'reports';
+    }
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array(
-			'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
-			'meal' => array(self::BELONGS_TO, 'Meals', 'meal_id'),
-		);
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules() {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('meal_id, user_id, report_code', 'required'),
+            array('createtime, report_code', 'numerical', 'integerOnly' => true),
+            array('meal_id, user_id', 'length', 'max' => 20),
+            $this->_access_status_rule,
+            array('text', 'safe'),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, meal_id, user_id, createtime, report_code, text, access_status', 'safe', 'on' => 'search'),
+        );
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels()
-	{
-		return array(
-			'id' => 'ID',
-			'meal_id' => 'Meal',
-			'user_id' => 'User',
-			'createtime' => 'Createtime',
-			'report_code' => 'Report Code',
-			'text' => 'Text',
-			'access_status' => 'Access Status',
-		);
-	}
+    /**
+     * @return array relational rules.
+     */
+    public function relations() {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array(
+            'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
+            'meal' => array(self::BELONGS_TO, 'Meals', 'meal_id'),
+        );
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels() {
+        return array(
+            'id' => 'ID',
+            'meal_id' => 'Meal',
+            'user_id' => 'User',
+            'createtime' => 'Createtime',
+            'report_code' => 'Report Code',
+            'text' => 'Text',
+            'access_status' => 'Access Status',
+        );
+    }
 
-		$criteria=new CDbCriteria;
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     */
+    public function search() {
+        // Warning: Please modify the following code to remove attributes that
+        // should not be searched.
 
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('meal_id',$this->meal_id,true);
-		$criteria->compare('user_id',$this->user_id,true);
-		$criteria->compare('createtime',$this->createtime);
-		$criteria->compare('report_code',$this->report_code);
-		$criteria->compare('text',$this->text,true);
-		$criteria->compare('access_status',$this->access_status);
+        $criteria = new CDbCriteria;
 
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
+        $criteria->compare('id', $this->id, true);
+        $criteria->compare('meal_id', $this->meal_id, true);
+        $criteria->compare('user_id', $this->user_id, true);
+        $criteria->compare('createtime', $this->createtime);
+        $criteria->compare('report_code', $this->report_code);
+        $criteria->compare('text', $this->text, true);
+        $criteria->compare('access_status', $this->access_status);
+
+        return new CActiveDataProvider($this, array(
+                    'criteria' => $criteria,
+                ));
+    }
+
 }

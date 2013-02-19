@@ -1,6 +1,19 @@
 <?php
 
 class PlantEatersARMain extends CActiveRecord {
+
+    protected $_access_status_rule = array(
+        'access_status',
+        'in',
+        'range' => array(
+            Constants::ACCESS_STATUS_PENDING,
+            Constants::ACCESS_STATUS_PUBLISHED,
+            Constants::ACCESS_STATUS_REMOVED,
+            Constants::ACCESS_STATUS_UNPUBLISHED,
+        ),
+        'allowEmpty' => true,
+    );
+
     /*
      * This is override CActiveRecord class method delete(),
      * to avoid real deleting data from database

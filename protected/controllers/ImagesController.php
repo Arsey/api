@@ -27,6 +27,10 @@ class ImagesController extends ApiController {
                 $photo->name.='.' . $photo->image->extensionName;
 
                 if ($photo->image->saveAs($meal_dir . '/' . $photo->name)) {
+                    if ($meal->access_status === Constants::ACCESS_STATUS_NEEDS_FOR_ACTION) {
+                        $meal->access_status=Constants::ACCESS_STATUS_PUBLISHED;
+                        $meal->update();
+                    }
                     $this->_apiHelper->sendResponse(200, array('message' => 'Image uploaded successfully'));
                 } else {
                     $photo->accessStatus(Constants::ACCESS_STATUS_REMOVED);

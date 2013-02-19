@@ -6,9 +6,8 @@
  * The followings are the available columns in table 'restaurants':
  * @property string $id
  * @property string $external_id
- * @property string $latitude
  * @property string $reference
- * @property string $longitude
+ * @property string $location
  * @property string $name
  * @property string $street_address
  * @property string $street_address_2
@@ -18,21 +17,17 @@
  * @property string $phone
  * @property string $email
  * @property string $website
- * @property integer $vegan
+ * @property string $vegan
  * @property string $rating
  * @property integer $createtime
  * @property integer $modifiedtime
- * @property integer $access_status
+ * @property string $access_status
  *
  * The followings are the available model relations:
  * @property Meals[] $meals
  * @property Users $user
  */
 class Restaurants extends PlantEatersARMain {
-
-    const NON_VEG = 0;
-    const VEGAN = 1;
-    const VEGETARIAN = 2;
 
     protected $_search_results = null;
     private $_current_lat = null;
@@ -68,17 +63,27 @@ class Restaurants extends PlantEatersARMain {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array(' latitude, longitude, name', 'required'),
-            array('vegan, createtime, modifiedtime, access_status', 'numerical', 'integerOnly' => true),
+            array('name, location', 'required'),
+            array('createtime, modifiedtime', 'numerical', 'integerOnly' => true),
             array('external_id, name, street_address, street_address_2, email, website', 'length', 'max' => 255),
             array('state', 'length', 'max' => 20),
-            array('latitude, longitude', 'length', 'max' => 18),
             array('city, country', 'length', 'max' => 100),
             array('phone', 'length', 'max' => 30),
             array('rating', 'length', 'max' => 4),
+            $this->_access_status_rule,
+            array(
+                'vegan',
+                'in',
+                'range' => array(
+                    Constants::VEGAN,
+                    Constants::VEGETARIAN,
+                ),
+                'allowEmpty' => true,
+            ),
+            array('access_status', 'length', 'max' => 11),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, external_id, latitude, longitude, name, street_address, street_address_2, city, state, country, phone, email, website, vegan, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
+            array('id, external_id, name, street_address, point, street_address_2, city, state, country, phone, email, website, vegan, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
         );
     }
 
@@ -100,8 +105,7 @@ class Restaurants extends PlantEatersARMain {
         return array(
             'id' => 'ID',
             'external_id' => 'External',
-            'latitude' => 'Latitude',
-            'longitude' => 'Longitude',
+            'point' => 'Point',
             'name' => 'Name',
             'street_address' => 'Street Address',
             'street_address_2' => 'Street Address 2',
@@ -131,8 +135,7 @@ class Restaurants extends PlantEatersARMain {
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('external_id', $this->external_id, true);
-        $criteria->compare('latitude', $this->latitude, true);
-        $criteria->compare('longitude', $this->longitude, true);
+        $criteria->compare('point', $this->point, true);
         $criteria->compare('name', $this->name, true);
         $criteria->compare('street_address', $this->street_address, true);
         $criteria->compare('street_address_2', $this->street_address_2, true);
@@ -186,7 +189,7 @@ class Restaurants extends PlantEatersARMain {
      * @return results from Google Places API textsearch request
      */
     public function searchByText($params) {
-
+        $this->setLatLngFromQuery($params);
         if (isset($params['nextpagetoken'])) {
             $this->_search_results = Yii::app()->gp->textsearchNextpage($params['nextpagetoken']);
         } elseif (isset($params['query'])) {
@@ -204,6 +207,7 @@ class Restaurants extends PlantEatersARMain {
      * @return results from Google Places API textsearch request
      */
     public function searchByNearby($params) {
+        $this->setLatLngFromQuery($params);
         if (isset($params['nextpagetoken'])) {
             $this->_search_results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
         } elseif (isset($params['location'])) {
@@ -215,17 +219,19 @@ class Restaurants extends PlantEatersARMain {
         return $this->decide($params);
     }
 
-    /**
-     * This method decides what to do with results form Google Places API response
-     * @return type
-     */
-    protected function decide($params) {
+    protected function setLatLngFromQuery($params) {
         if (isset($params['location'])) {
             $location = explode(',', $params['location']);
             $this->_current_lat = $location[0];
             $this->_current_long = $location[1];
         }
+    }
 
+    /**
+     * This method decides what to do with results form Google Places API response
+     * @return type
+     */
+    protected function decide($params) {
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OK')
             $this->_filterRequiredData();
 
@@ -234,6 +240,8 @@ class Restaurants extends PlantEatersARMain {
 
         if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'ZERO_RESULTS')
             $this->_search_results = array('message' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
+
+        SearchManager::rotateIndexes();
 
         return $this->_search_results;
     }
@@ -274,26 +282,22 @@ class Restaurants extends PlantEatersARMain {
     }
 
     public function getBaseRestaurantsByExternalIds() {
+        $select = array(
+            'id',
+            'name',
+            'X(location) as latitude',
+            'Y(location) as longitude',);
+
+        if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
+            $select[] = "(SELECT ( GLength( LineString(( PointFromWKB( POINT({$this->_current_lat}, {$this->_current_long} ))), ( PointFromWKB( POINT( X(location), Y(location) ) )))))) as meters";
+        }
         if (!is_null($this->_external_ids)) {
             $restaurants = Yii::app()->db->createCommand()
-                    ->select(array('id', 'latitude', 'longitude', 'name'))
+                    ->select($select)
                     ->from(self::$_table_name)
                     ->where(array('in', 'external_id', $this->_external_ids))
                     ->queryAll();
-
-            $this->addDistance($restaurants);
             return $restaurants;
-        }
-    }
-
-    protected function addDistance(&$restaurants) {
-        if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
-            $restaurants_with_distance = array();
-            foreach ($restaurants as $restaurant) {
-                $restaurant['meters'] = $this->distance($this->_current_lat, $this->_current_long, $restaurant['latitude'], $restaurant['longitude'], "M");
-                $restaurants_with_distance[] = $restaurant;
-            }
-            $restaurants = $restaurants_with_distance;
         }
     }
 
@@ -318,8 +322,7 @@ class Restaurants extends PlantEatersARMain {
             $model = new Restaurants;
             $model->external_id = $restaurant['id'];
             $model->reference = $restaurant['reference'];
-            $model->latitude = $restaurant['geometry']['location']['lat'];
-            $model->longitude = $restaurant['geometry']['location']['lng'];
+            $model->location = new CDbExpression("GeomFromText('POINT({$restaurant['geometry']['location']['lat']} {$restaurant['geometry']['location']['lng']})')");
             $model->name = $restaurant['name'];
             $model->rating = 0;
             if (
@@ -331,6 +334,8 @@ class Restaurants extends PlantEatersARMain {
                 $model->state = GoogleGeocode::getState($parsed_address);
                 $model->country = GoogleGeocode::getCountry($parsed_address);
             }
+
+            $model->access_status = Constants::ACCESS_STATUS_PUBLISHED;
 
             if ($model->validate()) {
                 $model->save();
@@ -367,34 +372,6 @@ class Restaurants extends PlantEatersARMain {
         }
 
         return $not_in;
-    }
-
-    /**
-     *
-     * @param type $lat1
-     * @param type $lon1
-     * @param type $lat2
-     * @param type $lon2
-     * @param type $unit
-     * @return type
-     */
-    private function distance($lat1, $lon1, $lat2, $lon2, $unit) {
-        $theta = $lon1 - $lon2;
-        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
-        $dist = acos($dist);
-        $dist = rad2deg($dist);
-        $miles = $dist * 60 * 1.1515;
-        $unit = strtoupper($unit);
-
-        if ($unit == "K") {
-            return ($miles * 1.609344);
-        } else if ($unit == "N") {
-            return ($miles * 0.8684);
-        } else if ($unit == "M") {
-            return round(($miles * 1.609344 * 1000), 2);
-        } else {
-            return $miles;
-        }
     }
 
 }

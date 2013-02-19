@@ -7,12 +7,12 @@ class MealsController extends ApiController {
      * @param integer $id
      * @param string $status
      */
-    public function actionRestaurantMeals($id, $status = 'published') {
+    public function actionRestaurantMeals($id, $status = Constants::ACCESS_STATUS_PUBLISHED) {
         /**
          * If user not administrator, than show meals only with published status
          */
         if ($this->_user_role !== Users::ROLE_SUPER)
-            $status = helper::translateAccessStatus('published');
+            $status = Constants::ACCESS_STATUS_PUBLISHED;
 
         /**
          * If restaurant with given id not found, raise not found error
@@ -57,7 +57,7 @@ class MealsController extends ApiController {
         $meal->rating = 0;
         $meal->gluten_free = 0;
         $meal->rating = 0;
-        $meal->access_status = Constants::ACCESS_STATUS_PENDING;
+        $meal->access_status = Constants::ACCESS_STATUS_NEEDS_FOR_ACTION;
         /**
          * Validate meal
          */

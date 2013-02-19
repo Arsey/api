@@ -1,0 +1,20 @@
+"path":"/meal/{id}/addphoto",
+"description":"This page allows the user upload photo to meal. Photo must be sended with header Content-Type: multipart/form-data; and has a name image",
+"operations":[
+    {
+        "httpMethod":"POST",
+        "nickname":"addmealphoto",
+        "parameters":[
+            {
+                "name":"id",
+                "required":"true",
+                "description":"Id of existing meal",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            }
+        ],
+        "summary":"Upload Meal Photo",
+        "notes": "This page allows the user upload photo to meal. Photo must be sended with header Content-Type: multipart/form-data; and has a name image"
+    }
+]

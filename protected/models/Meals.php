@@ -14,7 +14,7 @@
  * @property string $rating
  * @property integer $createtime
  * @property integer $modifiedtime
- * @property integer $access_status
+ * @property string $access_status
  *
  * The followings are the available model relations:
  * @property Users $user
@@ -24,16 +24,6 @@
  * @property Reports[] $reports
  */
 class Meals extends PlantEatersARMain {
-
-    const NON_VEG = 0;
-    /* vegan/vegetarian constants */
-    const VEGAN = 1;
-    const VEGAN_ON_REQUEST = 2;
-    const VEGETARIAN = 3;
-    const VEGETARIAN_ON_REQUEST = 4;
-    /* gluten constants */
-    const NOT_GLUTEN_FREE = 0;
-    const IS_GLUTEN_FREE = 1;
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -62,7 +52,7 @@ class Meals extends PlantEatersARMain {
         // will receive user inputs.
         return array(
             array('restaurant_id, user_id, name', 'required'),
-            array('vegan, gluten_free, createtime, modifiedtime, access_status', 'numerical', 'integerOnly' => true),
+            array('vegan, gluten_free, createtime, modifiedtime', 'numerical', 'integerOnly' => true),
             array('restaurant_id, user_id', 'length', 'max' => 20),
             array('name', 'length', 'max' => 100),
             array(
@@ -71,6 +61,7 @@ class Meals extends PlantEatersARMain {
                 'pattern' => '/^[A-Za-z0-9_\s\']+$/u',
                 'message' => 'Incorrect symbol\'s. (A-z0-9)'
             ),
+            $this->_access_status_rule,
             array('rating', 'length', 'max' => 4),
             array('description', 'safe'),
             // The following rule is used by search().

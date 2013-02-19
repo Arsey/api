@@ -13,7 +13,7 @@
  * @property string $comment
  * @property integer $veg
  * @property integer $gluten_free
- * @property integer $access_status
+ * @property string $access_status
  *
  * The followings are the available model relations:
  * @property Meals $meal
@@ -22,11 +22,11 @@
  */
 class Ratings extends PlantEatersARMain {
 
-    const HATED_ID = '1';
-    const DIDNT_LIKE_IT = '2';
-    const IT_WAS_OK = '3';
-    const LIKED_IT = '4';
-    const LOVED_IT = '5';
+    const HATED_ID = 1;
+    const DIDNT_LIKE_IT = 2;
+    const IT_WAS_OK = 3;
+    const LIKED_IT = 4;
+    const LOVED_IT = 5;
 
     /**
      * Returns the static model of the specified AR class.
@@ -52,7 +52,7 @@ class Ratings extends PlantEatersARMain {
         // will receive user inputs.
         return array(
             array('meal_id, user_id, veg, gluten_free', 'required'),
-            array('createtime, access_status, gluten_free', 'numerical', 'integerOnly' => true),
+            array('createtime,  gluten_free', 'numerical', 'integerOnly' => true),
             array('meal_id, user_id, photo_id', 'length', 'max' => 20),
             array('comment', 'safe'),
             array(
@@ -76,10 +76,11 @@ class Ratings extends PlantEatersARMain {
             array(
                 'gluten_free',
                 'in',
-                'range'=>array(0,1),
-                'allowEmpty'=>false,
+                'range' => array(0, 1),
+                'allowEmpty' => false,
                 'message' => 'Gluten free can be 1(gluten free) or 0(not gluten free)'
             ),
+            $this->_access_status_rule,
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, meal_id, user_id, photo_id, createtime, rating, comment, veg, gluten_free, access_status', 'safe', 'on' => 'search'),

@@ -17,7 +17,7 @@
  * @property integer $lastvisit
  * @property integer $lastaction
  * @property integer $lastpasswordchange
- * @property integer $status
+ * @property string $status
  * @property string $role
  *
  * The followings are the available model relations:
@@ -39,10 +39,10 @@ class Users extends CActiveRecord {
 
     //User statuses
 
-    const STATUS_INACTIVE = 0;
-    const STATUS_ACTIVE = 1;
-    const STATUS_BANNED = -1;
-    const STATUS_REMOVED = -2;
+    const STATUS_INACTIVE = 'inactive';
+    const STATUS_ACTIVE = 'acitve';
+    const STATUS_BANNED = 'banned';
+    const STATUS_REMOVED = 'removed';
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -71,7 +71,7 @@ class Users extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('password, salt, email, username', 'required'),
-            array('createtime, lastvisit, lastaction, lastpasswordchange, status', 'numerical', 'integerOnly' => true),
+            array('createtime, lastvisit, lastaction, lastpasswordchange', 'numerical', 'integerOnly' => true),
             array('password, salt, activation_key', 'length', 'max' => 128),
             array('email, city, country, avatar', 'length', 'max' => 255),
             array('password', 'length', 'min' => 6),
@@ -98,6 +98,17 @@ class Users extends CActiveRecord {
                 'email',
                 'unique',
                 'message' => 'This email already exists.'
+            ),
+            array(
+                'status',
+                'in',
+                'range' => array(
+                    self::STATUS_ACTIVE,
+                    self::STATUS_BANNED,
+                    self::STATUS_INACTIVE,
+                    self::STATUS_REMOVED,
+                ),
+                'allowEmpty'=>false,
             ),
             array('role', 'length', 'max' => 45),
             // The following rule is used by search().

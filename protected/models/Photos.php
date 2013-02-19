@@ -12,7 +12,7 @@
  * @property string $name
  * @property integer $createtime
  * @property integer $default
- * @property integer $access_status
+ * @property string $access_status
  *
  * The followings are the available model relations:
  * @property Users $user
@@ -51,10 +51,11 @@ class Photos extends PlantEatersARMain {
         // will receive user inputs.
         return array(
             array('user_id, meal_id, mime, size, name', 'required'),
-            array('size, createtime, default, access_status', 'numerical', 'integerOnly' => true),
+            array('size, createtime, default', 'numerical', 'integerOnly' => true),
             array('user_id, meal_id, mime', 'length', 'max' => 20),
             array('name', 'length', 'max' => 255),
             array('image', 'file', 'types' => 'jpg, gif, png, jpeg'),
+            $this->_access_status_rule,
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, user_id, meal_id, mime, size, name, createtime, default, access_status', 'safe', 'on' => 'search'),

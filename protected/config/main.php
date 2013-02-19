@@ -11,8 +11,7 @@ $main = array(
     // preloading 'log' component
     'preload' => array('log'),
     //Additional aliases
-    'aliases' => array(
-    ),
+    'aliases' => array(),
 // autoloading model and component classes
     'import' => array(
         'application.models.*',
@@ -24,10 +23,23 @@ $main = array(
         'application.extensions.components.*',
         //mail extension
         'application.extensions.yii-mail.*',
+        'ext.DGSphinxSearch.*',
     ),
     'modules' => array(),
     // application components
     'components' => array(
+        'sphinxsearch' => array(
+            'class' => 'ext.DGSphinxSearch.DGSphinxSearch',
+            'server' => '50.17.39.80',
+            'port' => 9306,
+            'maxQueryTime' => 3000,
+            'enableProfiling' => 0,
+            'enableResultTrace' => 0,
+            'fieldWeights' => array(
+                'name' => 10000,
+                'keywords' => 100,
+            ),
+        ),
         'device' => array(
             'class' => 'Device',
         ),
@@ -83,7 +95,7 @@ $main = array(
             'urlFormat' => 'path',
             'showScriptName' => false,
             'rules' => array(
-                //REST patterns for USERS
+//REST patterns for USERS
                 /*
                  * Join
                  */
@@ -153,10 +165,14 @@ $main = array(
     // application-level parameters that can be accessed
 // using Yii::app()->params['paramName']
     'params' => array(
-        //using on restaurants search throught Google Places API
+//using on restaurants search throught Google Places API
         'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian',
-        'upload_directory'
-
+        'image_sizes' => array(
+            'meal_gallery_small' => array('320', '240'),
+            'meal_gallery_big' => array('640', '480'),
+            'meal_table_small' => array('70', '70'),
+            'meal_table_big' => array('140', '140'),
+        )
     ),
 );
 

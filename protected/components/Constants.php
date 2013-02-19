@@ -1,20 +1,37 @@
 <?php
 
 class Constants {
-    //this prefix for query variables in headers sent from client
+    /*
+     * vegan/vegetarian constants
+     */
 
+    const VEGAN = 'vegan';
+    const VEGAN_ON_REQUEST = 'vegan_on_request';
+    const VEGETARIAN = 'vegetarian';
+    const VEGETARIAN_ON_REQUEST = 'vegetarian_on_request';
+    //this prefix for query variables in headers sent from client
     const SERVER_VARIABLE_PREFIX = 'HTTP_X_';
+
+    /*
+     * gluten free constants
+     */
+    const NOT_GLUTEN_FREE = 0;
+    const IS_GLUTEN_FREE = 1;
     /*
      * access statuses for models records
      */
     //record was removed
-    const ACCESS_STATUS_REMOVED = '0';
+    const ACCESS_STATUS_REMOVED = 'removed';
     //record published
-    const ACCESS_STATUS_PUBLISHED = '1';
+    const ACCESS_STATUS_PUBLISHED = 'published';
     //record waiting to check from admin(super user)
-    const ACCESS_STATUS_PENDING = '2';
+    const ACCESS_STATUS_PENDING = 'pending';
     //record was not removed, but not published too
-    const ACCESS_STATUS_UNPUBLISHED = '3';
+    const ACCESS_STATUS_UNPUBLISHED = 'unpublished';
+    /*
+     * record was added to DB, but need for additional action to be published
+     */
+    const ACCESS_STATUS_NEEDS_FOR_ACTION = 'needs_for_action';
     //google places api search types
     const SEARCHTYPE_NEARBY = 'nearbysearch';
     const SEARCHTYPE_TEXT = 'textsearch';
