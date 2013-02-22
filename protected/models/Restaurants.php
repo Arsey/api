@@ -289,7 +289,7 @@ class Restaurants extends PlantEatersARMain {
             'Y(location) as longitude',);
 
         if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
-            $select[] = "(SELECT ( GLength( LineString(( PointFromWKB( POINT({$this->_current_lat}, {$this->_current_long} ))), ( PointFromWKB( POINT( X(location), Y(location) ) )))))) as meters";
+            $select[] = "(SELECT ( GLength( LineString(( PointFromWKB( POINT({$this->_current_lat}, {$this->_current_long} ))), ( PointFromWKB( POINT( X(location), Y(location) ) ))))*100*1000)) as meters";
         }
         if (!is_null($this->_external_ids)) {
             $restaurants = Yii::app()->db->createCommand()

@@ -1,0 +1,10 @@
+"models":{
+    "add_feedback":{
+        "properties":{
+            "text":{
+                "type":"string",
+                "description":"Text without html(safe)"
+            }
+        }
+    }
+}

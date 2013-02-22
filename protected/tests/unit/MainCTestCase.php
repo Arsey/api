@@ -28,6 +28,9 @@ class MainCTestCase extends CTestCase {
         'comment' => 'test meal comment',
         'gluten_free' => '1',
     );
+    protected $_feedback = array(
+        'text' => 'Test feedback text',
+    );
     protected $_server;
     protected $_wrong_model_name = 'abracadabra_model_name';
     protected $_rest;
@@ -51,7 +54,11 @@ class MainCTestCase extends CTestCase {
 
     protected function setLoginCookie() {
         $login_response = $this->login();
-        $this->_rest->option(CURLOPT_COOKIE, "auth_token=" . $login_response['results']['auth_token']);
+        if (isset($login_response['results'])) {
+            $this->_rest->option(CURLOPT_COOKIE, "auth_token=" . $login_response['results']['auth_token']);
+        } else {
+            helper::p($login_response);
+        }
     }
 
 }

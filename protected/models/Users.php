@@ -342,7 +342,7 @@ class Users extends CActiveRecord {
      */
     public function getActivationUrl() {
 
-        $format = isset($_GET['format']) ? $_GET['format'] . '/' : '';
+        $format = isset($_GET['format']) ? $_GET['format'] . '/' : 'json/';
         isset($_SERVER['SERVER_NAME']) ? false : $_SERVER['SERVER_NAME'] = helper::yiiparam('server_name');
 
         return "https://" . $_SERVER['SERVER_NAME'] . "/api/{$format}user/activation/key/" . $this->activation_key . "/email/" . $this->email;

@@ -138,6 +138,7 @@ $main = array(
                 //CREATE
                 array('meals/addmealtorestaurant', 'pattern' => 'api/<format:json|xml>/restaurant/<id:\d+>/meal', 'verb' => 'POST'),
                 array('images/addmealphoto', 'pattern' => 'api/<format:json|xml>/meal/<id:\d+>/addphoto', 'verb' => 'POST'),
+                array('feedbacks/addfeedback','pattern'=>'api/<format:json|xml>/feedback','verb'=>'POST'),
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
             ),
         ),

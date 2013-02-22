@@ -1,0 +1,21 @@
+"path":"/feedback",
+"description":"This page allows the user to send feedback",
+"operations":[
+    {
+        "httpMethod":"POST",
+        "nickname":"AddFeedback",
+        "parameters":[
+            {
+                "name":"text",
+                "required":"true",
+                "description":"feedback text",
+                "allowMultiple":"false",
+                "dataType":"add_feedback",
+                "paramType":"body"
+            }
+        ],
+        "summary":"Send Feedback",
+        "notes": "This page allows the user to send feedback"
+
+    }
+]

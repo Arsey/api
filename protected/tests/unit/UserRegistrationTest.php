@@ -3,12 +3,9 @@
 class UserRegistrationTest extends MainCTestCase {
 
     function testRegistration() {
-
         /* trancate tables with users */
-
-
         if ($model = Users::model()->findByAttributes(array('email' => $this->_users['demo']['email']))) {
-            $model->delete();
+            Users::model()->deleteByPk($model->id);
         }
 
         /* send request with all needed POST fields for user registration */
@@ -24,19 +21,32 @@ class UserRegistrationTest extends MainCTestCase {
         $this->assertNotContains(ApiHelper::CUSTOM_MESSAGE_404, $response);
         $this->assertNotContains(Constants::BAD_USER_CREDNTIALS, $response);
 
-
-
         if ($response['status'] !== ApiHelper::MESSAGE_200) {
             helper::p($response);
         }
 
-        /* find registered user */
-        $model = new Users;
-        $criteria = new CDbCriteria;
-        $criteria->select = 'max(id),status,activation_key,email';
-        $model = Users::model()->find($criteria);
-        $this->assertTrue(!is_null($model));
-        $model->delete();
+        return $this->_users['demo']['email'];
+    }
+
+    /**
+     * @depends testRegistration
+     */
+    function testUserActivation($user_email) {
+        $find = Users::model()->findByAttributes(array('email' => $user_email));
+        $this->assertTrue(!is_null($find));
+
+        $user = Users::model()->findByPk($find->id);
+
+
+        $activation_url = $user->getActivationUrl();
+        $this->assertRegExp('/https.*key.*/', $activation_url);
+
+        $activation_url = explode('https://' . helper::yiiparam('server_name') . '/', $activation_url);
+
+        $response = $this->_rest->get($activation_url[1]);
+        $user = Users::model()->findByPk($find->id);
+        $this->assertTrue($user->status == Users::STATUS_ACTIVE);
     }
 
 }
+

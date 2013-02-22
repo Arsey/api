@@ -30,7 +30,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     public static function rotateIndexes() {
-        shell_exec('indexer --config /etc/sphinxsearch/sphinx.conf --rotate');
+        shell_exec('indexer --rotate --all');
     }
 
 }

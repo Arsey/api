@@ -13,7 +13,7 @@
  * The followings are the available model relations:
  * @property Users $user
  */
-class Feedbacks extends CActiveRecord {
+class Feedbacks extends PlantEatersARMain {
 
     /**
      * Returns the static model of the specified AR class.
@@ -91,6 +91,15 @@ class Feedbacks extends CActiveRecord {
         return new CActiveDataProvider($this, array(
                     'criteria' => $criteria,
                 ));
+    }
+
+    public function behaviors() {
+        return array(
+            'timestamps' => array(
+                'class' => 'zii.behaviors.CTimestampBehavior',
+                'createAttribute' => 'createtime',
+            ),
+        );
     }
 
 }
