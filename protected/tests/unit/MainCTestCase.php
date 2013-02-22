@@ -17,7 +17,7 @@ class MainCTestCase extends CTestCase {
         ),
         'demo' => array(
             'username' => 'demoUser',
-            'password' => 'password',
+            'password' => 'passwordRE@#',
             'email' => 'arseysensector@gmail.com',
         )
     );

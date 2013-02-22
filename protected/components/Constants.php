@@ -104,6 +104,13 @@ class Constants {
     const PASSWORD_INVALID_FOR_USER = 'Password invalid for user {username} (Ip-Address: {ip})';
     const INVALID_TOKEN = 'Invalid Token';
 
+    /*
+     * Action ChangeProfile
+     */
+    const PROFILE_UPDATED='Profile was successfully updated';
+    const MISSING_ANY_REQUIRED_FIELDS='One of required (username, email, password) fields must be filled';
+
+
     ///////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////MEALS CONTROLLER////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////

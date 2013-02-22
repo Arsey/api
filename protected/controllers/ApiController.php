@@ -96,17 +96,20 @@ class ApiController extends Controller {
                     'viewrestaurant',
                     'restaurantmeals',
                 ),
-                'users' => array('?'),
+                'users' => array('*'),
             //'expression',
             //'message',
             //'ips',
             ),
             array(
-                'deny',
+                'allow',
                 'actions' => array(
+                    'profile',
                     'addmealtorestaurant',
                     'addmealphoto',
                     'addfeedback',
+                    'profile',
+                    'changeprofile',
                     'list',
                     'view',
                     'create',
@@ -114,13 +117,9 @@ class ApiController extends Controller {
                     'delete',
                     'logout',
                 ),
-                'users' => array('?'),
-            ),
-            array(
-                'allow',
-                'actions' => array('logout'),
                 'users' => array('@'),
             ),
+            array('deny')
         );
     }
 

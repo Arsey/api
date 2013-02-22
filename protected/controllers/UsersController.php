@@ -82,8 +82,8 @@ class UsersController extends ApiController {
      */
     public function actionLogout() {
         // If the user is already logged out send them response with such message
-        if (Yii::app()->user->isGuest){
-        //send response to a client
+        if (Yii::app()->user->isGuest) {
+            //send response to a client
             $this->_apiHelper->sendResponse(200, array('errors' => Constants::ALREADY_LOGGED_OUT));
         }
 
@@ -150,6 +150,48 @@ class UsersController extends ApiController {
             }
         }
         $this->_apiHelper->sendResponse(400, array('message' => 'User not found'));
+    }
+
+    /**
+     * Returns response with user profile data for logged in users
+     */
+    public function actionProfile() {
+        $this->_apiHelper->sendResponse(200, array(
+            'results' => array(
+                'username' => $this->_user_info['username'],
+                'email' => $this->_user_info['email'],
+                'avatar' => $this->_user_info['avatar']
+                ))
+        );
+    }
+
+    /**
+     * Action to change profile info. Only for logged in users
+     */
+    public function actionChangeProfile() {
+        /* check if there is data to change */
+        if (isset($this->_parsed_attributes['username']) || isset($this->_parsed_attributes['email']) || isset($this->_parsed_attributes['password'])) {
+            $user = Users::model()->findByPk($this->_user_info['id']);
+            /* if user send some username, we must assign this value to username field of Users model */
+            isset($this->_parsed_attributes['username']) ? $user->username = $this->_parsed_attributes['username'] : false;
+            /* if user send some email, we must assign this value to email field of Users model */
+            isset($this->_parsed_attributes['email']) ? $user->email = $this->_parsed_attributes['email'] : false;
+            /* if user send some password, we must assign this value to password field of Users model */
+            isset($this->_parsed_attributes['password']) ? $user->password = $this->_parsed_attributes['password'] : false;
+
+            /* trying to save with validation */
+            if ($user->save()) {
+                if (isset($this->_parsed_attributes['password'])) {
+                    $user->changeUserPassword($user->password);
+                }
+                $this->_apiHelper->sendResponse(200, array('message' => Constants::PROFILE_UPDATED));
+            } else {
+                $this->_apiHelper->sendResponse(400, array('errors' => $user->errors));
+            }
+        } else {
+            /* send error about missed required fields */
+            $this->_apiHelper->sendResponse(400, array('errors' => Constants::MISSING_ANY_REQUIRED_FIELDS));
+        }
     }
 
     /**

@@ -2,6 +2,8 @@
 
 class ImagesController extends ApiController {
 
+    
+
     public function actionAddMealPhoto($id) {
 
         if (!$meal = Meals::model()->findByPk($id))

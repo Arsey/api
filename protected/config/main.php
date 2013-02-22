@@ -96,27 +96,23 @@ $main = array(
             'showScriptName' => false,
             'rules' => array(
 //REST patterns for USERS
-                /*
-                 * Join
-                 */
+                /* Join */
                 array('users/join', 'pattern' => 'api/<format:json|xml>/user/join', 'verb' => 'POST'),
-                /*
-                 * Account Activation
-                 */
+                /* Account Activation */
                 array('users/activation', 'pattern' => 'api/<format:json|xml>/user/activation/key/<key:\S+>/email/<email:\S+>', 'verb' => 'GET'),
-                /*
-                 * Login
-                 */
+                /* Login */
                 array('users/login', 'pattern' => 'api/<format:json|xml>/user/login/', 'verb' => 'POST'),
-                /*
-                 * Logout
-                 */
+                /* Logout */
                 array('users/logout', 'pattern' => 'api/<format:json|xml>/user/logout/'),
-                /*
-                 * RESET PASSWORD PATTERNS
-                 */
+                /* RESET PASSWORD PATTERNS */
                 array('/users/tryresetpassword', 'pattern' => 'api/<format:json|xml>/user/tryresetpassword', 'verb' => 'POST'),
                 array('/users/resetpassword', 'pattern' => 'api/<format:json|xml>/user/resetpassword/<token:\S+>'),
+                /* Get User Profile Info */
+                array('/users/profile', 'pattern' => 'api/<format:json|xml>/user/profile', 'verb' => 'GET'),
+                /* Change Profile Info */
+                array('/users/changeprofile', 'pattern' => 'api/<format:json|xml>/user/profile', 'verb' => 'PUT'),
+                /* Change user avatar */
+                array('/users/changeavatar', 'pattern' => 'api/<format:json|xml>/user/changeavatar', 'verb' => 'POST'),
                 //REST patterns for RESTAURANTS SEARCHING
                 array(
                     'restaurants/<searchtype>',
@@ -138,7 +134,7 @@ $main = array(
                 //CREATE
                 array('meals/addmealtorestaurant', 'pattern' => 'api/<format:json|xml>/restaurant/<id:\d+>/meal', 'verb' => 'POST'),
                 array('images/addmealphoto', 'pattern' => 'api/<format:json|xml>/meal/<id:\d+>/addphoto', 'verb' => 'POST'),
-                array('feedbacks/addfeedback','pattern'=>'api/<format:json|xml>/feedback','verb'=>'POST'),
+                array('feedbacks/addfeedback', 'pattern' => 'api/<format:json|xml>/feedback', 'verb' => 'POST'),
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
             ),
         ),

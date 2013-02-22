@@ -1,0 +1,20 @@
+"path":"/user/profile",
+"description":"This page allows the user to change profile info(username, email, password)",
+"operations":[
+    {
+        "httpMethod":"PUT",
+        "nickname":"ChangeProfile",
+        "parameters":[
+            {
+                "name":"username or email or password",
+                "required":"true",
+                "description":"One of fields: username, email, password",
+                "allowMultiple":"false",
+                "dataType":"change_profile",
+                "paramType":"body"
+            }
+        ],
+        "summary":"Change Profile",
+        "notes": "This page allows the user to change profile info(username, email, password)"
+    }
+]

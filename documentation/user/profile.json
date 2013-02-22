@@ -1,0 +1,11 @@
+"path":"/user/profile",
+"description":"This page allows the user to get his own profile information",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"GetProfile",
+
+        "summary":"Get Profile",
+        "notes": "This page allows the user to get his own profile information. LOGIN REQUIRED!!!"
+    }
+]
