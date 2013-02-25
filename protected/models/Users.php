@@ -44,6 +44,8 @@ class Users extends CActiveRecord {
     const STATUS_BANNED = 'banned';
     const STATUS_REMOVED = 'removed';
 
+    const AVATARS_UPLOAD_DIRECTORY='avatars';
+
     //////////////////////////////
     //BASE METHODS CREATED BY GII
     //////////////////////////////
@@ -108,7 +110,7 @@ class Users extends CActiveRecord {
                     self::STATUS_INACTIVE,
                     self::STATUS_REMOVED,
                 ),
-                'allowEmpty'=>false,
+                'allowEmpty' => false,
             ),
             array('role', 'length', 'max' => 45),
             // The following rule is used by search().

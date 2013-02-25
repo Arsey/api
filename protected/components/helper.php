@@ -122,8 +122,12 @@ class helper extends CApplicationComponent {
         return $list;
     }
 
-    public static function getMealsUploadDirectory() {
-        return realpath(Yii::app()->basePath.'/../uploads/'.Photos::MEALS_UPLOAD_DIRECTORY);
+    public static function getMealsPhotosDir() {
+        return realpath(Yii::app()->basePath . '/../uploads') . DIRECTORY_SEPARATOR . Photos::MEALS_UPLOAD_DIRECTORY;
+    }
+
+    public static function getAvatarsDir() {
+        return realpath(Yii::app()->basePath . '/../uploads') . DIRECTORY_SEPARATOR . Users::AVATARS_UPLOAD_DIRECTORY;
     }
 
 }

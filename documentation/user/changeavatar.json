@@ -1,0 +1,11 @@
+"path":"/user/changeavatar",
+"description":"This page allows the user upload photo for avatar",
+"operations":[
+    {
+        "httpMethod":"POST",
+        "nickname":"changeavatar",
+
+        "summary":"Upload Meal Photo",
+        "notes": "This page allows the user upload photo for avatar. Photo must be sended with header <strong>Content-Type: multipart/form-data;</strong> and has a name <u><strong>avatar</strong></u>"
+    }
+]

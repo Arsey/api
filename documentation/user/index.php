@@ -18,6 +18,8 @@ echo '},{';
 echo file_get_contents('profile.json');
 echo '},{';
 echo file_get_contents('changeprofile.json');
+echo '},{';
+echo file_get_contents('changeavatar.json');
 echo '}],';
 echo file_get_contents('models.json');
 echo '}';

@@ -110,6 +110,7 @@ class ApiController extends Controller {
                     'addfeedback',
                     'profile',
                     'changeprofile',
+                    'changeuseravatar',
                     'list',
                     'view',
                     'create',

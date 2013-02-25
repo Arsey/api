@@ -140,10 +140,10 @@ class CURL extends CComponent
 	public function post($params = array(), $options = array())
 	{
 		// If its an array (instead of a query string) then format it correctly
-		if (is_array($params))
+		/*if (is_array($params))
 		{
 			$params = http_build_query($params, NULL, '&');
-		}
+		}*/
 
 		// Add in the specific options provided
 		$this->options($options);

@@ -285,6 +285,10 @@ class Restaurants extends PlantEatersARMain {
         $select = array(
             'id',
             'name',
+            'street_address',
+            'city',
+            'country',
+            'state',
             'X(location) as latitude',
             'Y(location) as longitude',);
 

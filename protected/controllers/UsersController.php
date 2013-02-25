@@ -160,7 +160,7 @@ class UsersController extends ApiController {
             'results' => array(
                 'username' => $this->_user_info['username'],
                 'email' => $this->_user_info['email'],
-                'avatar' => $this->_user_info['avatar']
+                'avatar' => ImagesManager::getAvatarWebPath($this->_user_info['avatar'])
                 ))
         );
     }

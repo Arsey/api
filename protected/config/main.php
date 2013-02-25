@@ -111,8 +111,10 @@ $main = array(
                 array('/users/profile', 'pattern' => 'api/<format:json|xml>/user/profile', 'verb' => 'GET'),
                 /* Change Profile Info */
                 array('/users/changeprofile', 'pattern' => 'api/<format:json|xml>/user/profile', 'verb' => 'PUT'),
+                /* Get User Avatar */
+                array('/users/avatar', 'pattern' => 'api/<format:json|xml>/user/avatar', 'verb' => 'GET'),
                 /* Change user avatar */
-                array('/users/changeavatar', 'pattern' => 'api/<format:json|xml>/user/changeavatar', 'verb' => 'POST'),
+                array('/images/changeuseravatar', 'pattern' => 'api/<format:json|xml>/user/changeavatar', 'verb' => 'POST'),
                 //REST patterns for RESTAURANTS SEARCHING
                 array(
                     'restaurants/<searchtype>',
