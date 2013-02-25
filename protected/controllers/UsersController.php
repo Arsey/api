@@ -156,13 +156,15 @@ class UsersController extends ApiController {
      * Returns response with user profile data for logged in users
      */
     public function actionProfile() {
-        $this->_apiHelper->sendResponse(200, array(
-            'results' => array(
-                'username' => $this->_user_info['username'],
-                'email' => $this->_user_info['email'],
-                'avatar' => ImagesManager::getAvatarWebPath($this->_user_info['avatar'])
-                ))
-        );
+        if ($this->_user_info) {
+            $this->_apiHelper->sendResponse(200, array(
+                'results' => array(
+                    'username' => $this->_user_info['username'],
+                    'email' => $this->_user_info['email'],
+                    'avatar' => ImagesManager::getAvatarWebPath($this->_user_info['avatar'])
+                    ))
+            );
+        }
     }
 
     /**

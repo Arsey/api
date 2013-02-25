@@ -62,9 +62,9 @@ class ApiHelper extends CApplicationComponent {
      * @return string
      */
     protected function _encode($array) {
-        if ($this->_format === Constants::APPLICATION_JSON) {
+        if ($this->_format === Constants::APPLICATION_JSON||$this->_format==='json') {
             return CJSON::encode($array);
-        } elseif ($this->_format === Constants::APPLICATION_XML) {
+        } elseif ($this->_format === Constants::APPLICATION_XML||$this->_format==='xml') {
             return helper::array_to_xml($array, new SimpleXMLElement('<root/>'))->asXML();
         }
     }

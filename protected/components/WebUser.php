@@ -18,4 +18,12 @@ class WebUser extends CWebUser {
         return $this->_model;
     }
 
+    public function loginRequired() {
+        if(isset($_COOKIE['auth_token'])&&!empty($_COOKIE['auth_token'])){
+            $apiHelper=Yii::app()->apiHelper->setFormat($_GET['format']);
+            $apiHelper->sendResponse(403,array('errors'=>'Login Required. Maybe your authorization token wrong or expired'));
+        }
+        parent::loginRequired();
+    }
+
 }

@@ -104,7 +104,6 @@ class ApiController extends Controller {
             array(
                 'allow',
                 'actions' => array(
-                    'profile',
                     'addmealtorestaurant',
                     'addmealphoto',
                     'addfeedback',
