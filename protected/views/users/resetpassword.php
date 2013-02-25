@@ -29,6 +29,14 @@
         <?php echo CHtml::activeLabelEx($form, 'confirm_password'); ?>
         <?php echo CHtml::activePasswordField($form, 'confirm_password'); ?>
     </div>
+    <div class="row">
+        <?php if (CCaptcha::checkRequirements()) { ?>
+            <?php echo CHtml::activeLabelEx($form, 'verify_code'); ?>
+            <?php $this->widget('CCaptcha'); ?>
+            <?php echo CHtml::activeTextField($form, 'verify_code'); ?>
+            <?php echo CHtml::error($form, 'verify_code'); ?>
+        <?php } ?>
+    </div>
     <?php echo CHtml::submitButton('Submit'); ?>
     <?php echo CHtml::endForm(); ?>
 </div>

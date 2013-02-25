@@ -85,6 +85,7 @@ class ApiController extends Controller {
             array(
                 'allow',
                 'actions' => array(
+                    'captcha',
                     'error',
                     'join',
                     'activation',

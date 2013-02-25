@@ -4,12 +4,14 @@ class UserResetPasswordForm extends CFormModel {
 
     public $password;
     public $confirm_password;
+    public $verify_code;
 
     public function rules() {
         return array(
-            array('password', 'ext.SPasswordValidator.SPasswordValidator', 'min' => 6, 'max' => 128),
             array('password, confirm_password', 'required'),
-            array('password', 'compare', 'compareAttribute' => 'confirm_password', 'message' => 'Confirm password is incorrect')
+            array('password', 'ext.SPasswordValidator.SPasswordValidator', 'min' => 6, 'max' => 128, 'digit' => 0),
+            array('password', 'compare', 'compareAttribute' => 'confirm_password', 'message' => 'Confirm password is incorrect'),
+            array('verify_code', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements())
         );
     }
 

@@ -2,6 +2,14 @@
 
 class UsersController extends ApiController {
 
+    public function actions(){
+        return array(
+            'captcha'=>array(
+                'class'=>'CCaptchaAction'
+            )
+        );
+    }
+
     /**
      * This is the Join action, that is invoked,
      * when client go with POST to api/<format>/user/activation.
