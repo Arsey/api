@@ -121,7 +121,8 @@ class Photos extends PlantEatersARMain {
     ////////////////////////////////
 
     public function accessStatus($status){
-        $this->update(array('access_status'=>$status));
+        $this->access_status=$status;
+        $this->update('access_status');
     }
 
     public function behaviors() {

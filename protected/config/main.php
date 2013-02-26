@@ -24,10 +24,21 @@ $main = array(
         //mail extension
         'application.extensions.yii-mail.*',
         'ext.DGSphinxSearch.*',
+        'application.helpers.*',
     ),
     'modules' => array(),
     // application components
     'components' => array(
+        'imagesManager' => array(
+            'class' => 'ImagesManager',
+        ),
+        'image' => array(
+            'class' => 'application.extensions.image.CImageComponent',
+            //GD or ImageMagic
+            'driver' => 'GD',
+        //ImageMagic setup path
+        //'params'=>array('directory'=>'opt/local/bin'),
+        ),
         'sphinxsearch' => array(
             'class' => 'ext.DGSphinxSearch.DGSphinxSearch',
             'server' => '50.17.39.80',
@@ -166,11 +177,15 @@ $main = array(
     'params' => array(
 //using on restaurants search throught Google Places API
         'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian',
-        'image_sizes' => array(
+        'sizes_for_photos_of_meals ' => array(
             'meal_gallery_small' => array('320', '240'),
             'meal_gallery_big' => array('640', '480'),
             'meal_table_small' => array('70', '70'),
             'meal_table_big' => array('140', '140'),
+        ),
+        'sizes_for_user_avatar' => array(
+            'meal_gallery_small' => array('95', '95'),
+            'meal_gallery_big' => array('190', '190'),
         )
     ),
 );

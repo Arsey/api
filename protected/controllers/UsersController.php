@@ -2,10 +2,10 @@
 
 class UsersController extends ApiController {
 
-    public function actions(){
+    public function actions() {
         return array(
-            'captcha'=>array(
-                'class'=>'CCaptchaAction'
+            'captcha' => array(
+                'class' => 'CCaptchaAction'
             )
         );
     }
@@ -104,27 +104,24 @@ class UsersController extends ApiController {
     }
 
     /**
-     *
-     * @param type $token
+     * Using to allow user reset hist password with valid token sended via email
+     * @param string $token
      */
     public function actionResetPassword($token = null) {
         $errors = array();
         $form = new UserResetPasswordForm;
 
-
         if (!is_null($token)) {
+            /* find given token in database */
             $password_reset_token = PasswordResetTokens::model()->findByAttributes(array('token' => $token));
-
-            if (
-                    $password_reset_token &&
-                    $password_reset_token->isValidToken($errors)
-            ) {
+            /* if found token and token is valid */
+            if ($password_reset_token && $password_reset_token->isValidToken($errors)) {
+                /* user must fill required fields that will contains in $_POST['UserResetPasswordForm'] */
                 if (isset($_POST['UserResetPasswordForm'])) {
                     $form->attributes = $_POST['UserResetPasswordForm'];
                     if ($form->validate()) {
                         $password_reset_token->status = PasswordResetTokens::TOKEN_USED;
                         $password_reset_token->save(false, array('status'));
-
                         if ($user = Users::model()->findByPk($password_reset_token->user_id)) {
                             $user->changeUserPassword($form->password);
                             Yii::app()->user->setFlash('success', 'Your password was changed successfully!');
@@ -135,7 +132,6 @@ class UsersController extends ApiController {
                 $errors[] = 'Wrong token!';
             }
         }
-
         $this->render('resetpassword', array('form' => $form, 'errors' => $errors));
     }
 

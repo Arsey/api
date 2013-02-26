@@ -10,6 +10,7 @@ class PlantEatersARMain extends CActiveRecord {
             Constants::ACCESS_STATUS_PUBLISHED,
             Constants::ACCESS_STATUS_REMOVED,
             Constants::ACCESS_STATUS_UNPUBLISHED,
+            Constants::ACCESS_STATUS_NEEDS_FOR_ACTION,
         ),
         'allowEmpty' => true,
     );

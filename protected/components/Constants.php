@@ -107,8 +107,8 @@ class Constants {
     /*
      * Action ChangeProfile
      */
-    const PROFILE_UPDATED='Profile was successfully updated';
-    const MISSING_ANY_REQUIRED_FIELDS='One of required (username, email, password) fields must be filled';
+    const PROFILE_UPDATED = 'Profile was successfully updated';
+    const MISSING_ANY_REQUIRED_FIELDS = 'One of required (username, email, password) fields must be filled';
 
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -116,4 +116,9 @@ class Constants {
     ///////////////////////////////////////////////////////////////////////////////
     const ZERO_RESULTS_BY_RESTAURANT_ID = 'No meals was found in restaurant with id %d';
 
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////IMAGES CONTROLLER///////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    const IMAGE_UPLOADED_SUCCESSFULLY='Image uploaded successfully';
+    const IMAGE_REQUIRED='Image file required';
 }

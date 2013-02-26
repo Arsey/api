@@ -158,4 +158,9 @@ class Meals extends PlantEatersARMain {
         return parent::filterByRole($this, $user_role);
     }
 
+    public function accessStatus($status) {
+        $this->access_status=$status;
+        $this->update('access_status');
+    }
+
 }
