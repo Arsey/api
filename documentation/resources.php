@@ -9,6 +9,7 @@ echo '{
     {"path": "/user"},
      {"path": "/restaurants"},
      {"path": "/meals"},
-      {"path": "/feedbacks"}
+      {"path": "/feedbacks"},
+      {"path": "/reports"}
   ]
 }';

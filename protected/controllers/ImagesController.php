@@ -7,6 +7,8 @@ class ImagesController extends ApiController {
 
     public function beforeAction($action) {
         $this->_meals_photos_dir = helper::getMealsPhotosDir();
+        if (!is_dir($this->_meals_photos_dir))
+            mkdir($this->_meals_photos_dir, 0755);
 
         $this->_avatars_dir = helper::getAvatarsDir();
         if (!is_dir($this->_avatars_dir))
@@ -92,33 +94,38 @@ class ImagesController extends ApiController {
             $avatar_new_name = ImagesManager::generateNewName(32, $this->_user_info['id'], true);
             $image->name = $avatar_new_name . '.' . $image->avatar->extensionName;
             $image_path = $this->_avatars_dir . '/' . $image->name;
-            $image->avatar->saveAs($image_path);
-            /*
-             * Create thimbnails for avatar for registered image sizes
-             */
-            Yii::app()->imagesManager
-                    ->setImagePath($image_path)
-                    ->setSaveTo($this->_avatars_dir)
-                    ->setExt($image->avatar->extensionName)
-                    ->setPrefix($avatar_new_name . '_')
-                    ->setSizes(helper::yiiparam('sizes_for_user_avatar'))
-                    ->makeThumbnails();
 
-            /*
-             * If avatar uploaded  not in first time,
-             * we must delete old avatar from server
-             */
-            if (!empty($this->_user_info['avatar'])) {
+
+            if ($image->avatar->saveAs($image_path)) {
+                /*
+                 * Create thimbnails for avatar for registered image sizes
+                 */
                 Yii::app()->imagesManager
+                        ->setImagePath($image_path)
+                        ->setSaveTo($this->_avatars_dir)
+                        ->setExt($image->avatar->extensionName)
+                        ->setPrefix($avatar_new_name . '_')
                         ->setSizes(helper::yiiparam('sizes_for_user_avatar'))
-                        ->delete($this->_user_info['avatar']);
-            }
+                        ->makeThumbnails();
 
-            if ($user = Users::model()->updateByPk($this->_user_info['id'], array('avatar' => $image->name))) {
-                $avatar_web_path = ImagesManager::getAvatarWebPath($image->name);
-                $this->_apiHelper->sendResponse(200, array('results' => array('avatar' => $avatar_web_path), 'message' => 'Avatar uploaded successfully'));
+                /*
+                 * If avatar uploaded  not in first time,
+                 * we must delete old avatar from server
+                 */
+                if (!empty($this->_user_info['avatar'])) {
+                    Yii::app()->imagesManager
+                            ->setSizes(helper::yiiparam('sizes_for_user_avatar'))
+                            ->delete($this->_user_info['avatar']);
+                }
+
+                if ($user = Users::model()->updateByPk($this->_user_info['id'], array('avatar' => $image->name))) {
+                    $avatar_web_path = ImagesManager::getAvatarWebPath($image->name);
+                    $this->_apiHelper->sendResponse(200, array('results' => array('avatar' => $avatar_web_path), 'message' => 'Avatar uploaded successfully'));
+                } else {
+                    $this->_apiHelper->sendResponse(400, array('errors' => $user->errors));
+                }
             } else {
-                $this->_apiHelper->sendResponse(400, array('errors' => $user->errors));
+                $this->_apiHelper->sendResponse(400, array('errors' => $image->avatar->error));
             }
         } else {
             $this->_apiHelper->sendResponse(400, array('errors' => $image->errors));

@@ -98,9 +98,6 @@ class ApiController extends Controller {
                     'restaurantmeals',
                 ),
                 'users' => array('*'),
-            //'expression',
-            //'message',
-            //'ips',
             ),
             array(
                 'allow',
@@ -111,6 +108,7 @@ class ApiController extends Controller {
                     'profile',
                     'changeprofile',
                     'changeuseravatar',
+                    'mealreport',
                     'list',
                     'view',
                     'create',
@@ -120,7 +118,7 @@ class ApiController extends Controller {
                 ),
                 'users' => array('@'),
             ),
-            array('deny')
+            array('deny'),
         );
     }
 

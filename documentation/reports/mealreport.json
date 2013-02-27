@@ -1,0 +1,29 @@
+"path":"/meal/{id}/report/{report_code}",
+"description":"This page allows the user to send meal report",
+"operations":[
+    {
+        "httpMethod":"POST",
+        "nickname":"MealReport",
+        "parameters":[
+            {
+                "name":"id",
+                "required":"true",
+                "description":"Id of existing meal",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            },
+            {
+                "name":"report_code",
+                "required":"true",
+                "description":"Report code is string that can take values as: not_vegetarian, not_gluten_free, not_on_the_menu, restaurant_closed, inappropriate_content",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            }
+        ],
+        "summary":"Send Feedback",
+        "notes": "This page allows the user to send meal report"
+
+    }
+]
