@@ -10,8 +10,8 @@
                 "description":"Numbers from 1 to 5"
             },
              "veg":{
-                "type":"integer",
-                "description":"Numbers from 1 to 4: 1 - VEGAN; 2 - VEGAN_ON_REQUEST; 3 - VEGETARIAN; 4 - VEGETARIAN_ON_REQUEST"
+                "type":"string",
+                "description":"can be:vegan, vegan_on_request, vegetarian, vegetarian_on_request"
             },
             "comment":{
                 "type":"string",

@@ -11,7 +11,7 @@
  * @property integer $createtime
  * @property integer $rating
  * @property string $comment
- * @property integer $veg
+ * @property string $veg
  * @property integer $gluten_free
  * @property string $access_status
  *
@@ -66,12 +66,15 @@ class Ratings extends PlantEatersARMain {
             ),
             array(
                 'veg',
-                'numerical',
-                'integerOnly' => true,
-                'min' => 1,
-                'max' => 4,
-                'tooSmall' => 'Rating must be not less than 1 and to bigger than 4 (1 - vegan, 2 - vegan on request, 3 - vegetarian, 4 - vegetarian on request)',
-                'tooBig' => 'Rating must be not less than 1 and to bigger than 4 (1 - vegan, 2 - vegan on request, 3 - vegetarian, 4 - vegetarian on request)',
+                'in',
+                'range' => array(
+                    Constants::VEGAN,
+                    Constants::VEGAN_ON_REQUEST,
+                    Constants::VEGETARIAN,
+                    Constants::VEGETARIAN_ON_REQUEST,
+                ),
+                'allowEmpty' => false,
+                'message' => 'Rating must be equal on of this variants: vegan, vegan_on_request, vegetarian, vegetarian_on_request)'
             ),
             array(
                 'gluten_free',
