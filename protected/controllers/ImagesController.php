@@ -27,6 +27,7 @@ class ImagesController extends ApiController {
         if (!$meal = Meals::model()->findByPk($id))
             $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $id)));
 
+        $this->checkForExtension();
         /* file field 'image' in request is required */
         if (isset($_FILES['image'])) {
 
@@ -85,11 +86,14 @@ class ImagesController extends ApiController {
      * Uploaded image apply to current logged in user.
      */
     public function actionChangeUserAvatar() {
-        /* trying to validate file that uploading */
-        $image = new ImageValidate;
-        $image->avatar = CUploadedFile::getInstanceByName('avatar');
-        if ($image->validate()) {
+        $this->checkForExtension();
 
+        /* trying to validate file that uploading */
+        $image = new ImageValidate('avatar_upload');
+        $image->avatar = CUploadedFile::getInstanceByName('avatar');
+
+
+        if ($image->validate()) {
 
             $avatar_new_name = ImagesManager::generateNewName(32, $this->_user_info['id'], true);
             $image->name = $avatar_new_name . '.' . $image->avatar->extensionName;
@@ -129,6 +133,16 @@ class ImagesController extends ApiController {
             }
         } else {
             $this->_apiHelper->sendResponse(400, array('errors' => $image->errors));
+        }
+    }
+
+    private function checkForExtension() {
+        if (
+                isset($_FILES['avatar']) &&
+                !ImagesManager::isValidExtension($_FILES['avatar']['tmp_name']) &&
+                ($ext = ImagesManager::isValidMime($_FILES['avatar']['tmp_name']))
+        ) {
+            $_FILES['avatar']['name'].='.' . $ext;
         }
     }
 

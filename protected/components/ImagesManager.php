@@ -9,6 +9,8 @@ class ImagesManager extends CApplicationComponent {
     private $_ext;
     private $_prefix = null;
     private $_sizes = array();
+    public static $allowed_img_ext = array('gif', 'png', 'jpg', 'jpeg');
+    public static $allowed_img_mimes = array('image/gif', 'image/png', 'image/jpeg');
 
     public function setImagePath($image_path) {
         $this->_image_path = $image_path;
@@ -110,6 +112,34 @@ class ImagesManager extends CApplicationComponent {
             return $avatar;
         }
         return false;
+    }
+
+    public static function isValidExtension($file) {
+        $ext = CFileHelper::getExtension($file);
+        if (in_array($ext, self::$allowed_img_ext))
+            return true;
+        return false;
+    }
+
+    public static function isValidMime($file) {
+        $mime = CFileHelper::getMimeType($file);
+        if (in_array($mime, self::$allowed_img_mimes))
+            return self::mimeToExt($mime);
+        return false;
+    }
+
+    public static function mimeToExt($mime) {
+        switch ($mime):
+            case 'image/gif':
+                return 'gif';
+                break;
+            case 'image/png':
+                return 'png';
+                break;
+            case 'image/jpeg':
+                return 'jpg';
+                break;
+        endswitch;
     }
 
 }
