@@ -24,7 +24,7 @@ class ReportsController extends ApiController {
 
         if ($report_model->validate()) {
             $restaurant = Restaurants::model()->findByPk($meal_model->restaurant_id);
-            if ($this->_sendReportEmail($report, $restaurant, $meal_model)) {
+            if (helper::yiiparam('support_email', false) && $this->_sendReportEmail($report, $restaurant, $meal_model)) {
                 $report_model->save();
                 $this->_apiHelper->sendResponse(200, array('message' => Constants::REPORT_SENT));
             } else {
