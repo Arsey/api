@@ -108,7 +108,7 @@ class Constants {
      * Action ChangeProfile
      */
     const PROFILE_UPDATED = 'Profile was successfully updated';
-    const MISSING_ANY_REQUIRED_FIELDS = 'One of required (username, email, password) fields must be filled';
+    const MISSING_ANY_REQUIRED_FIELDS = 'One of required (new_username, new_email, new_password) fields must be filled';
 
 
     ///////////////////////////////////////////////////////////////////////////////

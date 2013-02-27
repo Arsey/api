@@ -33,10 +33,13 @@ class ApiController extends Controller {
 
     public function beforeAction($action) {
 
-        if(isset($_GET['showrequest'])){
+        if (isset($_GET['showrequest'])) {
+            if (isset($_FILES['avatar'])) {
+                echo CFileHelper::getMimeType($_FILES['avatar']['tmp_name']) . "\n";
+            }
             var_dump($_REQUEST);
             var_dump($_FILES);
-            var_dump(file_get_contents( 'php://input' ));
+            var_dump(file_get_contents('php://input'));
             Yii::app()->end();
         }
 

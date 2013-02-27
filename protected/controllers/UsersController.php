@@ -176,18 +176,25 @@ class UsersController extends ApiController {
      */
     public function actionChangeProfile() {
         /* check if there is data to change */
-        if (isset($this->_parsed_attributes['username']) || isset($this->_parsed_attributes['email']) || isset($this->_parsed_attributes['password'])) {
+        if (
+                (isset($this->_parsed_attributes['new_username']) && !empty($this->_parsed_attributes['new_username'])) ||
+                (isset($this->_parsed_attributes['new_email']) && !empty($this->_parsed_attributes['new_email'])) ||
+                (isset($this->_parsed_attributes['new_password']) && !empty($this->_parsed_attributes['new_password'])
+                )
+        ) {
+
             $user = Users::model()->findByPk($this->_user_info['id']);
             /* if user send some username, we must assign this value to username field of Users model */
-            isset($this->_parsed_attributes['username']) ? $user->username = $this->_parsed_attributes['username'] : false;
+            isset($this->_parsed_attributes['new_username'])&&!empty($this->_parsed_attributes['new_username']) ? $user->username = $this->_parsed_attributes['new_username'] : false;
             /* if user send some email, we must assign this value to email field of Users model */
-            isset($this->_parsed_attributes['email']) ? $user->email = $this->_parsed_attributes['email'] : false;
+            isset($this->_parsed_attributes['new_email'])&&!empty($this->_parsed_attributes['new_email']) ? $user->email = $this->_parsed_attributes['new_email'] : false;
             /* if user send some password, we must assign this value to password field of Users model */
-            isset($this->_parsed_attributes['password']) ? $user->password = $this->_parsed_attributes['password'] : false;
+            isset($this->_parsed_attributes['new_password'])&&!empty($this->_parsed_attributes['new_password']) ? $user->password = $this->_parsed_attributes['new_password'] : false;
 
             /* trying to save with validation */
+            $user->scenario = 'change_profile';
             if ($user->save()) {
-                if (isset($this->_parsed_attributes['password'])) {
+                if (isset($this->_parsed_attributes['new_password']) && !empty($this->_parsed_attributes['new_password'])) {
                     $user->changeUserPassword($user->password);
                 }
                 $this->_apiHelper->sendResponse(200, array('message' => Constants::PROFILE_UPDATED));

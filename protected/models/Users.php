@@ -43,8 +43,7 @@ class Users extends CActiveRecord {
     const STATUS_ACTIVE = 'acitve';
     const STATUS_BANNED = 'banned';
     const STATUS_REMOVED = 'removed';
-
-    const AVATARS_UPLOAD_DIRECTORY='avatars';
+    const AVATARS_UPLOAD_DIRECTORY = 'avatars';
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -72,7 +71,7 @@ class Users extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('password, salt, email, username', 'required'),
+            array('password, salt, email, username', 'required','on'=>'insert'),
             array('createtime, lastvisit, lastaction, lastpasswordchange', 'numerical', 'integerOnly' => true),
             array('password, salt, activation_key', 'length', 'max' => 128),
             array('email, city, country, avatar', 'length', 'max' => 255),
@@ -83,18 +82,19 @@ class Users extends CActiveRecord {
                 'length',
                 'max' => 20,
                 'min' => 3,
-                'message' => 'Username length needs to be between 3 and 20 characters'
+                'message' => 'Username length needs to be between 3 and 20 characters',
             ),
             array(
                 'username',
                 'unique',
-                'message' => 'This user\'s name already exists.'
+                'message' => 'This user\'s name already exists.',
             ),
             array(
                 'username',
                 'match',
                 'pattern' => '/^[A-Za-z0-9_]+$/u',
-                'message' => 'Incorrect symbol\'s. (A-z0-9)'
+                'message' => 'Incorrect symbol\'s. (A-z0-9)',
+                //'on'=>'insert,change_profile',
             ),
             array(
                 'email',

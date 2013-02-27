@@ -37,15 +37,15 @@
     },
          "change_profile":{
         "properties":{
-            "username":{
+            "new_username":{
                 "type":"string",
                 "description":"Any A-Za-z0-9_ characters please. Also username length needs to be between 3 and 20 characters and be unique"
             },
-            "password":{
+            "new_password":{
                 "type":"string",
                 "description":"Any characters allowed. Maximum length is 128 charachers and minimum is 6."
             },
-            "email":{
+            "new_email":{
                 "type":"string",
                 "description":"Must match the correct email address, must be unique. Max length 255 characters"
             }
