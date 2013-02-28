@@ -14,6 +14,28 @@ class PlantEatersARMain extends CActiveRecord {
         ),
         'allowEmpty' => true,
     );
+    protected $_veg = array(
+        'veg',
+        'in',
+        'range' => array(
+            Constants::VEGAN,
+            Constants::VEGAN_ON_REQUEST,
+            Constants::VEGETARIAN,
+            Constants::VEGETARIAN_ON_REQUEST,
+        ),
+        'allowEmpty' => false,
+        'message' => 'Field "veg" must match one of the options: vegan, vegan_on_request, vegetarian, vegetarian_on_request)'
+    );
+    protected $_veg_short = array(
+        'veg',
+        'in',
+        'range' => array(
+            Constants::VEGAN,
+            Constants::VEGETARIAN,
+        ),
+        'allowEmpty' => false,
+        'message' => 'Field "veg" must match one of the options: vegan, vegetarian)'
+    );
 
     /*
      * This is override CActiveRecord class method delete(),
@@ -48,8 +70,8 @@ class PlantEatersARMain extends CActiveRecord {
                 'normal' => array('reference', 'external_id', 'access_status'),
             ),
             'meals' => array(
-                'guest' => array('access_status', 'user_id', 'restaurant_id'),
-                'normal' => array('access_status'),
+                'guest' => array('access_status', 'user_id', 'restaurant_id','modifiedtime','createtime'),
+                'normal' => array('access_status','user_id','modifiedtime','createtime'),
             ),
         );
         return $npa[$model_name][$role];

@@ -9,7 +9,7 @@
  * @property string $user_id
  * @property string $name
  * @property string $description
- * @property integer $vegan
+ * @property string $veg
  * @property integer $gluten_free
  * @property string $rating
  * @property integer $createtime
@@ -52,7 +52,7 @@ class Meals extends PlantEatersARMain {
         // will receive user inputs.
         return array(
             array('restaurant_id, user_id, name', 'required'),
-            array('vegan, gluten_free, createtime, modifiedtime', 'numerical', 'integerOnly' => true),
+            array('gluten_free, createtime, modifiedtime', 'numerical', 'integerOnly' => true),
             array('restaurant_id, user_id', 'length', 'max' => 20),
             array('name', 'length', 'max' => 100),
             array(
@@ -62,11 +62,12 @@ class Meals extends PlantEatersARMain {
                 'message' => 'Incorrect symbol\'s. (A-z0-9)'
             ),
             $this->_access_status_rule,
+            $this->_veg,
             array('rating', 'length', 'max' => 4),
             array('description', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, restaurant_id, user_id, name, description, vegan, gluten_free, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
+            array('id, restaurant_id, user_id, name, description, veg, gluten_free, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
         );
     }
 
@@ -95,7 +96,7 @@ class Meals extends PlantEatersARMain {
             'user_id' => 'User',
             'name' => 'Name',
             'description' => 'Description',
-            'vegan' => 'Vegan',
+            'veg' => 'Vegan/Vegetarian',
             'gluten_free' => 'Gluten Free',
             'rating' => 'Rating',
             'createtime' => 'Createtime',
@@ -119,7 +120,7 @@ class Meals extends PlantEatersARMain {
         $criteria->compare('user_id', $this->user_id, true);
         $criteria->compare('name', $this->name, true);
         $criteria->compare('description', $this->description, true);
-        $criteria->compare('vegan', $this->vegan);
+        $criteria->compare('veg', $this->veg);
         $criteria->compare('gluten_free', $this->gluten_free);
         $criteria->compare('rating', $this->rating, true);
         $criteria->compare('createtime', $this->createtime);
