@@ -31,7 +31,10 @@ class MealsController extends ApiController {
         /* filter model data attributes by role */
         $results['restaurant'] = $restaurant->filterByRole($this->_user_role);
         /* filter model data attributes by role */
-        $results['meals'] = $restaurant->filterByRole($this->_user_role);
+        foreach ($meals as $meal) {
+            $results['meals'][] = $meal->filterByRole($this->_user_role);
+        }
+
 
         $this->_apiHelper->sendResponse(200, array('results' => $results));
     }
@@ -54,9 +57,6 @@ class MealsController extends ApiController {
         $this->_assignModelAttributes($meal);
         $meal->restaurant_id = $id;
         $meal->user_id = $this->_user_info['id'];
-        $meal->rating = 0;
-        $meal->gluten_free = 0;
-        $meal->rating = 0;
         $meal->access_status = Constants::ACCESS_STATUS_NEEDS_FOR_ACTION;
         /**
          * Validate meal
@@ -69,7 +69,7 @@ class MealsController extends ApiController {
         $rating = new Ratings;
         $this->_assignModelAttributes($rating);
         $rating->meal_id = 1;
-        $rating->photo_id = 0;
+        $rating->photo_id = 1;
         $rating->user_id = $this->_user_info['id'];
         ($rating->gluten_free === '' ) ? $rating->gluten_free = Meals::NOT_GLUTEN_FREE : '';
 
