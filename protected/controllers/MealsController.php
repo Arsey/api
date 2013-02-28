@@ -32,7 +32,8 @@ class MealsController extends ApiController {
         $results['restaurant'] = $restaurant->filterByRole($this->_user_role);
         /* filter model data attributes by role */
         foreach ($meals as $meal) {
-            $results['meals'][] = $meal->filterByRole($this->_user_role);
+            $filtered_meal = $meal->filterByRole($this->_user_role);
+            $results['meals'][] = $filtered_meal;
         }
 
 

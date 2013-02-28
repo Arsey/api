@@ -123,11 +123,15 @@ class helper extends CApplicationComponent {
     }
 
     public static function getMealsPhotosDir() {
-        return realpath(Yii::app()->basePath . '/../uploads') . DIRECTORY_SEPARATOR . Photos::MEALS_UPLOAD_DIRECTORY;
+        return realpath(self::unixSlashes(Yii::app()->basePath) . '/../uploads') . '/' . Photos::MEALS_UPLOAD_DIRECTORY;
     }
 
     public static function getAvatarsDir() {
-        return realpath(Yii::app()->basePath . '/../uploads') . DIRECTORY_SEPARATOR . Users::AVATARS_UPLOAD_DIRECTORY;
+        return realpath(self::unixSlashes(Yii::app()->basePath) . '/../uploads') . '/' . Users::AVATARS_UPLOAD_DIRECTORY;
+    }
+
+    public static function unixSlashes($string) {
+        return preg_replace('/' . preg_quote('\\') . '/', '/', $string);
     }
 
 }

@@ -17,7 +17,7 @@
  * @property string $phone
  * @property string $email
  * @property string $website
- * @property string $vegan
+ * @property string $veg
  * @property string $rating
  * @property integer $createtime
  * @property integer $modifiedtime
@@ -71,19 +71,11 @@ class Restaurants extends PlantEatersARMain {
             array('phone', 'length', 'max' => 30),
             array('rating', 'length', 'max' => 4),
             $this->_access_status_rule,
-            array(
-                'vegan',
-                'in',
-                'range' => array(
-                    Constants::VEGAN,
-                    Constants::VEGETARIAN,
-                ),
-                'allowEmpty' => true,
-            ),
+           $this->_veg_short,
             array('access_status', 'length', 'max' => 11),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, external_id, name, street_address, point, street_address_2, city, state, country, phone, email, website, vegan, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
+            array('id, external_id, name, street_address, point, street_address_2, city, state, country, phone, email, website, veg, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
         );
     }
 
@@ -115,7 +107,7 @@ class Restaurants extends PlantEatersARMain {
             'phone' => 'Phone',
             'email' => 'Email',
             'website' => 'Website',
-            'vegan' => 'Vegan',
+            'veg' => 'Vegan/Vegetarian',
             'rating' => 'Rating',
             'createtime' => 'Createtime',
             'modifiedtime' => 'Modifiedtime',
@@ -145,7 +137,7 @@ class Restaurants extends PlantEatersARMain {
         $criteria->compare('phone', $this->phone, true);
         $criteria->compare('email', $this->email, true);
         $criteria->compare('website', $this->website, true);
-        $criteria->compare('vegan', $this->vegan);
+        $criteria->compare('veg', $this->veg);
         $criteria->compare('rating', $this->rating, true);
         $criteria->compare('createtime', $this->createtime);
         $criteria->compare('modifiedtime', $this->modifiedtime);

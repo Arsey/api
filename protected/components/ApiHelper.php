@@ -62,9 +62,9 @@ class ApiHelper extends CApplicationComponent {
      * @return string
      */
     protected function _encode($array) {
-        if ($this->_format === Constants::APPLICATION_JSON||$this->_format==='json') {
+        if ($this->_format === Constants::APPLICATION_JSON || $this->_format === 'json') {
             return CJSON::encode($array);
-        } elseif ($this->_format === Constants::APPLICATION_XML||$this->_format==='xml') {
+        } elseif ($this->_format === Constants::APPLICATION_XML || $this->_format === 'xml') {
             return helper::array_to_xml($array, new SimpleXMLElement('<root/>'))->asXML();
         }
     }
@@ -118,6 +118,12 @@ class ApiHelper extends CApplicationComponent {
         }
 
         $body_return['status'] = $this->getStatusCodeMessage($status);
+
+        if (isset($_GET['var_dump_response'])) {
+             header('Content-type: text/html');
+            var_dump($body_return);
+            Yii::app()->end();
+        }
 
         //at the end we need to encode data into json or xml based on $this->_format variable
         return $this->_encode($body_return);

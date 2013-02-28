@@ -65,18 +65,6 @@ class Ratings extends PlantEatersARMain {
                 'tooBig' => 'Maximum value for rating is 5',
             ),
             array(
-                'veg',
-                'in',
-                'range' => array(
-                    Constants::VEGAN,
-                    Constants::VEGAN_ON_REQUEST,
-                    Constants::VEGETARIAN,
-                    Constants::VEGETARIAN_ON_REQUEST,
-                ),
-                'allowEmpty' => false,
-                'message' => 'Rating must be equal on of this variants: vegan, vegan_on_request, vegetarian, vegetarian_on_request)'
-            ),
-            array(
                 'gluten_free',
                 'in',
                 'range' => array(0, 1),
@@ -84,6 +72,7 @@ class Ratings extends PlantEatersARMain {
                 'message' => 'Gluten free can be 1(gluten free) or 0(not gluten free)'
             ),
             $this->_access_status_rule,
+            $this->_veg,
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, meal_id, user_id, photo_id, createtime, rating, comment, veg, gluten_free, access_status', 'safe', 'on' => 'search'),
@@ -144,6 +133,21 @@ class Ratings extends PlantEatersARMain {
         return new CActiveDataProvider($this, array(
                     'criteria' => $criteria,
                 ));
+    }
+
+    ////////////////////////////////
+    //CUSTOM OVERLOAD METHODS OF RA
+    ////////////////////////////////
+
+    public function behaviors() {
+        return array(
+            'timestamps' => array(
+                'class' => 'zii.behaviors.CTimestampBehavior',
+                'createAttribute' => 'createtime',
+                'updateAttribute' => 'modifiedtime',
+                'setUpdateOnCreate' => true,
+            ),
+        );
     }
 
 }

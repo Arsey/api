@@ -24,7 +24,7 @@ class MainCTestCase extends CTestCase {
     protected $_meal = array(
         'name' => 'test meal name',
         'rating' => '3',
-        'veg' => '1',
+        'veg' => 'vegetarian',
         'comment' => 'test meal comment',
         'gluten_free' => '1',
     );

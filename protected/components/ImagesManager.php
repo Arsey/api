@@ -11,6 +11,8 @@ class ImagesManager extends CApplicationComponent {
     private $_sizes = array();
     public static $allowed_img_ext = array('gif', 'png', 'jpg', 'jpeg');
     public static $allowed_img_mimes = array('image/gif', 'image/png', 'image/jpeg');
+    public static $uploads_folder = '/uploads/';
+    private $_lastSavedThumbnails = array();
 
     public function setImagePath($image_path) {
         $this->_image_path = $image_path;
@@ -37,11 +39,18 @@ class ImagesManager extends CApplicationComponent {
         return $this;
     }
 
+    public function getLastSavedThumbnails(){
+        return $this->_lastSavedThumbnails;
+    }
+
     public function makeThumbnails() {
+        $this->_lastSavedThumbnails = array();
         $image = Yii::app()->image->load($this->_image_path);
         foreach ($this->_sizes as $size) {
             $image->resize($size[0], $size[1])->quality(75)->sharpen(15);
-            $image->save($this->_save_to . '/' . $this->_prefix . $size[0] . '.' . $this->_ext);
+            $image_path = $this->_save_to . '/' . $this->_prefix . $size[0] . '.' . $this->_ext;
+            $image->save($image_path);
+            $this->_lastSavedThumbnails[self::$_thumbnail_prefix . $size[0]] = $image_path;
         }
     }
 
@@ -60,12 +69,25 @@ class ImagesManager extends CApplicationComponent {
         return $lover ? strtolower($name) : $name;
     }
 
-    public static function getAvatarWebPath($user_id_or_avatar) {
+    public static function getAvatarWebPath($user_id_or_avatar, $sizes = array()) {
+        $avatar = array();
         $avatar_name = self::getAvatarName($user_id_or_avatar);
-        $avatar_web_path = Yii::app()->createAbsoluteUrl('/uploads/' . Users::AVATARS_UPLOAD_DIRECTORY . '/' . $avatar_name);
-        if (@GetImageSize($avatar_web_path))
-            return $avatar_web_path;
-        return '';
+        $avatar_web_path = Yii::app()->createAbsoluteUrl(self::$uploads_folder . Users::AVATARS_UPLOAD_DIRECTORY . '/' . $avatar_name);
+        $ext = CFileHelper::getExtension($avatar_web_path);
+        $file_name = pathinfo($avatar_web_path, PATHINFO_FILENAME);
+
+        if (empty($sizes) && @GetImageSize($avatar_web_path)) {
+            $avatar['avatar'] = $avatar_web_path;
+        }
+        if (!empty($sizes)) {
+            foreach ($sizes as $size) {
+                $thumb_web_path = Yii::app()->createAbsoluteUrl(self::$uploads_folder . Users::AVATARS_UPLOAD_DIRECTORY . '/' . $file_name . '_' . $size[0] . '.' . $ext);
+                if (@GetImageSize($thumb_web_path)) {
+                    $avatar['avatar_thumbnails']['thumb_' . $size[0]] = $thumb_web_path;
+                }
+            }
+        }
+        return $avatar;
     }
 
     public static function getAvatarPath($user_id_or_avatar) {
