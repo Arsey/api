@@ -65,6 +65,9 @@ $main = array(
         'authManager' => array(
             'class' => 'CDbAuthManager',
             'connectionID' => 'db',
+            'assignmentTable' => 'auth_assignment',
+            'itemChildTable' => 'auth_item_child',
+            'itemTable' => 'auth_item',
         //'showErrors' => YII_DEBUG
         ),
         'mail' => array(
@@ -145,7 +148,7 @@ $main = array(
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),
                 array('api/delete', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
                 //CREATE
-                array('reports/mealreport','pattern'=>'api/<format:json|xml>/meal/<id:\d+>/report/<report:\w+>'),
+                array('reports/mealreport', 'pattern' => 'api/<format:json|xml>/meal/<id:\d+>/report/<report:\w+>'),
                 array('meals/addmealtorestaurant', 'pattern' => 'api/<format:json|xml>/restaurant/<id:\d+>/meal', 'verb' => 'POST'),
                 array('images/addmealphoto', 'pattern' => 'api/<format:json|xml>/meal/<id:\d+>/addphoto', 'verb' => 'POST'),
                 array('feedbacks/addfeedback', 'pattern' => 'api/<format:json|xml>/feedback', 'verb' => 'POST'),
