@@ -2,9 +2,14 @@
 
 class MealReportTest extends MainCTestCase {
 
-    private $_uri = 'api/json/meal/1/report/';
+    private $_uri;
 
     /* with wrong url */
+
+    protected function setUp() {
+        $id = Yii::app()->db->createCommand("select id from meals limit 1")->queryScalar();
+        $this->_uri = 'api/json/meal/' . $id . '/report/';
+    }
 
     function testWrongUrl() {
 
@@ -24,6 +29,7 @@ class MealReportTest extends MainCTestCase {
     function testWithLogin() {
         $this->setLoginCookie();
         $response = helper::jsonDecode($this->_rest->post($this->_uri . Reports::NOT_GLUTEN_FREE));
+        helper::P($response);
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
     }
 

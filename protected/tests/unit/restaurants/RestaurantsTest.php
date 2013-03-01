@@ -40,8 +40,7 @@ class RestaurantsTest extends MainCTestCase {
         $this->assertTrue(isset($response['results']) && !empty($response['results']));
         $this->assertNotEmpty($response['results']['id']);
         $this->assertNotEmpty($response['results']['name']);
-        $this->assertNotEmpty($response['results']['latitude']);
-        $this->assertNotEmpty($response['results']['longitude']);
+        
         $this->assertNotEmpty($response['results']['rating']);
     }
 

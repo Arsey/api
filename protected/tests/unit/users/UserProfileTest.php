@@ -24,7 +24,7 @@ class UserProfileTest extends MainCTestCase {
 
     function testChangeProfileName() {
         $this->setLoginCookie();
-        $response = helper::jsonDecode($this->_rest->put($this->_profile_url, array('username' => 'anothername')));
+        $response = helper::jsonDecode($this->_rest->put($this->_profile_url, array('new_username' => 'anothername')));
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertEquals(Constants::PROFILE_UPDATED, $response['message']);
         $user = Users::model()->findByAttributes(array('username' => 'anothername'));
@@ -34,7 +34,7 @@ class UserProfileTest extends MainCTestCase {
 
     function testChangeProfileEmail() {
         $this->setLoginCookie();
-        $response = helper::jsonDecode($this->_rest->put($this->_profile_url, array('email' => 'someemail@gmail.com')));
+        $response = helper::jsonDecode($this->_rest->put($this->_profile_url, array('new_email' => 'someemail@gmail.com')));
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertEquals(Constants::PROFILE_UPDATED, $response['message']);
         $user = Users::model()->findByAttributes(array('email' => 'someemail@gmail.com'));
@@ -44,7 +44,7 @@ class UserProfileTest extends MainCTestCase {
 
     function testChangeProfilePassword() {
         $this->setLoginCookie();
-        $response = helper::jsonDecode($this->_rest->put($this->_profile_url, array('password' => 'passwordRE@#')));
+        $response = helper::jsonDecode($this->_rest->put($this->_profile_url, array('new_password' => 'passwordRE@#')));
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertEquals(Constants::PROFILE_UPDATED, $response['message']);
     }

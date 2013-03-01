@@ -9,9 +9,9 @@ class SignInOutTest extends MainCTestCase {
         }
 
         $this->assertContains(ApiHelper::MESSAGE_200, $response['status']);
-        $this->assertTrue(!empty($response['results']['session_id']));
+        $this->assertTrue(!empty($response['results']['auth_token']));
 
-        return $response['results']['session_id'];
+        return $response['results']['auth_token'];
     }
 
     /**
