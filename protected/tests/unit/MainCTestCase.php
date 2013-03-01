@@ -39,6 +39,10 @@ class MainCTestCase extends CTestCase {
 
     public function __construct() {
         $this->_server = helper::yiiparam('rest_api_server_base_url');
+        $this->_initCurl();
+    }
+
+    protected function _initCurl() {
         $this->_rest = helper::curlInit($this->_server);
     }
 

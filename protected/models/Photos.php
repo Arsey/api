@@ -120,8 +120,8 @@ class Photos extends PlantEatersARMain {
     //CUSTOM OVERLOAD METHODS OF RA
     ////////////////////////////////
 
-    public function accessStatus($status){
-        $this->access_status=$status;
+    public function accessStatus($status) {
+        $this->access_status = $status;
         $this->update('access_status');
     }
 

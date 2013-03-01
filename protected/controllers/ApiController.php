@@ -114,11 +114,13 @@ class ApiController extends Controller {
                 'actions' => array(
                     'addmealtorestaurant',
                     'addmealphoto',
+                    'addratingphoto',
                     'addfeedback',
                     'profile',
                     'changeprofile',
                     'changeuseravatar',
                     'mealreport',
+                    'ratemeal',
                     'list',
                     'view',
                     'create',

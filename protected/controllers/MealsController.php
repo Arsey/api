@@ -42,21 +42,21 @@ class MealsController extends ApiController {
 
     /**
      *
-     * @param integer $id
+     * @param integer $restaurant_id
      */
-    public function actionAddMealToRestaurant($id) {
+    public function actionAddMealToRestaurant($restaurant_id) {
         /**
          * If restaurant with given id not found, raise not found error
          */
-        if (!$restaurant = Restaurants::model()->findByPk($id))
-            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $id)));
+        if (!$restaurant = Restaurants::model()->findByPk($restaurant_id))
+            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $restaurant_id)));
 
         /**
          * Fill fields for new meal
          */
         $meal = new Meals;
         $this->_assignModelAttributes($meal);
-        $meal->restaurant_id = $id;
+        $meal->restaurant_id = $restaurant_id;
         $meal->user_id = $this->_user_info['id'];
         $meal->access_status = Constants::ACCESS_STATUS_NEEDS_FOR_ACTION;
         /**
@@ -70,8 +70,8 @@ class MealsController extends ApiController {
         $rating = new Ratings;
         $this->_assignModelAttributes($rating);
         $rating->meal_id = 1;
-        $rating->photo_id = 1;
         $rating->user_id = $this->_user_info['id'];
+        $rating->access_status = Constants::ACCESS_STATUS_NEEDS_FOR_ACTION;
         ($rating->gluten_free === '' ) ? $rating->gluten_free = Meals::NOT_GLUTEN_FREE : '';
 
 

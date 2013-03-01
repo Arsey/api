@@ -1,0 +1,27 @@
+"path":"/meal/{id}/ratemeal",
+"description":"This page allows the user rate meal",
+"operations":[
+    {
+        "httpMethod":"POST",
+        "nickname":"ratemeal",
+        "parameters":[
+            {
+                "name":"id",
+                "required":"true",
+                "description":"Id of existing meal",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            },
+            {
+                "name":"rating,veg,comment,gluten_free,photo_id",
+                "required":"true",
+                "allowMultiple":"false",
+                "dataType":"rate_meal_required",
+                "paramType":"body"
+            }
+        ],
+        "summary":"Rate Meal",
+        "notes": "This page allows the user rate meal"
+    }
+]

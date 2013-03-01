@@ -1,0 +1,26 @@
+"models":{
+    "rate_meal_required":{
+        "properties":{
+            "rating":{
+                "type":"integer",
+                "description":"Numbers from 1 to 5"
+            },
+             "veg":{
+                "type":"string",
+                "description":"can be:vegan, vegan_on_request, vegetarian, vegetarian_on_request"
+            },
+            "comment":{
+                "type":"string",
+                "description":"Comment(optional) is text"
+            },
+            "gluten_free":{
+                "type":"integer",
+                "description":"Numbers: 1 - IS_GLUTEN_FREE or 0 - NOT_GLUTEN_FREE. By default it's equals 0"
+            },
+            "photo_id":{
+                "type":"integer",
+                "description":"photo_id is identifier of existing photo, that belongs to current meal. This parameter is options, but if you will not send it, your rating will needs in upload photo with rating identifier given in response on successfull meal rate."
+            }
+        }
+    }
+}

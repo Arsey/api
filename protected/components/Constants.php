@@ -119,11 +119,22 @@ class Constants {
     ///////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////IMAGES CONTROLLER///////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
-    const IMAGE_UPLOADED_SUCCESSFULLY='Image uploaded successfully';
-    const IMAGE_REQUIRED='Image file required';
+    const IMAGE_UPLOADED_SUCCESSFULLY = 'Image uploaded successfully';
+    const IMAGE_REQUIRED = 'Image file required';
+    const NO_RATING_WAS_FOUND='No rating was found with id=%d';
     ///////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////REPORTS CONTROLLER//////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
-    const NO_MEAL_WAS_FOUND='No meal was found with id=%d';
-    const REPORT_SENT='Your report successfully sent';
+    const NO_MEAL_WAS_FOUND = 'No meal was found with id=%d';
+    const REPORT_SENT = 'Your report successfully sent';
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////RATINGS CONTROLLER//////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    const DONT_HAVE_ACCESS_TO_MEAL = 'You don\'t have access to this meal';
+    const RATING_NEED_ACTION_MESSAGE = 'Your rating was added, but you also need upload photo to it. If you will not do this, rating will not be avaliable in list of rates!';
+    const RATING_SUCCESSFULLY_SENT = 'Rating successfully sent';
+    const PHOTO_ATTACHED_TO_RATING='Photo is already attached to rating';
+
+
+
 }

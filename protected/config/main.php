@@ -149,7 +149,10 @@ $main = array(
                 array('api/delete', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
                 //CREATE
                 array('reports/mealreport', 'pattern' => 'api/<format:json|xml>/meal/<id:\d+>/report/<report:\w+>'),
-                array('meals/addmealtorestaurant', 'pattern' => 'api/<format:json|xml>/restaurant/<id:\d+>/meal', 'verb' => 'POST'),
+                array('meals/addmealtorestaurant', 'pattern' => 'api/<format:json|xml>/restaurant/<restaurant_id:\d+>/meal', 'verb' => 'POST'),
+                array('ratings/ratemeal', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>/ratemeal', 'verb' => 'POST'),
+                //photo upload
+                array('images/addratingphoto', 'pattern' => 'api/<format:json|xml>/rating/<rating_id:\d+>/addphoto', 'verb' => 'POST'),
                 array('images/addmealphoto', 'pattern' => 'api/<format:json|xml>/meal/<id:\d+>/addphoto', 'verb' => 'POST'),
                 array('feedbacks/addfeedback', 'pattern' => 'api/<format:json|xml>/feedback', 'verb' => 'POST'),
                 array('api/create', 'pattern' => 'api/<format:json|xml>/<model:\w+>', 'verb' => 'POST'),
