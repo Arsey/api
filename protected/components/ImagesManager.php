@@ -186,8 +186,12 @@ class ImagesManager extends CApplicationComponent {
         return $lover ? strtolower($name) : $name;
     }
 
-    public static function getAvatarWebPath($avatar_image_name){
+    public static function getAvatarWebPath($avatar_image_name) {
         return helper::getAvatarsWebPath() . '/' . $avatar_image_name;
+    }
+
+    public static function getMealWebPath($meal_id) {
+        return helper::getMealsPhotosWebPath() . '/' . $meal_id . '/';
     }
 
 }

@@ -26,6 +26,9 @@ class RatingsController extends ApiController {
 
         $find_photo = Photos::model()->findByAttributes(array('id' => $rating->photo_id, 'access_status' => Constants::ACCESS_STATUS_PUBLISHED, 'meal_id' => $meal->id));
 
+        if (empty($rating->photo_id))
+            unset($rating->photo_id);
+
         if ($rating->photo_id == 0 || !$find_photo) {
             $rating->access_status = Constants::ACCESS_STATUS_NEEDS_FOR_ACTION;
         } else {

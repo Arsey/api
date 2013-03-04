@@ -65,7 +65,7 @@ class ImagesController extends ApiController {
 
 
         $results = array();
-        $this->_meal_dir = helper::getMealsPhotosWebPath() . '/' . $meal->id . '/';
+        $this->_meal_dir = ImagesManager::getMealWebPath($meal->id);
         $imagesManager = Yii::app()->imagesManager;
         /*
          * getting thumbnails for each photo
@@ -130,7 +130,11 @@ class ImagesController extends ApiController {
                 $this->_apiHelper->sendResponse(200, array(
                     'message' => Constants::IMAGE_UPLOADED_SUCCESSFULLY,
                     'results' => array(
-                        'photo_thumbnails' => $images_manager->lastSavedThumbnails
+                        'photo_thumbnails' => Yii::app()
+                                ->imagesManager
+                                ->setImagePath(ImagesManager::getMealWebPath($meal->id) . $this->_photo->name)
+                                ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
+                                ->getImageThumbnails()
                     )
                 ));
             } else {
@@ -138,7 +142,7 @@ class ImagesController extends ApiController {
                 $this->_apiHelper->sendResponse(400, array('errors' => $this->_photo->image->error));
             }
         } else {
-            $this->_apiHelper->sendResponse(400, array('errors' =>$this->_photo->errors));
+            $this->_apiHelper->sendResponse(400, array('errors' => $this->_photo->errors));
         }
     }
 
@@ -207,10 +211,16 @@ class ImagesController extends ApiController {
 
                 $this->_apiHelper->sendResponse(200, array(
                     'message' => Constants::IMAGE_UPLOADED_SUCCESSFULLY,
-                    'results' => array('photo_thumbnails' => $images_manager->lastSavedThumbnails)));
+                    'results' => array(
+                        'photo_thumbnails' => Yii::app()
+                                ->imagesManager
+                                ->setImagePath(ImagesManager::getMealWebPath($meal->id) . $this->_photo->name)
+                                ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
+                                ->getImageThumbnails()
+                        )));
             } else {
                 $this->_photo->accessStatus(Constants::ACCESS_STATUS_REMOVED);
-                $this->_apiHelper->sendResponse(400, array('errors' => $photo->image->error));
+                $this->_apiHelper->sendResponse(400, array('errors' => $this->_photo->image->error));
             }
         } else {
             $this->_apiHelper->sendResponse(400, array('errors' => $photo->errors));
