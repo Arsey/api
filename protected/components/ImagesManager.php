@@ -9,8 +9,17 @@ class ImagesManager extends CApplicationComponent {
     private $_ext;
     private $_prefix = null;
     private $_sizes = array();
-    public static $allowed_img_ext = array('gif', 'png', 'jpg', 'jpeg');
-    public static $allowed_img_mimes = array('image/gif', 'image/png', 'image/jpeg');
+    public static $allowed_img_ext = array(
+        'gif',
+        'png',
+        'jpg',
+        'jpeg'
+    );
+    public static $allowed_img_mimes = array(
+        'image/gif',
+        'image/png',
+        'image/jpeg'
+    );
     public static $uploads_folder = '/uploads/';
     private $_lastSavedThumbnails = array();
 
@@ -39,7 +48,7 @@ class ImagesManager extends CApplicationComponent {
         return $this;
     }
 
-    public function getLastSavedThumbnails(){
+    public function getLastSavedThumbnails() {
         return $this->_lastSavedThumbnails;
     }
 
@@ -54,46 +63,22 @@ class ImagesManager extends CApplicationComponent {
         }
     }
 
-    public static function generateNewName($len = 24, $additional_factor = null, $lover = false) {
-        $factor = 1;
-        if (!is_null($additional_factor) && (int) $additional_factor) {
-            $factor = $additional_factor;
-        }
-        mt_srand((double) microtime() * 1000000 + time() * $factor);
-        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZqwertyuiopasdfghjklzxcvbnm_';
-        $numChars = strlen($chars) - 1;
-        $name = '';
-        for ($i = 0; $i < $len; $i++) {
-            $name .= $chars[mt_rand(0, $numChars)];
-        }
-        return $lover ? strtolower($name) : $name;
-    }
+    public function getImageThumbnails() {
+        $thumbs = array();
 
-    public static function getAvatarWebPath($user_id_or_avatar, $sizes = array()) {
-        $avatar = array();
-        $avatar_name = self::getAvatarName($user_id_or_avatar);
-        $avatar_web_path = Yii::app()->createAbsoluteUrl(self::$uploads_folder . Users::AVATARS_UPLOAD_DIRECTORY . '/' . $avatar_name);
-        $ext = CFileHelper::getExtension($avatar_web_path);
-        $file_name = pathinfo($avatar_web_path, PATHINFO_FILENAME);
+        $this->_ext = CFileHelper::getExtension($this->_image_path);
+        $file_name = pathinfo($this->_image_path, PATHINFO_FILENAME);
+        $web_path = pathinfo($this->_image_path, PATHINFO_DIRNAME);
 
-        if (empty($sizes) && @GetImageSize($avatar_web_path)) {
-            $avatar['avatar'] = $avatar_web_path;
-        }
-        if (!empty($sizes)) {
-            foreach ($sizes as $size) {
-                $thumb_web_path = Yii::app()->createAbsoluteUrl(self::$uploads_folder . Users::AVATARS_UPLOAD_DIRECTORY . '/' . $file_name . '_' . $size[0] . '.' . $ext);
+        if (!empty($this->_sizes)) {
+            foreach ($this->_sizes as $size) {
+                $thumb_web_path = $web_path . '/' . $file_name . '_' . $size[0] . '.' . $this->_ext;
                 if (@GetImageSize($thumb_web_path)) {
-                    $avatar['avatar_thumbnails']['thumb_' . $size[0]] = $thumb_web_path;
+                    $thumbs['thumb_' . $size[0]] = $thumb_web_path;
                 }
             }
         }
-        return $avatar;
-    }
-
-    public static function getAvatarPath($user_id_or_avatar) {
-        if (self::getAvatarName($user_id_or_avatar) && $avatar = self::avatarPath())
-            return $avatar;
-        return false;
+        return $thumbs;
     }
 
     public function delete($user_id_or_avatar) {
@@ -136,6 +121,11 @@ class ImagesManager extends CApplicationComponent {
         return false;
     }
 
+    /**
+     * Return true if extension of file is in allowed images extensions array
+     * @param string $file
+     * @return boolean
+     */
     public static function isValidExtension($file) {
         $ext = CFileHelper::getExtension($file);
         if (in_array($ext, self::$allowed_img_ext))
@@ -143,6 +133,11 @@ class ImagesManager extends CApplicationComponent {
         return false;
     }
 
+    /**
+     * When user send file withou extension we must check it for valid mime type
+     * @param file $file
+     * @return boolean
+     */
     public static function isValidMime($file) {
         $mime = CFileHelper::getMimeType($file);
         if (in_array($mime, self::$allowed_img_mimes))
@@ -150,6 +145,11 @@ class ImagesManager extends CApplicationComponent {
         return false;
     }
 
+    /**
+     * This method convert mime type to similar extension
+     * @param string $mime
+     * @return string
+     */
     public static function mimeToExt($mime) {
         switch ($mime):
             case 'image/gif':
@@ -162,6 +162,28 @@ class ImagesManager extends CApplicationComponent {
                 return 'jpg';
                 break;
         endswitch;
+    }
+
+    /**
+     * This method generates random strings
+     * @param integer $len
+     * @param integer $additional_factor - also user id
+     * @param boolean $lover - needs to return new name in lover case
+     * @return string
+     */
+    public static function generateNewName($len = 24, $additional_factor = null, $lover = false) {
+        $factor = 1;
+        if (!is_null($additional_factor) && (int) $additional_factor) {
+            $factor = $additional_factor;
+        }
+        mt_srand((double) microtime() * 1000000 + time() * $factor);
+        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZqwertyuiopasdfghjklzxcvbnm_';
+        $numChars = strlen($chars) - 1;
+        $name = '';
+        for ($i = 0; $i < $len; $i++) {
+            $name .= $chars[mt_rand(0, $numChars)];
+        }
+        return $lover ? strtolower($name) : $name;
     }
 
 }

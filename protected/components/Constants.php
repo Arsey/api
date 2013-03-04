@@ -134,6 +134,7 @@ class Constants {
     const RATING_NEED_ACTION_MESSAGE = 'Your rating was added, but you also need upload photo to it. If you will not do this, rating will not be avaliable in list of rates!';
     const RATING_SUCCESSFULLY_SENT = 'Rating successfully sent';
     const PHOTO_ATTACHED_TO_RATING='Photo is already attached to rating';
+    const NO_MEAL_IMAGES='No photos was found for meal with id=%d';
 
 
 

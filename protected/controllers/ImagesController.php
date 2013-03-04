@@ -48,6 +48,44 @@ class ImagesController extends ApiController {
     }
 
     /**
+     * With this action user can take meal photos thumbnails
+     * @param integer $meal_id
+     */
+    function actionMealPhotos($meal_id) {
+        /*
+         * Is meal with $id exists
+         */
+        if (!$meal = Meals::model()->findByPk($meal_id))
+            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_MEAL_WAS_FOUND, $meal_id)));
+        /*
+         * Is meal have photos
+         */
+        if (!$photos = Photos::model()->findAllByAttributes(array('access_status' => Constants::ACCESS_STATUS_PUBLISHED, 'meal_id' => $meal->id)))
+            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_MEAL_IMAGES, $meal_id)));
+
+
+        $results = array();
+        $this->_meal_dir = helper::getMealsPhotosDir() . '/' . $meal->id . '/';
+        $imagesManager = Yii::app()->imagesManager;
+        /*
+         * getting thumbnails for each photo
+         */
+        foreach ($photos as $photo) {
+
+            $photo_thumbnails = $imagesManager
+                    ->setImagePath($this->_meal_dir . $photo->name)
+                    ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
+                    ->getImageThumbnails();
+
+            $photo_info = $photo->filterByRole($this->_user_role);
+            $photo_info['thumbnails'] = $photo_thumbnails;
+            $results[] = $photo_info;
+        }
+
+        $this->_apiHelper->sendResponse(200, array('results' => $results));
+    }
+
+    /**
      * With this action user can upload photos for meal
      * @param integer $id of existing meal
      */
@@ -200,17 +238,41 @@ class ImagesController extends ApiController {
             if ($image->avatar->saveAs($image_path)) {
                 $avatar_sizes = helper::yiiparam('sizes_for_user_avatar');
                 /* Create thimbnails for avatar for registered image sizes */
-                Yii::app()->imagesManager->setImagePath($image_path)->setSaveTo($this->_avatars_dir)->setExt($image->avatar->extensionName)->setPrefix($avatar_new_name . '_')->setSizes($avatar_sizes)->makeThumbnails();
+                Yii::app()
+                        ->imagesManager
+                        ->setImagePath($image_path)
+                        ->setSaveTo($this->_avatars_dir)
+                        ->setExt($image->avatar->extensionName)
+                        ->setPrefix($avatar_new_name . '_')
+                        ->setSizes($avatar_sizes)
+                        ->makeThumbnails();
                 /*
                  * If avatar uploaded  not in first time,
                  * we must delete old avatar from server
                  */
                 if (!empty($this->_user_info['avatar']))
-                    Yii::app()->imagesManager->setSizes($avatar_sizes)->delete($this->_user_info['avatar']);
+                    Yii::app()
+                            ->imagesManager
+                            ->setSizes($avatar_sizes)
+                            ->delete($this->_user_info['avatar']);
 
 
                 if ($user = Users::model()->updateByPk($this->_user_info['id'], array('avatar' => $image->name))) {
-                    $this->_apiHelper->sendResponse(200, array('results' => array(ImagesManager::getAvatarWebPath($image->name, $avatar_sizes)), 'message' => 'Avatar uploaded successfully'));
+                    /*
+                     * geting avatar thumbnails
+                     */
+                    $avatar_thumbs = Yii::app()
+                            ->imagesManager
+                            ->setImagePath($image_path)
+                            ->setSizes($avatar_sizes)
+                            ->getImageThumbnails();
+                    /*
+                     * send to user success message and avatar thumnails
+                     */
+                    $this->_apiHelper->sendResponse(200, array(
+                        'results' => $avatar_thumbs,
+                        'message' => 'Avatar uploaded successfully')
+                    );
                 } else {
                     $this->_apiHelper->sendResponse(400, array('errors' => $user->errors));
                 }

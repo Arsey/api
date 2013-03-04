@@ -137,12 +137,11 @@ $main = array(
                     'verb' => 'GET'
                 ),
                 //pattern to apply access filter for any model
-
-
                 array('meals/restaurantmeals', 'pattern' => 'api/<format:json|xml>/restaurant/<id:\d+>/meals(/<status:published|removed|pending|unpublished>)?', 'verb' => 'GET'),
                 array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>(/<status:published|removed|pending|unpublished>)?', 'verb' => 'GET'),
                 //PATTERNS TO GET INFO ABOUT SINGLE OBJECT
                 array('restaurants/viewrestaurant', 'pattern' => 'api/<format:json|xml>/<model:restaurant>/<id:\d+>', 'verb' => 'GET'),
+                array('images/mealphotos', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>/photos', 'verb' => 'GET'),//get meal photos
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 ////
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),

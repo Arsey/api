@@ -1,0 +1,21 @@
+"path":"/meal/{id}/photos",
+"description":"This page allows the user to get all photos for meal by it id",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"MealPhotos",
+        "parameters":[
+            {
+                "name":"id",
+                "required":"true",
+                "description":"Id of existing meal",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            }
+        ],
+        "summary":"Meal Photos",
+        "notes": "This page allows the user to get all photos for meal by it id"
+
+    }
+]

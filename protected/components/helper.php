@@ -123,7 +123,7 @@ class helper extends CApplicationComponent {
     }
 
     public static function getMealsPhotosDir() {
-        return realpath(self::unixSlashes(Yii::app()->basePath) . '/../uploads') . '/' . Photos::MEALS_UPLOAD_DIRECTORY;
+        return self::unixSlashes(realpath(Yii::app()->basePath . '/../uploads')) . '/' . Photos::MEALS_UPLOAD_DIRECTORY;
     }
 
     public static function getAvatarsDir() {

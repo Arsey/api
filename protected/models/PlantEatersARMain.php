@@ -70,9 +70,13 @@ class PlantEatersARMain extends CActiveRecord {
                 'normal' => array('reference', 'external_id', 'access_status'),
             ),
             'meals' => array(
-                'guest' => array('access_status', 'user_id', 'restaurant_id','modifiedtime','createtime'),
-                'normal' => array('access_status','user_id','modifiedtime','createtime'),
+                'guest' => array('access_status', 'user_id', 'restaurant_id', 'modifiedtime', 'createtime'),
+                'normal' => array('access_status', 'user_id', 'modifiedtime', 'createtime'),
             ),
+            'photos' => array(
+                'guest' => array('user_id', 'meal_id', 'access_status'),
+                'normal' => array('user_id', 'meal_id', 'access_status'),
+            )
         );
         return $npa[$model_name][$role];
     }

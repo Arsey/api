@@ -12,6 +12,8 @@ echo '},{';
 echo file_get_contents('addrestaurantmeal.json');
 echo '},{';
 echo file_get_contents('addmealphoto.json');
+echo '},{';
+echo file_get_contents('getmealphotos.json');
 echo '}],';
 echo file_get_contents('models.json');
 echo '}';

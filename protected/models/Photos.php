@@ -120,11 +120,6 @@ class Photos extends PlantEatersARMain {
     //CUSTOM OVERLOAD METHODS OF RA
     ////////////////////////////////
 
-    public function accessStatus($status) {
-        $this->access_status = $status;
-        $this->update('access_status');
-    }
-
     public function behaviors() {
         return array(
             'timestamps' => array(
@@ -132,6 +127,23 @@ class Photos extends PlantEatersARMain {
                 'createAttribute' => 'createtime',
             ),
         );
+    }
+
+    //////////////////////////////
+    //CUSTOM NOT RA MODEL METHODS
+    //////////////////////////////
+    /**
+     * This method need for filtering data by user role
+     * @param string $user_role
+     * @return model attributes
+     */
+    public function filterByRole($user_role) {
+        return parent::filterByRole($this, $user_role);
+    }
+
+    public function accessStatus($status) {
+        $this->access_status = $status;
+        $this->update('access_status');
     }
 
 }
