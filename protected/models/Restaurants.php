@@ -30,12 +30,25 @@
 class Restaurants extends PlantEatersARMain {
 
     protected $_search_results = null;
+
+    /**
+     * current user position latitude
+     * @var float
+     */
     private $_current_lat = null;
+
+    /**
+     * current user position longitude
+     * @var float
+     */
     private $_current_long = null;
     private static $_table_name = 'restaurants';
     private $_external_ids_not_in_db = null;
     private $_external_ids = null;
     public $role_based_attributes = array();
+    public $latitude;
+    public $longitude;
+    public $not_model_attributes = null;
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -71,7 +84,7 @@ class Restaurants extends PlantEatersARMain {
             array('phone', 'length', 'max' => 30),
             array('rating', 'length', 'max' => 4),
             $this->_access_status_rule,
-           $this->_veg_short,
+            $this->_veg_short,
             array('access_status', 'length', 'max' => 11),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -166,13 +179,76 @@ class Restaurants extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+    public function getFullInfo($restaurant_id) {
+
+
+        $restaurant = Yii::app()->db->createCommand()
+                ->select(
+                        array(
+                            'id',
+                            'name',
+                            'external_id',
+                            'reference',
+                            'X(location) as latitude',
+                            'Y(location) as longitude',
+                            'street_address',
+                            'street_address_2',
+                            'city',
+                            'state',
+                            'country',
+                            'phone',
+                            'email',
+                            'website',
+                            'veg',
+                            'rating',
+                            'createtime',
+                            'modifiedtime',
+                            'access_status',
+                            '(SELECT COUNT(*) AS count
+                                FROM ' . Meals::model()->tableName() . '
+                                    WHERE `restaurant_id`=\'' . $restaurant_id . '\' AND `access_status`=\'published\') as number_of_meals',
+                        )
+                )
+                ->from(Restaurants::model()->tableName())
+                ->where(array('and', 'id=:id'), array(':id' => $restaurant_id,))
+                ->queryRow();
+
+        $restaurant_best_meals = Yii::app()->db->createCommand()
+                ->select(
+                        array(
+                            'id',
+                            'name',
+                            'rating',
+                        )
+                )
+                ->from(Meals::model()->tableName())
+                ->where(
+                        array(
+                    'and',
+                    'restaurant_id=:restaurant_id',
+                    'access_status=:access_status',
+                        ), array(
+                    ':restaurant_id' => $restaurant_id,
+                    ':access_status' => Constants::ACCESS_STATUS_PUBLISHED
+                        )
+                )
+                ->limit(2)
+                ->queryAll();
+
+        if ($restaurant) {
+            $restaurant['best_meals'] = $restaurant_best_meals;
+        }
+
+        return $restaurant;
+    }
+
     /**
      * This method need for filtering data by user role
      * @param string $user_role
      * @return model attributes
      */
     public function filterByRole($user_role) {
-        return parent::filterByRole($this, $user_role);
+        return parent::filterByRole($this, $user_role, $this->not_model_attributes);
     }
 
     /**

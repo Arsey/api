@@ -65,7 +65,7 @@ class ImagesController extends ApiController {
 
 
         $results = array();
-        $this->_meal_dir = helper::getMealsPhotosDir() . '/' . $meal->id . '/';
+        $this->_meal_dir = helper::getMealsPhotosWebPath() . '/' . $meal->id . '/';
         $imagesManager = Yii::app()->imagesManager;
         /*
          * getting thumbnails for each photo
@@ -138,7 +138,7 @@ class ImagesController extends ApiController {
                 $this->_apiHelper->sendResponse(400, array('errors' => $this->_photo->image->error));
             }
         } else {
-            $this->_apiHelper->sendResponse(400, array('errors' => $photo->errors));
+            $this->_apiHelper->sendResponse(400, array('errors' =>$this->_photo->errors));
         }
     }
 
@@ -263,7 +263,7 @@ class ImagesController extends ApiController {
                      */
                     $avatar_thumbs = Yii::app()
                             ->imagesManager
-                            ->setImagePath($image_path)
+                            ->setImagePath(ImagesManager::getAvatarWebPath($image->name))
                             ->setSizes($avatar_sizes)
                             ->getImageThumbnails();
                     /*

@@ -87,16 +87,20 @@ class PlantEatersARMain extends CActiveRecord {
      * @param string $user_role
      * @return model attributes
      */
-    protected function filterByRole($model, $user_role) {
+    protected function filterByRole($model, $user_role, $not_model_attributes = null) {
         if ($user_role !== Users::ROLE_SUPER) {
-            $attributes = array();
+            $attributes_return = array();
             $not_public_attributes = $this->_notPublicAttributes($model->tableName(), $user_role);
-            foreach ($model->attributes as $key => $val) {
+
+            $attributes = is_null($not_model_attributes) ? $model->attributes : $not_model_attributes;
+            foreach ($attributes as $key => $val) {
                 if (!in_array($key, $not_public_attributes)) {
-                    $attributes[$key] = $val;
+                    $attributes_return[$key] = $val;
                 }
             }
-            return $attributes;
+
+
+            return $attributes_return;
         }
         return $model;
     }

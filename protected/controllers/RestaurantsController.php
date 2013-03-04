@@ -30,14 +30,16 @@ class RestaurantsController extends ApiController {
     /**
      * Get information about restaurant by id
      */
-    public function actionViewRestaurant() {
+    public function actionViewRestaurant($id) {
         /* Did we found the requested restaurant? If not, raise an error */
+        $restaurant = Restaurants::model()->getFullInfo($id);
+        if (!$restaurant)
+            $this->_apiHelper->sendResponse(404, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $id)));
 
-        if (!$restaurant = Restaurants::model()->findByPk($this->_parsed_attributes['id']))
-            $this->_apiHelper->sendResponse(404, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $this->_parsed_attributes['id'])));
-        else {
-            $this->_apiHelper->sendResponse(200, array('results' => $restaurant->filterByRole($this->_user_role)));
-        }
+        $model = new Restaurants;
+        $model->not_model_attributes = $restaurant;
+
+        $this->_apiHelper->sendResponse(200, array('results' => $model->filterByRole($this->_user_role)));
     }
 
     protected function _isInvalidRequest() {

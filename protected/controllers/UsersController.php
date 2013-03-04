@@ -161,11 +161,19 @@ class UsersController extends ApiController {
      */
     public function actionProfile() {
         if ($this->_user_info) {
+
+
+            $avatar = Yii::app()
+                    ->imagesManager
+                    ->setImagePath(ImagesManager::getAvatarWebPath($this->_user_info['avatar']))
+                    ->setSizes(helper::yiiparam('sizes_for_user_avatar'))
+                    ->getImageThumbnails();
+
             $this->_apiHelper->sendResponse(200, array(
                 'results' => array(
                     'username' => $this->_user_info['username'],
                     'email' => $this->_user_info['email'],
-                    'avatar' => ImagesManager::getAvatarWebPath($this->_user_info['avatar'])
+                    'avatar_thumbnails' => $avatar
                     ))
             );
         }
@@ -185,11 +193,11 @@ class UsersController extends ApiController {
 
             $user = Users::model()->findByPk($this->_user_info['id']);
             /* if user send some username, we must assign this value to username field of Users model */
-            isset($this->_parsed_attributes['new_username'])&&!empty($this->_parsed_attributes['new_username']) ? $user->username = $this->_parsed_attributes['new_username'] : false;
+            isset($this->_parsed_attributes['new_username']) && !empty($this->_parsed_attributes['new_username']) ? $user->username = $this->_parsed_attributes['new_username'] : false;
             /* if user send some email, we must assign this value to email field of Users model */
-            isset($this->_parsed_attributes['new_email'])&&!empty($this->_parsed_attributes['new_email']) ? $user->email = $this->_parsed_attributes['new_email'] : false;
+            isset($this->_parsed_attributes['new_email']) && !empty($this->_parsed_attributes['new_email']) ? $user->email = $this->_parsed_attributes['new_email'] : false;
             /* if user send some password, we must assign this value to password field of Users model */
-            isset($this->_parsed_attributes['new_password'])&&!empty($this->_parsed_attributes['new_password']) ? $user->password = $this->_parsed_attributes['new_password'] : false;
+            isset($this->_parsed_attributes['new_password']) && !empty($this->_parsed_attributes['new_password']) ? $user->password = $this->_parsed_attributes['new_password'] : false;
 
             /* trying to save with validation */
             $user->scenario = 'change_profile';

@@ -126,8 +126,16 @@ class helper extends CApplicationComponent {
         return self::unixSlashes(realpath(Yii::app()->basePath . '/../uploads')) . '/' . Photos::MEALS_UPLOAD_DIRECTORY;
     }
 
+    public static function getMealsPhotosWebPath() {
+        return Yii::app()->createAbsoluteUrl(ImagesManager::$uploads_folder . Photos::MEALS_UPLOAD_DIRECTORY . '/');
+    }
+
     public static function getAvatarsDir() {
         return realpath(self::unixSlashes(Yii::app()->basePath) . '/../uploads') . '/' . Users::AVATARS_UPLOAD_DIRECTORY;
+    }
+
+    public static function getAvatarsWebPath() {
+        return Yii::app()->createAbsoluteUrl(ImagesManager::$uploads_folder . Users::AVATARS_UPLOAD_DIRECTORY . '/');
     }
 
     public static function unixSlashes($string) {
