@@ -30,6 +30,9 @@ $main = array(
     'modules' => array(),
     // application components
     'components' => array(
+        'meals' => array(
+            'class' => 'MealsManager'
+        ),
         'ratings' => array(
             'class' => 'RatingsManager'
         ),
@@ -148,6 +151,8 @@ $main = array(
                 //PATTERNS TO GET INFO ABOUT SINGLE OBJECT
                 array('restaurants/viewrestaurant', 'pattern' => 'api/<format:json|xml>/<model:restaurant>/<id:\d+>', 'verb' => 'GET'),
                 array('images/mealphotos', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>/photos', 'verb' => 'GET'), //get meal photos
+                array('meals/getmealwithratings', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>', 'verb' => 'GET'), //get meal with it ratings
+                array('ratings/canuserratemeal', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>/canrate', 'verb' => 'GET'), //is user can rate meal
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 ////
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),

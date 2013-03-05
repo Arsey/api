@@ -150,6 +150,34 @@ class Meals extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+    public static function getCompleteInfo($meal_id) {
+
+        $meals_table = self::model()->tableName();
+        $restaurants_table = Restaurants::model()->tableName();
+        $ratings_table = Ratings::model()->tableName();
+
+        return Yii::app()->db->createCommand()
+                        ->select(array(
+                            "$restaurants_table.id as restaurant_id",
+                            "$meals_table.id as meal_id",
+                            "$meals_table.name as meal_name",
+                            "$restaurants_table.name as restaurant_name",
+                            "$meals_table.veg",
+                            "$meals_table.gluten_free",
+                            "$meals_table.rating",
+                            "(SELECT COUNT(*) FROM $ratings_table 
+                                WHERE 
+                                    access_status='" . Constants::ACCESS_STATUS_PUBLISHED . "' 
+                                    AND 
+                                    meal_id='{$meal_id}'
+                              ) AS number_of_ratings"
+                        ))
+                        ->join($restaurants_table, "$restaurants_table.id=$meals_table.restaurant_id")
+                        ->from($meals_table)
+                        ->where("$meals_table.id=:id", array(':id' => $meal_id))
+                        ->queryRow();
+    }
+
     /**
      * This method need for filtering data by user role
      * @param string $user_role
@@ -160,7 +188,7 @@ class Meals extends PlantEatersARMain {
     }
 
     public function accessStatus($status) {
-        $this->access_status=$status;
+        $this->access_status = $status;
         $this->update('access_status');
     }
 

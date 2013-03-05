@@ -151,6 +151,32 @@ class Ratings extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+
+    public static function isUserLeaveMealRating($user_id, $meal_id) {
+        $ratings_table = self::model()->tableName();
+        return Yii::app()
+                        ->db
+                        ->createCommand("SELECT id FROM {$ratings_table} WHERE meal_id=$meal_id AND user_id=$user_id")
+                        ->queryScalar();
+    }
+
+    public static function getMealRatings($meal_id) {
+        $table = self::model()->tableName();
+        $users_table = Users::model()->tableName();
+        return Yii::app()->db->createCommand()
+                        ->select(array(
+                            'users.id AS user_id',
+                            'users.username as username',
+                            'users.avatar as avatar',
+                            'ratings.comment as comment',
+                            'ratings.rating as rating',
+                        ))
+                        ->join($users_table, "`$table`.`user_id`=`$users_table`.`id`")
+                        ->from($table)
+                        ->where('meal_id=:meal_id', array(':meal_id' => $meal_id))
+                        ->queryAll();
+    }
+
     public static function getUserRatings($user_id) {
         return Yii::app()->db->createCommand()
                         ->select(

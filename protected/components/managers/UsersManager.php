@@ -17,7 +17,7 @@ class UsersManager extends CApplicationComponent {
         return $this;
     }
 
-    public function getActivityUserInfo() {
+    public function getUserActivityInfo() {
 
         $user = Users::getUserActivityInfo($this->_user_id);
         if (!empty($user['avatar']))

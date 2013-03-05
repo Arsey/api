@@ -2,6 +2,12 @@
 
 class RatingsController extends ApiController {
 
+    function actionCanUserRateMeal($meal_id) {
+        BaseChecker::isMeal($meal_id, $this->_apiHelper);
+        BaseChecker::canUserRateMeal($this->_user_info['id'], $meal_id, $this->_apiHelper);
+        $this->_apiHelper->sendResponse(200, array('message' => 'You can rate this meal'));
+    }
+
     /**
      *
      * @param integer $user_id - optional
@@ -26,7 +32,7 @@ class RatingsController extends ApiController {
         /*
          * Getting all required user information for this action
          */
-        $user_activity_info = Yii::app()->usersManager->setUserId($user_id)->getActivityUserInfo();
+        $user_activity_info = Yii::app()->usersManager->setUserId($user_id)->getUserActivityInfo();
 
         $this->_apiHelper->sendResponse(200, array(
             'results' => array(
@@ -38,16 +44,13 @@ class RatingsController extends ApiController {
 
     function actionRateMeal($meal_id) {
 
-        /**
-         * If meal with given id not found, raise not found error
-         */
-        if (!$meal = Meals::model()->findByPk($meal_id))
-            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_MEAL_WAS_FOUND, $meal_id)));
-        /**
-         * Meal must have publish access status for rate
-         */
+        /* If meal with given id not found, raise not found error */
+        $meal = BaseChecker::isMeal($meal_id, $this->_apiHelper);
+        /* Meal must have publish access status for rate */
         if ($meal->access_status !== Constants::ACCESS_STATUS_PUBLISHED)
             $this->_apiHelper->sendResponse(400, array('errors' => Constants::DONT_HAVE_ACCESS_TO_MEAL));
+
+        BaseChecker::canUserRateMeal($this->_user_info['id'], $meal_id, $this->_apiHelper);
 
         /**
          * Fill fields for new rating

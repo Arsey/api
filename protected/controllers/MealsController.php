@@ -3,6 +3,26 @@
 class MealsController extends ApiController {
 
     /**
+     * 
+     * @param type $meal_id
+     */
+    function actionGetMealWithRatings($meal_id) {
+        $meal = BaseChecker::isMeal($meal_id, $this->_apiHelper);
+
+        if (!$ratings = Yii::app()->ratings->getMealRatings($meal->id))
+            $this->_apiHelper->sendResponse(404, array('message' => sprintf(Constants::NO_MEAL_RATINGS, $meal->name)));
+
+        $meal_complete_info = Yii::app()->meals->setMealId($meal->id)->getCompleteInfo();
+
+        $this->_apiHelper->sendResponse(200, array(
+            'results' => array(
+                'meal' => $meal_complete_info,
+                'ratings' => $ratings
+            )
+        ));
+    }
+
+    /**
      * This action allows to users view meals in restaurant by restaurant id
      * @param integer $id
      * @param string $status
@@ -17,8 +37,7 @@ class MealsController extends ApiController {
         /**
          * If restaurant with given id not found, raise not found error
          */
-        if (!$restaurant = Restaurants::model()->findByPk($id))
-            $this->_apiHelper->sendResponse(404, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $id)));
+        $restaurant = BaseChecker::isRestaurant($restaurant_id, $this->_apiHelper);
         /**
          * If in restaurant was not found any meals with $status by restaurant $id
          */
@@ -36,7 +55,6 @@ class MealsController extends ApiController {
             $results['meals'][] = $filtered_meal;
         }
 
-
         $this->_apiHelper->sendResponse(200, array('results' => $results));
     }
 
@@ -48,8 +66,7 @@ class MealsController extends ApiController {
         /**
          * If restaurant with given id not found, raise not found error
          */
-        if (!$restaurant = Restaurants::model()->findByPk($restaurant_id))
-            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $restaurant_id)));
+        BaseChecker::isRestaurant($restaurant_id, $this->_apiHelper);
 
         /**
          * Fill fields for new meal

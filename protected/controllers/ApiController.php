@@ -4,18 +4,7 @@ class ApiController extends Controller {
 
     public $is_mobile_client_device;
     public $layout = 'empty';
-
-    /*
-     *  Key which has to be in HTTP USERNAME and PASSWORD headers
-     */
-
-    const APPLICATION_ID = 'ASCCPE';
-
-    /*
-     * format - "application/json" or "application/xml"
-     */
-
-    protected $_format;
+    protected $_format; //format - "application/json" or "application/xml"
     /*
      * format_url is for genereting url based on it's format.
      * That's can be xml or json
@@ -123,6 +112,8 @@ class ApiController extends Controller {
                     'ratemeal',
                     'mealphotos',
                     'activity',
+                    'getmealwithratings',
+                    'canuserratemeal',
                     'list',
                     'view',
                     'create',
