@@ -122,6 +122,7 @@ class ApiController extends Controller {
                     'mealreport',
                     'ratemeal',
                     'mealphotos',
+                    'activity',
                     'list',
                     'view',
                     'create',

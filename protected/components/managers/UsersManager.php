@@ -2,7 +2,48 @@
 
 class UsersManager extends CApplicationComponent {
 
-   
+    /**
+     * User identifier
+     * @var integer
+     */
+    private $_user_id = null;
+
+    /**
+     * Settern for $_user_id
+     * @param integer $id
+     */
+    function setUserId($id) {
+        $this->_user_id = $id;
+        return $this;
+    }
+
+    public function getActivityUserInfo() {
+
+        $user = Users::getUserActivityInfo($this->_user_id);
+        if (!empty($user['avatar'])) {
+            $user['avatar_thumbnails'] = self::getAvatarThumbnails($user['avatar']);
+        }
+
+
+
+        return $user;
+    }
+
+    /**
+     * Return array of avatar thumbnails
+     * @param string $avatar_name
+     * @param array $sizes
+     * @return array
+     */
+    public static function getAvatarThumbnails($avatar_name, $sizes = null) {
+
+        $image_path = ImagesManager::getAvatarWebPath($avatar_name);
+
+        if (is_null($sizes))
+            $sizes = helper::yiiparam('sizes_for_user_avatar');
+
+        return Yii::app()->imagesManager->setImagePath($image_path)->setSizes($sizes)->getImageThumbnails();
+    }
 
     /**
      * Create manually user. With email confirmation

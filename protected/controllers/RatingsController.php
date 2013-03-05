@@ -2,6 +2,27 @@
 
 class RatingsController extends ApiController {
 
+    /**
+     *
+     * @param integer $user_id
+     */
+    function actionActivity($user_id) {
+        if (!$user = Users::model()->findByPk($user_id))
+            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_USER_WAS_FOUND, $user_id)));
+
+        if (!$ratings = Yii::app()->ratings->getUserRatings($user_id))
+            $this->_apiHelper->sendResponse(404, array('message' => sprintf(Constants::NO_USER_RATINGS, $user->username)));
+
+        $user_activity_info = Yii::app()->usersManager->setUserId($user_id)->getActivityUserInfo();
+
+        $this->_apiHelper->sendResponse(200, array(
+            'results' => array(
+                'user' => $user_activity_info,
+                'ratings' => $ratings
+            )
+        ));
+    }
+
     function actionRateMeal($meal_id) {
 
         /**
@@ -56,3 +77,4 @@ class RatingsController extends ApiController {
     }
 
 }
+

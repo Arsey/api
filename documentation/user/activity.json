@@ -1,0 +1,20 @@
+"path":"/user/{id}/activity",
+"description":"This page allows the user to get activity information by user id",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"GetUserActivity",
+        "parameters":[
+            {
+                "name":"id",
+                "required":"true",
+                "description":"Id of user",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            }
+        ],
+        "summary":"Get User Activity(Profile)",
+        "notes": "This page allows the user to get activity information by user id"
+    }
+]

@@ -19,7 +19,7 @@ class UserProfileTest extends MainCTestCase {
         $this->assertNotEmpty($response['results']['username']);
         $this->assertArrayHasKey('email', $response['results']);
         $this->assertNotEmpty($response['results']['email']);
-        $this->assertArrayHasKey('avatar', $response['results']);
+        $this->assertArrayHasKey('avatar_thumbnails', $response['results']);
     }
 
     function testChangeProfileName() {

@@ -16,6 +16,7 @@ $main = array(
     'import' => array(
         'application.models.*',
         'application.components.*',
+        'application.components.managers.*',
         'application.controllers.*',
         //import user models from user module extension
         'application.extensions.googlePlaces',
@@ -29,6 +30,9 @@ $main = array(
     'modules' => array(),
     // application components
     'components' => array(
+        'ratings' => array(
+            'class' => 'RatingsManager'
+        ),
         'imagesManager' => array(
             'class' => 'ImagesManager',
         ),
@@ -129,6 +133,8 @@ $main = array(
                 array('/users/avatar', 'pattern' => 'api/<format:json|xml>/user/avatar', 'verb' => 'GET'),
                 /* Change user avatar */
                 array('/images/changeuseravatar', 'pattern' => 'api/<format:json|xml>/user/changeavatar', 'verb' => 'POST'),
+                /* Get User Activity */
+                array('/ratings/activity', 'pattern' => 'api/<format:json|xml>/user/<user_id:\d+>/activity', 'verb' => 'GET'),
                 //REST patterns for RESTAURANTS SEARCHING
                 array(
                     'restaurants/<searchtype>',
@@ -141,7 +147,7 @@ $main = array(
                 array('api/list', 'pattern' => 'api/<format:json|xml>/<model:\w+>(/<status:published|removed|pending|unpublished>)?', 'verb' => 'GET'),
                 //PATTERNS TO GET INFO ABOUT SINGLE OBJECT
                 array('restaurants/viewrestaurant', 'pattern' => 'api/<format:json|xml>/<model:restaurant>/<id:\d+>', 'verb' => 'GET'),
-                array('images/mealphotos', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>/photos', 'verb' => 'GET'),//get meal photos
+                array('images/mealphotos', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>/photos', 'verb' => 'GET'), //get meal photos
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 ////
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),

@@ -93,6 +93,7 @@ class Constants {
     const ACCOUNT_WITH_GIVEN_EMAIL_NOT_FOUND = 'User account with {email} email not found.';
     //message wich sey to user foolow instructions for password recovery
     const INSTRUCTIONS_SENT = 'Instructions have been sent to you. Please check your email.';
+    const NO_USER_WAS_FOUND = 'No user was found with id=%d';
     /*
      * authenticate method
      */
@@ -121,7 +122,7 @@ class Constants {
     ///////////////////////////////////////////////////////////////////////////////
     const IMAGE_UPLOADED_SUCCESSFULLY = 'Image uploaded successfully';
     const IMAGE_REQUIRED = 'Image file required';
-    const NO_RATING_WAS_FOUND='No rating was found with id=%d';
+    const NO_RATING_WAS_FOUND = 'No rating was found with id=%d';
     ///////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////REPORTS CONTROLLER//////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
@@ -133,9 +134,8 @@ class Constants {
     const DONT_HAVE_ACCESS_TO_MEAL = 'You don\'t have access to this meal';
     const RATING_NEED_ACTION_MESSAGE = 'Your rating was added, but you also need upload photo to it. If you will not do this, rating will not be avaliable in list of rates!';
     const RATING_SUCCESSFULLY_SENT = 'Rating successfully sent';
-    const PHOTO_ATTACHED_TO_RATING='Photo is already attached to rating';
-    const NO_MEAL_IMAGES='No photos was found for meal with id=%d';
-
-
+    const PHOTO_ATTACHED_TO_RATING = 'Photo is already attached to rating';
+    const NO_MEAL_IMAGES = 'No photos was found for meal with id=%d';
+    const NO_USER_RATINGS = 'No available ratings  was found for user %s';
 
 }

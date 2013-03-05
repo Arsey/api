@@ -71,7 +71,7 @@ class Users extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('password, salt, email, username', 'required','on'=>'insert'),
+            array('password, salt, email, username', 'required', 'on' => 'insert'),
             array('createtime, lastvisit, lastaction, lastpasswordchange', 'numerical', 'integerOnly' => true),
             array('password, salt, activation_key', 'length', 'max' => 128),
             array('email, city, country, avatar', 'length', 'max' => 255),
@@ -94,7 +94,7 @@ class Users extends CActiveRecord {
                 'match',
                 'pattern' => '/^[A-Za-z0-9_]+$/u',
                 'message' => 'Incorrect symbol\'s. (A-z0-9)',
-                //'on'=>'insert,change_profile',
+            //'on'=>'insert,change_profile',
             ),
             array(
                 'email',
@@ -247,7 +247,7 @@ class Users extends CActiveRecord {
     }
 
     //////////////////////////////
-    //CUSTOM NOT RA MODEL METHODS
+    ///CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
     /**
      * Static function that returns user by pk without AR model
@@ -255,9 +255,37 @@ class Users extends CActiveRecord {
      * @return object
      */
     public static function getUserFastByPk($pk) {
-        if (is_numeric($pk)) {
+        if (is_numeric($pk))
             return Yii::app()->db->createCommand("SELECT * FROM `users` WHERE `id`=" . $pk)->queryRow();
+        return false;
+    }
+
+    public static function getUserActivityInfo($user_id) {
+
+        $table = Users::model()->tableName();
+        $ratings_table = Ratings::model()->tableName();
+        $meals_table = Meals::model()->tableName();
+
+        if (is_numeric($user_id)) {
+
+            $number_of_ratings_query = "(SELECT COUNT(*) FROM `{$ratings_table}`
+            WHERE `{$ratings_table}`.`user_id`='$user_id'
+            AND `{$ratings_table}`.`access_status`='" . Constants::ACCESS_STATUS_PUBLISHED . "')
+                AS number_of_ratings";
+
+            $dines_mostly_in = "
+            (SELECT `$meals_table`.`restaurant_id` FROM $meals_table WHERE $meals_table.`id`
+            IN (SELECT `$ratings_table`.`meal_id` FROM `{$ratings_table}` WHERE `$ratings_table`.`user_id`={$user_id} AND `$ratings_table`.`access_status`='" . Constants::ACCESS_STATUS_PUBLISHED . "')
+                limit 1)
+                AS dines_mostly_in";
+
+            return Yii::app()->db->createCommand()
+                            ->select(array('username', 'avatar', $number_of_ratings_query, $dines_mostly_in))
+                            ->where('id=:id', array(':id' => $user_id))
+                            ->from($table)
+                            ->queryRow();
         }
+        return false;
     }
 
     /**
