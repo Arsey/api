@@ -156,12 +156,15 @@ class Ratings extends PlantEatersARMain {
                         ->select(
                                 array(
                                     'meal_id',
-                                    '(SELECT `meals`.`name` FROM `meals` WHERE `meals`.`id`=`ratings`.`meal_id`) AS meal_name',
-                                    '(SELECT COUNT(*) FROM `ratings` WHERE `ratings`.`meal_id`=`ratings`.`meal_id`) AS number_of_ratings',
+                                    '(SELECT `meals`.`name` FROM `meals` WHERE `meals`.`id`=`ratings`.`meal_id`) 
+                                      AS meal_name',
+                                    '(SELECT COUNT(*) FROM `ratings` WHERE `ratings`.`meal_id`=`ratings`.`meal_id`) 
+                                      AS number_of_ratings',
                                     'comment',
                                     'rating',
                                     "(SELECT `photos`.`name` FROM `photos` WHERE `photos`.`id`=
-                                        (SELECT `photos`.`id` FROM `photos` WHERE `photos`.`meal_id`=`ratings`.`meal_id` AND `photos`.`default`=1)) AS photo_name",
+                                        (SELECT `photos`.`id` FROM `photos` WHERE `photos`.`meal_id`=`ratings`.`meal_id` AND `photos`.`default`=1)
+                                     ) AS photo_name",
                                 )
                         )
                         ->where(array('and', 'access_status=:access_status', 'user_id=:user_id')

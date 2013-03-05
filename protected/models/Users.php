@@ -268,16 +268,19 @@ class Users extends CActiveRecord {
 
         if (is_numeric($user_id)) {
 
-            $number_of_ratings_query = "(SELECT COUNT(*) FROM `{$ratings_table}`
-            WHERE `{$ratings_table}`.`user_id`='$user_id'
-            AND `{$ratings_table}`.`access_status`='" . Constants::ACCESS_STATUS_PUBLISHED . "')
+            $number_of_ratings_query = "
+                (SELECT COUNT(*) FROM `{$ratings_table}`
+                    WHERE `{$ratings_table}`.`user_id`='$user_id' AND `{$ratings_table}`.`access_status`='" . Constants::ACCESS_STATUS_PUBLISHED . "')
                 AS number_of_ratings";
 
             $dines_mostly_in = "
-            (SELECT `$meals_table`.`restaurant_id` FROM $meals_table WHERE $meals_table.`id`
-            IN (SELECT `$ratings_table`.`meal_id` FROM `{$ratings_table}` WHERE `$ratings_table`.`user_id`={$user_id} AND `$ratings_table`.`access_status`='" . Constants::ACCESS_STATUS_PUBLISHED . "')
-                limit 1)
-                AS dines_mostly_in";
+                (SELECT restaurant_id FROM (SELECT restaurant_id, COUNT(*) AS magnitude FROM 
+                    (SELECT `$meals_table`.`restaurant_id` FROM $meals_table WHERE `$meals_table`.`id` IN 
+                            (SELECT `$ratings_table`.`meal_id` FROM `$ratings_table` 
+                                    WHERE `$ratings_table`.`user_id`=28 AND `$ratings_table`.`access_status`='published')
+                            ) AS t GROUP BY restaurant_id ORDER BY magnitude  DESC LIMIT 1
+                    ) AS t
+                ) AS dines_mostly_in";
 
             return Yii::app()->db->createCommand()
                             ->select(array('username', 'avatar', $number_of_ratings_query, $dines_mostly_in))

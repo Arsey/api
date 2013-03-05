@@ -179,9 +179,26 @@ class Restaurants extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+    public function getCityAndHigherLocation($restaurant_id) {
+        $location = false;
+        $restaurant = Yii::app()->db->createCommand()
+                ->select(array('city', 'state', 'country'))
+                ->from(self::model()->tableName())
+                ->where('id=:id', array(':id' => $restaurant_id))
+                ->queryRow();
+        if ($restaurant) {
+            if (!empty($restaurant['city']))
+                $location = $restaurant['city'];
+            if (!empty($restaurant['state']))
+                $location.=', ' . $restaurant['state'];
+            elseif (!empty($restaurant['country']))
+                $location.=', ' . $restaurant['country'];
+        }
+
+        return $location;
+    }
+
     public function getFullInfo($restaurant_id) {
-
-
         $restaurant = Yii::app()->db->createCommand()
                 ->select(
                         array(
@@ -206,7 +223,8 @@ class Restaurants extends PlantEatersARMain {
                             'access_status',
                             '(SELECT COUNT(*) AS count
                                 FROM ' . Meals::model()->tableName() . '
-                                    WHERE `restaurant_id`=\'' . $restaurant_id . '\' AND `access_status`=\'published\') as number_of_meals',
+                                    WHERE `restaurant_id`=\'' . $restaurant_id . '\' AND `access_status`=\'published\'
+                             ) AS number_of_meals',
                         )
                 )
                 ->from(Restaurants::model()->tableName())

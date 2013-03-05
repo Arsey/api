@@ -75,6 +75,8 @@ class ImagesManager extends CApplicationComponent {
                 $thumb_web_path = $web_path . '/' . $file_name . '_' . $size[0] . '.' . $this->_ext;
                 if (@GetImageSize($thumb_web_path)) {
                     $thumbs['thumb_' . $size[0]] = $thumb_web_path;
+                }else{
+                    Yii::log('Problem with GetImageSize function. Maybe in php.ini not included extension=php_openssl.dll', CLogger::LEVEL_ERROR);
                 }
             }
         }

@@ -134,7 +134,7 @@ $main = array(
                 /* Change user avatar */
                 array('/images/changeuseravatar', 'pattern' => 'api/<format:json|xml>/user/changeavatar', 'verb' => 'POST'),
                 /* Get User Activity */
-                array('/ratings/activity', 'pattern' => 'api/<format:json|xml>/user/<user_id:\d+>/activity', 'verb' => 'GET'),
+                array('/ratings/activity', 'pattern' => 'api/<format:json|xml>/user/(<user_id:\d+>/)?activity', 'verb' => 'GET'),
                 //REST patterns for RESTAURANTS SEARCHING
                 array(
                     'restaurants/<searchtype>',

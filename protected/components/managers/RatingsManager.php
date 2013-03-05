@@ -13,8 +13,9 @@ class RatingsManager extends CApplicationComponent {
             return false;
         /* foreach rating if it have photo, we must get photo thumbnails */
         foreach ($ratings as $key => $rating)
-            if (!empty($rating['photo_name']))
+            if (!empty($rating['photo_name'])) {
                 $ratings[$key]['photo_thumbnails'] = $this->_getMealPhotoThumbnails($rating['meal_id'], $rating['photo_name']);
+            }
 
         return $ratings;
     }
@@ -26,7 +27,13 @@ class RatingsManager extends CApplicationComponent {
      * @return array
      */
     private function _getMealPhotoThumbnails($meal_id, $photo_name) {
-        return Yii::app()->imagesManager->setImagePath(ImagesManager::getMealWebPath($meal_id) . $photo_name)->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))->getImageThumbnails();
+        $image_path=ImagesManager::getMealWebPath($meal_id) . $photo_name;
+        
+        return Yii::app()
+                ->imagesManager
+                ->setImagePath($image_path)
+                ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
+                ->getImageThumbnails();
     }
 
 }

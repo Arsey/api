@@ -20,11 +20,11 @@ class UsersManager extends CApplicationComponent {
     public function getActivityUserInfo() {
 
         $user = Users::getUserActivityInfo($this->_user_id);
-        if (!empty($user['avatar'])) {
+        if (!empty($user['avatar']))
             $user['avatar_thumbnails'] = self::getAvatarThumbnails($user['avatar']);
-        }
 
-
+        if (isset($user['dines_mostly_in']) && !empty($user['dines_mostly_in']))
+            $user['dines_mostly_in'] = Restaurants::model()->getCityAndHigherLocation($user['dines_mostly_in']);
 
         return $user;
     }
