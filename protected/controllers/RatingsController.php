@@ -89,6 +89,8 @@ class RatingsController extends ApiController {
         $msg = Constants::RATING_SUCCESSFULLY_SENT;
         if ($rating->access_status === Constants::ACCESS_STATUS_NEEDS_FOR_ACTION) {
             $msg = Constants::RATING_NEED_ACTION_MESSAGE;
+        } else {
+            Photos::makeDefaultPhoto($meal_id);
         }
 
 

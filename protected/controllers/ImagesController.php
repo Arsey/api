@@ -92,8 +92,11 @@ class ImagesController extends ApiController {
     public function actionAddMealPhoto($id) {
 
         /* is meal with $id exists */
-        if (!$meal = Meals::model()->findByPk($id))
-            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $id)));
+        $meal = BaseChecker::isMeal($id, $this->_apiHelper);
+
+
+        if ($meal->access_status !== Constants::ACCESS_STATUS_NEEDS_FOR_ACTION)
+            $this->_apiHelper->sendResponse(400, array('message' => 'You can\'t add photo to this meal'));
 
         $this->_image_field_name = 'image';
         $this->_setPhoto($meal->id);
@@ -127,6 +130,7 @@ class ImagesController extends ApiController {
                         ));
                     }
                 }
+                Photos::makeDefaultPhoto($meal->id);
                 $this->_apiHelper->sendResponse(200, array(
                     'message' => Constants::IMAGE_UPLOADED_SUCCESSFULLY,
                     'results' => array(
@@ -206,7 +210,8 @@ class ImagesController extends ApiController {
                 if ($meal->access_status === Constants::ACCESS_STATUS_NEEDS_FOR_ACTION) {
                     $meal->accessStatus(Constants::ACCESS_STATUS_PUBLISHED);
                 }
-
+                
+                Photos::makeDefaultPhoto($meal->id);
                 $rating->updateByPk($rating_id, array('access_status' => Constants::ACCESS_STATUS_PUBLISHED, 'photo_id' => $this->_photo->id));
 
                 $this->_apiHelper->sendResponse(200, array(
