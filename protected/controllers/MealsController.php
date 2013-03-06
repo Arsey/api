@@ -3,7 +3,7 @@
 class MealsController extends ApiController {
 
     /**
-     * 
+     *
      * @param type $meal_id
      */
     function actionGetMealWithRatings($meal_id) {
@@ -37,7 +37,7 @@ class MealsController extends ApiController {
         /**
          * If restaurant with given id not found, raise not found error
          */
-        $restaurant = BaseChecker::isRestaurant($restaurant_id, $this->_apiHelper);
+        $restaurant = BaseChecker::isRestaurant($id, $this->_apiHelper);
         /**
          * If in restaurant was not found any meals with $status by restaurant $id
          */

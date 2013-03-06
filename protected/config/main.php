@@ -116,6 +116,7 @@ $main = array(
             'urlFormat' => 'path',
             'showScriptName' => false,
             'rules' => array(
+                array('testdata/import', 'pattern' => 'import/<filename:\w+\.xls>'),
 //REST patterns for USERS
                 /* Join */
                 array('users/join', 'pattern' => 'api/<format:json|xml>/user/join', 'verb' => 'POST'),
