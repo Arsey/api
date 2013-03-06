@@ -1,0 +1,21 @@
+"path":"/user/canratemeal/{meal_id}",
+"description":"Here user can check if he can rate meal(login required)",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"IsUserCanRateMeal",
+        "parameters":[
+            {
+                "required":"true",
+                "name":"meal_id",
+                "description":"Id of existing meal",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            }
+        ],
+        "summary":"Check User Can Rate Meal(without user ID)",
+        "notes": "Here user can check if he can rate meal(login required)"
+
+    }
+]

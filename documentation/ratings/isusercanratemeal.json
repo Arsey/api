@@ -1,0 +1,29 @@
+"path":"/user/{user_id}/canratemeal/{meal_id}",
+"description":"Here user can check if he or another user(by id) can rate meal",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"IsUserCanRateMeal",
+        "parameters":[
+            {
+                "name":"user_id",
+                "required":"true",
+                "description":"Id of existing user",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            },
+            {
+                "required":"true",
+                "name":"meal_id",
+                "description":"Id of existing meal",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            }
+        ],
+        "summary":"Check User Can Rate Meal(with user ID)",
+        "notes": "Here user can check if he or another user(by id) can rate meal"
+
+    }
+]

@@ -152,7 +152,7 @@ $main = array(
                 array('restaurants/viewrestaurant', 'pattern' => 'api/<format:json|xml>/<model:restaurant>/<id:\d+>', 'verb' => 'GET'),
                 array('images/mealphotos', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>/photos', 'verb' => 'GET'), //get meal photos
                 array('meals/getmealwithratings', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>', 'verb' => 'GET'), //get meal with it ratings
-                array('ratings/canuserratemeal', 'pattern' => 'api/<format:json|xml>/meal/<meal_id:\d+>/canrate', 'verb' => 'GET'), //is user can rate meal
+                array('ratings/canuserratemeal', 'pattern' => 'api/<format:json|xml>/user/(<user_id:\d+>/)?canratemeal/<meal_id:\d+>', 'verb' => 'GET'), //is user can rate meal
                 array('api/view', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'GET'),
                 ////
                 array('api/update', 'pattern' => 'api/<format:json|xml>/<model:\w+>/<id:\d+>', 'verb' => 'PUT'),

@@ -4,8 +4,14 @@ class RatingsController extends ApiController {
 
     function actionCanUserRateMeal($meal_id) {
         BaseChecker::isMeal($meal_id, $this->_apiHelper);
-        BaseChecker::canUserRateMeal($this->_user_info['id'], $meal_id, $this->_apiHelper);
-        $this->_apiHelper->sendResponse(200, array('message' => 'You can rate this meal'));
+
+        $user_id = $this->_user_info['id'];
+        if (isset($this->_parsed_attributes['user_id']) && !empty($this->_parsed_attributes['user_id']))
+            $user_id = $this->_parsed_attributes['user_id'];
+
+        BaseChecker::canUserRateMeal($user_id, $meal_id, $this->_apiHelper);
+
+        $this->_apiHelper->sendResponse(200, array('message' => 'Can rate this meal'));
     }
 
     /**
@@ -19,7 +25,7 @@ class RatingsController extends ApiController {
         if (isset($this->_parsed_attributes['user_id']))
             $user_id = $this->_parsed_attributes['user_id'];
         /*
-         * Check is user with given id exists 
+         * Check is user with given id exists
          */
         if (!$user = Users::model()->findByPk($user_id))
             $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_USER_WAS_FOUND, $user_id)));

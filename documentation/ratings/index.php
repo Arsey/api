@@ -10,6 +10,10 @@ echo'{
 echo file_get_contents('ratemeal.json');
 echo '},{';
 echo file_get_contents('addratingphoto.json');
+echo '},{';
+echo file_get_contents('isusercanratemeal.json');
+echo '},{';
+echo file_get_contents('isusercanratemealwithoutid.json');
 echo '}],';
 echo file_get_contents('models.json');
 echo '}';

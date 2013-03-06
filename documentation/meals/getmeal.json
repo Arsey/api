@@ -1,0 +1,21 @@
+"path":"/meal/{id}",
+"description":"This page allows the user to get meal information and it ratings",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"GetMeal",
+        "parameters":[
+            {
+                "name":"id",
+                "required":"true",
+                "description":"Id of existing meal",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"path"
+            }
+        ],
+        "summary":"Meal Information With Ratings",
+        "notes": "This page allows the user to get meal information and it ratings"
+
+    }
+]

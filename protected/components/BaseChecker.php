@@ -16,7 +16,7 @@ class BaseChecker extends CApplicationComponent {
 
     public static function canUserRateMeal($user_id, $meal_id, $api_helper) {
         if (!$can = Yii::app()->ratings->canUserRateMeal($user_id, $meal_id))
-            $api_helper->sendResponse(403, array('message' => 'You cannot rate this meal'));
+            $api_helper->sendResponse(403, array('message' => 'Can\'t rate this meal'));
         return $can;
     }
 
