@@ -75,7 +75,7 @@ class ImagesManager extends CApplicationComponent {
                 $thumb_web_path = $web_path . '/' . $file_name . '_' . $size[0] . '.' . $this->_ext;
                 if (@GetImageSize($thumb_web_path)) {
                     $thumbs['thumb_' . $size[0]] = $thumb_web_path;
-                }else{
+                } else {
                     Yii::log('Problem with GetImageSize function. Maybe in php.ini not included extension=php_openssl.dll', CLogger::LEVEL_ERROR);
                 }
             }
@@ -194,6 +194,16 @@ class ImagesManager extends CApplicationComponent {
 
     public static function getMealWebPath($meal_id) {
         return helper::getMealsPhotosWebPath() . '/' . $meal_id . '/';
+    }
+
+    public static function getMealPhotoThumbnails($meal_id, $photo_name) {
+        $image_path = self::getMealWebPath($meal_id) . $photo_name;
+
+        return Yii::app()
+                        ->imagesManager
+                        ->setImagePath($image_path)
+                        ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
+                        ->getImageThumbnails();
     }
 
 }

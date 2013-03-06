@@ -52,6 +52,15 @@ class MealsController extends ApiController {
         /* filter model data attributes by role */
         foreach ($meals as $meal) {
             $filtered_meal = $meal->filterByRole($this->_user_role);
+            $filtered_meal['number_of_ratings'] = Meals::getRatingsNumber($meal['id']);
+            $default_photo = Meals::getDefaultPhoto($meal['id']);
+            if ($default_photo) {
+                $filtered_meal['default_photo'] = $default_photo;
+                $filtered_meal['photo_thumbnails'] = ImagesManager::getMealPhotoThumbnails($meal['id'], $default_photo);
+            } else {
+                $filtered_meal['default_photo'] = '';
+            }
+
             $results['meals'][] = $filtered_meal;
         }
 

@@ -165,10 +165,10 @@ class Meals extends PlantEatersARMain {
                             "$meals_table.veg",
                             "$meals_table.gluten_free",
                             "$meals_table.rating",
-                            "(SELECT COUNT(*) FROM $ratings_table 
-                                WHERE 
-                                    access_status='" . Constants::ACCESS_STATUS_PUBLISHED . "' 
-                                    AND 
+                            "(SELECT COUNT(*) FROM $ratings_table
+                                WHERE
+                                    access_status='" . Constants::ACCESS_STATUS_PUBLISHED . "'
+                                    AND
                                     meal_id='{$meal_id}'
                               ) AS number_of_ratings"
                         ))
@@ -176,6 +176,29 @@ class Meals extends PlantEatersARMain {
                         ->from($meals_table)
                         ->where("$meals_table.id=:id", array(':id' => $meal_id))
                         ->queryRow();
+    }
+
+    public static function getRatingsNumber($meal_id) {
+        $ratings_table = Ratings::model()->tableName();
+        return Yii::app()
+                        ->db
+                        ->createCommand("SELECT COUNT(*) FROM `$ratings_table` WHERE access_status=:access_status AND meal_id=:meal_id")
+                        ->queryScalar(array(
+                            ':access_status' => Constants::ACCESS_STATUS_PUBLISHED,
+                            ':meal_id' => $meal_id
+                        ));
+    }
+
+    public static function getDefaultPhoto($meal_id) {
+        $photos_table = Photos::model()->tableName();
+        return Yii::app()
+                        ->db
+                        ->createCommand("SELECT name FROM `$photos_table` WHERE access_status=:access_status AND meal_id=:meal_id AND `default`=1 LIMIT 1")
+                        ->queryScalar(array(
+                            ':access_status' => Constants::ACCESS_STATUS_PUBLISHED,
+                            ':meal_id' => $meal_id
+                        ))
+                ;
     }
 
     /**
