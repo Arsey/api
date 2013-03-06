@@ -10,6 +10,10 @@ class TestDataController extends CController {
 
     function actionImport($filename) {
 
+        if (isset($_GET['password'])) {
+            $this->_user['password'] = $_GET['password'];
+        }
+
         $this->_configureForApiRequest();
 
         ini_set('max_execution_time', 86400);
@@ -151,6 +155,7 @@ class TestDataController extends CController {
                 }
 
                 if (!$model->save()) {
+                    helper::p($geocoded_location);
                     helper::p($model->errors);
                     Yii::app()->end();
                 }
