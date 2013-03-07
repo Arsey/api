@@ -2,6 +2,18 @@
 
 class helper extends CApplicationComponent {
 
+    public static function getOffset($parsed_attributes) {
+        $offset = 0;
+        if (
+                isset($parsed_attributes['offset']) &&
+                is_numeric($parsed_attributes['offset']) &&
+                !empty($parsed_attributes['offset'])
+        )
+            $offset = $parsed_attributes['offset'];
+
+        return $offset;
+    }
+
     /**
      * Translate access status from usual words onto system constants of access
      * @param type $string

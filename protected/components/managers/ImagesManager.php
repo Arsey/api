@@ -199,11 +199,20 @@ class ImagesManager extends CApplicationComponent {
     public static function getMealPhotoThumbnails($meal_id, $photo_name) {
         $image_path = self::getMealWebPath($meal_id) . $photo_name;
 
-        return Yii::app()
-                        ->imagesManager
+        return Yii::app()->imagesManager
                         ->setImagePath($image_path)
                         ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
                         ->getImageThumbnails();
     }
 
+    public static function getAvatarThumbnails($avatar_name) {
+        $image_path = self::getAvatarWebPath($avatar_name);
+
+        return Yii::app()->imagesManager
+                        ->setImagePath($image_path)
+                        ->setSizes(helper::yiiparam('sizes_for_user_avatar'))
+                        ->getImageThumbnails();
+    }
+
 }
+

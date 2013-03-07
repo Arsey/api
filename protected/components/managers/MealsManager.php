@@ -17,9 +17,23 @@ class MealsManager extends CApplicationComponent {
         return $this;
     }
 
-    public function getCompleteInfo() {
-        $meal = Meals::getCompleteInfo($this->_meal_id);
-        return $meal;
+    function getRestaurantMeals($restaurant_id, $offset) {
+        if (!$meals = Meals::getRestaurantMeals($restaurant_id, $offset))
+            return false;
+
+        foreach ($meals as $key => $meal)
+            if (!empty($meal['default_photo']))
+                $meals[$key]['photo_thumbnails'] = ImagesManager::getMealPhotoThumbnails($meal['id'], $meal['default_photo']);
+
+        return $meals;
+    }
+
+    /**
+     * It returns info about meal that needed on meal page action
+     * @return array
+     */
+    function getCompleteInfo() {
+        return Meals::getCompleteInfo($this->_meal_id);
     }
 
 }

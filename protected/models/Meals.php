@@ -150,55 +150,102 @@ class Meals extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
-    public static function getCompleteInfo($meal_id) {
+    public static function getRestaurantMeals($restaurant_id, $offset = 0, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
 
         $meals_table = self::model()->tableName();
-        $restaurants_table = Restaurants::model()->tableName();
-        $ratings_table = Ratings::model()->tableName();
+        $ratings_table=Ratings::model()->tableName();
+        $photos_table=Photos::model()->tableName();
 
-        return Yii::app()->db->createCommand()
-                        ->select(array(
-                            "$restaurants_table.id as restaurant_id",
-                            "$meals_table.id as meal_id",
-                            "$meals_table.name as meal_name",
-                            "$restaurants_table.name as restaurant_name",
-                            "$meals_table.veg",
-                            "$meals_table.gluten_free",
-                            "$meals_table.rating",
-                            "(SELECT COUNT(*) FROM $ratings_table
-                                WHERE
-                                    access_status='" . Constants::ACCESS_STATUS_PUBLISHED . "'
-                                    AND
-                                    meal_id='{$meal_id}'
-                              ) AS number_of_ratings"
-                        ))
+        return
+                        Yii::app()->db->createCommand()
+                        ->select(
+                                array(
+                                    'id',
+                                    'name',
+                                    'description',
+                                    'veg',
+                                    'gluten_free',
+                                    'rating',
+                                    "(SELECT COUNT(`id`) FROM `$ratings_table` WHERE `access_status`='published' AND `meal_id`=`meals`.`id`) AS number_of_ratings",
+                                    "(SELECT `name` FROM `$photos_table` WHERE `access_status`='published' AND `meal_id`=`meals`.`id` AND `default`=1 LIMIT 1) as default_photo"
+                                )
+                        )
+                        ->from($meals_table)
+                        ->where(
+                                array(
+                            'and',
+                            'restaurant_id=:restaurant_id',
+                            'access_status=:access_status'
+                                ), array(
+                            ':restaurant_id' => $restaurant_id,
+                            ':access_status' => $access_status,
+                                )
+                        )
+                        ->limit(10)
+                        ->offset($offset)
+                        ->queryAll(true, array());
+    }
+
+    public static function getCompleteInfo($meal_id, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
+
+        $meals_table = self::model()->tableName(); //Meal model table name
+        $restaurants_table = Restaurants::model()->tableName(); //Restaurants model table name
+        $ratings_table = Ratings::model()->tableName(); //Ratings model table name
+
+        return
+                        Yii::app()->db->createCommand()
+                        ->select(
+                                array(
+                                    "$restaurants_table.id as restaurant_id",
+                                    "$meals_table.id as meal_id",
+                                    "$meals_table.name as meal_name",
+                                    "$restaurants_table.name as restaurant_name",
+                                    "$meals_table.veg",
+                                    "$meals_table.gluten_free",
+                                    "$meals_table.rating",
+                                    "(SELECT COUNT(*) FROM $ratings_table
+                                        WHERE
+                                    `access_status`='" . $access_status . "'
+                                        AND
+                                    `meal_id`='{$meal_id}') AS number_of_ratings"
+                                )
+                        )
                         ->join($restaurants_table, "$restaurants_table.id=$meals_table.restaurant_id")
                         ->from($meals_table)
                         ->where("$meals_table.id=:id", array(':id' => $meal_id))
                         ->queryRow();
     }
 
-    public static function getRatingsNumber($meal_id) {
+    /**
+     *
+     * @param type $meal_id
+     * @param type $access_status
+     * @return type
+     */
+    public static function getRatingsNumber($meal_id, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
+
         $ratings_table = Ratings::model()->tableName();
-        return Yii::app()
-                        ->db
+
+        return
+                        Yii::app()->db
                         ->createCommand("SELECT COUNT(*) FROM `$ratings_table` WHERE access_status=:access_status AND meal_id=:meal_id")
-                        ->queryScalar(array(
-                            ':access_status' => Constants::ACCESS_STATUS_PUBLISHED,
-                            ':meal_id' => $meal_id
-                        ));
+                        ->queryScalar(array(':access_status' => $access_status, ':meal_id' => $meal_id));
     }
 
-    public static function getDefaultPhoto($meal_id) {
+    /**
+     *
+     * @param type $meal_id
+     * @param type $access_status
+     * @return query result
+     */
+    public static function getDefaultPhoto($meal_id, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
+
         $photos_table = Photos::model()->tableName();
-        return Yii::app()
-                        ->db
-                        ->createCommand("SELECT name FROM `$photos_table` WHERE access_status=:access_status AND meal_id=:meal_id AND `default`=1 LIMIT 1")
-                        ->queryScalar(array(
-                            ':access_status' => Constants::ACCESS_STATUS_PUBLISHED,
-                            ':meal_id' => $meal_id
-                        ))
-                ;
+
+        return
+                        Yii::app()->db
+                        ->createCommand("SELECT `name` FROM `$photos_table` WHERE `access_status`=:access_status AND `meal_id`=:meal_id AND `default`=1 LIMIT 1")
+                        ->queryScalar(array(':access_status' => $access_status, ':meal_id' => $meal_id));
     }
 
     /**

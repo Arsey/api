@@ -14,7 +14,7 @@ class RatingsManager extends CApplicationComponent {
         /* foreach rating if it have photo, we must get photo thumbnails */
         foreach ($ratings as $key => $rating)
             if (!empty($rating['photo_name'])) {
-                $ratings[$key]['photo_thumbnails'] = $this->_getMealPhotoThumbnails($rating['meal_id'], $rating['photo_name']);
+                $ratings[$key]['photo_thumbnails'] = ImagesManager::getMealPhotoThumbnails($rating['meal_id'], $rating['photo_name']);
             }
 
         return $ratings;
@@ -31,7 +31,7 @@ class RatingsManager extends CApplicationComponent {
 
         foreach ($ratings as $key => $rating)
             if (!empty($rating['avatar'])) {
-                $ratings[$key]['avatar_thumbnails'] = $this->_getAvatarThumbnails($rating['avatar']);
+                $ratings[$key]['avatar_thumbnails'] = ImagesManager::getAvatarThumbnails($rating['avatar']);
             }
 
         return $ratings;
@@ -39,32 +39,6 @@ class RatingsManager extends CApplicationComponent {
 
     function canUserRateMeal($user_id, $meal_id) {
         return !Ratings::isUserLeaveMealRating($user_id, $meal_id);
-    }
-
-    /**
-     * Return nothing or array of photo thumbnails
-     * @param integer $meal_id
-     * @param string $photo_name
-     * @return array
-     */
-    private function _getMealPhotoThumbnails($meal_id, $photo_name) {
-        $image_path = ImagesManager::getMealWebPath($meal_id) . $photo_name;
-
-        return Yii::app()
-                        ->imagesManager
-                        ->setImagePath($image_path)
-                        ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
-                        ->getImageThumbnails();
-    }
-
-    private function _getAvatarThumbnails($avatar_name) {
-        $image_path = ImagesManager::getAvatarWebPath($avatar_name);
-
-        return Yii::app()
-                        ->imagesManager
-                        ->setImagePath($image_path)
-                        ->setSizes(helper::yiiparam('sizes_for_user_avatar'))
-                        ->getImageThumbnails();
     }
 
 }
