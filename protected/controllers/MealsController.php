@@ -36,14 +36,19 @@ class MealsController extends ApiController {
         $restaurant = BaseChecker::isRestaurant($id, $this->_apiHelper);
 
         $offset = helper::getOffset($this->_parsed_attributes);
+        $limit = helper::getLimit($this->_parsed_attributes);
+
+        $mealsManager = Yii::app()->meals->setRestaurantId($id);
 
         /* Check if restaurant have meals */
-        if (!$meals = Yii::app()->meals->getRestaurantMeals($id, $offset))
+        if (!$meals = $mealsManager->getRestaurantMeals($offset, $limit))
             $this->_apiHelper->sendResponse(404, array('message' => 'No meals for restaurant'));
 
 
-        if ($offset == 0)
+        if ($offset == 0) {
             $results['restaurant'] = $restaurant->filterByRole($this->_user_role);
+            $results['restaurant']['number_of_meals'] = $mealsManager->numberOfMeals;
+        }
 
         $results['meals'] = $meals;
 

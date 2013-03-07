@@ -150,11 +150,22 @@ class Meals extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
-    public static function getRestaurantMeals($restaurant_id, $offset = 0, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
+    public static function numberOfMeals($restaurant_id, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
 
         $meals_table = self::model()->tableName();
-        $ratings_table=Ratings::model()->tableName();
-        $photos_table=Photos::model()->tableName();
+
+        return
+                ($count = Yii::app()->db
+                ->createCommand("SELECT COUNT(id) FROM `$meals_table` WHERE `restaurant_id`=:restaurant_id AND `access_status`=:access_status")
+                ->queryScalar(array('restaurant_id' => $restaurant_id, 'access_status' => $access_status))
+                ) ? $count : 0;
+    }
+
+    public static function getRestaurantMeals($restaurant_id, $offset = 0, $limit = 10, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
+
+        $meals_table = self::model()->tableName();
+        $ratings_table = Ratings::model()->tableName();
+        $photos_table = Photos::model()->tableName();
 
         return
                         Yii::app()->db->createCommand()
@@ -181,7 +192,7 @@ class Meals extends PlantEatersARMain {
                             ':access_status' => $access_status,
                                 )
                         )
-                        ->limit(10)
+                        ->limit($limit)
                         ->offset($offset)
                         ->queryAll(true, array());
     }

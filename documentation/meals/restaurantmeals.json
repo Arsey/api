@@ -12,6 +12,21 @@
                 "allowMultiple":"false",
                 "dataType":"Integer",
                 "paramType":"path"
+            },
+            {
+                "name":"offset",
+                "description":"How many result items to skip",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"query"
+            
+            },
+            {
+                "name":"limit",
+                "description":"Maximum number of result items per request",
+                "allowMultiple":"false",
+                "dataType":"Integer",
+                "paramType":"query"
             }
         ],
         "summary":"Text searching",

@@ -2,8 +2,13 @@
 
 class helper extends CApplicationComponent {
 
-    public static function getOffset($parsed_attributes) {
-        $offset = 0;
+    /**
+     * Using for setting offset
+     * @param array $parsed_attributes
+     * @return integer
+     */
+    public static function getOffset($parsed_attributes, $default = 0) {
+        $offset = $default;
         if (
                 isset($parsed_attributes['offset']) &&
                 is_numeric($parsed_attributes['offset']) &&
@@ -12,6 +17,23 @@ class helper extends CApplicationComponent {
             $offset = $parsed_attributes['offset'];
 
         return $offset;
+    }
+
+    /**
+     * Using for setting maximum items per request
+     * @param array $parsed_attributes
+     * @return integer
+     */
+    public static function getLimit($parsed_attributes, $default = 10) {
+        $limit = $default;
+        if (
+                isset($parsed_attributes['limit']) &&
+                is_numeric($parsed_attributes['limit']) &&
+                !empty($parsed_attributes['limit'])
+        )
+            $limit = $parsed_attributes['limit'];
+
+        return $limit;
     }
 
     /**

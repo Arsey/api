@@ -10,7 +10,7 @@ class BaseChecker extends CApplicationComponent {
 
     public static function isRestaurant($id, $api_helper) {
         if (!$restaurant = Restaurants::model()->findByPk($id))
-            $api_helper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_BY_ID, $id)));
+            $api_helper->sendResponse(400, array('errors' => sprintf(Constants::NO_RESTAURANT_WAS_FOUND, $id)));
         return $restaurant;
     }
 

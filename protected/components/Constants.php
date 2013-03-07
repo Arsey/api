@@ -49,6 +49,7 @@ class Constants {
     const BAD_USER_CREDNTIALS = 'Username/email or password are invalid';
     const NOT_ALLOWED_MODEL_PARAMETER = 'Parameter "%s" is not allowed for model "%s"';
     const MODEL_DELETE_ERROR = 'Couldn\'t delete %s with ID %s.';
+    const NO_RESTAURANT_WAS_FOUND = 'No restaurant was found with id=%d';
     /* modes */
     const MODE_LIST_NOT_IMPLEMENTED = 'Mode list is not impemented for %s';
     const MODE_VIEW_NOT_IMPLEMENTED = 'Mode view is not implemented for model %s';
