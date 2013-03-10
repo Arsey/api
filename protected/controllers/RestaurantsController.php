@@ -21,6 +21,11 @@ class RestaurantsController extends ApiController {
         } else {
             $search_index = helper::yiiparam('restaurants_search_index');
         }
+        
+        if($search_index===''){
+            $this->_apiHelper->sendResponse(500);
+        }
+        
         $search->index = $search_index;
         /* Geting test search results */
         $results = $search->goSearch;
