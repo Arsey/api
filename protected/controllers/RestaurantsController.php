@@ -2,29 +2,33 @@
 
 class RestaurantsController extends ApiController {
 
-    private $_google_search_results = array();
-
     /**
      * This action allow to search restaurants by text string.
      * @param query
      * @param radius
      */
-    public function actionTextSearch() {
-        $model = new Restaurants;
-        $this->_google_search_results = $model->searchByText($this->_parsed_attributes);
-        $this->_isInvalidRequest();
-    }
+    public function actionSearchRestaurants() {
+        $search = Yii::app()->search;
+        /* maximum restaurants per response */
+        $search->limit = (int) helper::getLimit($this->_parsed_attributes, $search->limit);
 
-    /**
-     * This action allow to search restaurants by current lication(latitude,longitude) or any location.
-     * @param query
-     * @param radius
-     * @param location
-     */
-    public function actionNearbySearch() {
-        $model = new Restaurants;
-        $this->_google_search_results = $model->searchByNearby($this->_parsed_attributes);
-        $this->_isInvalidRequest();
+        $search->offset = (int) helper::getOffset($this->_parsed_attributes, $search->offset);
+
+        $search->requestAttributes = ($this->_parsed_attributes);
+        /* Setting Sphinx Search index */
+        if (isset($this->_parsed_attributes['inmeals']) && $this->_parsed_attributes['inmeals'] === 'true') {
+            $search_index = helper::yiiparam('restaurants_and_meals_search_index');
+        } else {
+            $search_index = helper::yiiparam('restaurants_search_index');
+        }
+        $search->index = $search_index;
+        /* Geting test search results */
+        $results = $search->goSearch;
+
+        if (!empty($results))
+            $this->_apiHelper->sendResponse(200, array('results' => $results));
+
+        $this->_apiHelper->sendResponse(400);
     }
 
     /**
@@ -40,13 +44,6 @@ class RestaurantsController extends ApiController {
         $model->not_model_attributes = $restaurant;
 
         $this->_apiHelper->sendResponse(200, array('results' => $model->filterByRole($this->_user_role)));
-    }
-
-    protected function _isInvalidRequest() {
-        if (!isset($this->_google_search_results['status']) || $this->_google_search_results['status'] === 'INVALID_REQUEST')
-            $this->_apiHelper->sendResponse(400);
-
-        $this->_apiHelper->sendResponse(200, $this->_google_search_results);
     }
 
 }

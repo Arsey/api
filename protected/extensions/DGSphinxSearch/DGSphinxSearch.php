@@ -269,8 +269,8 @@ class DGSphinxSearch extends CApplicationComponent {
                     $this->client->setGeoAnchor(
                             $vol['lat_field_name'],
                             $vol['lng_field_name'],
-                            (float) $point[0] * ( pi() / 180 ),
-                            (float) $point[1] * ( pi() / 180 )
+                            (float)  deg2rad($point[0]) ,
+                            (float) deg2rad($point[1])
                      );
 
                     $this->client->setFilterFloatRange('@geodist', $min, (float) $vol['buffer']);

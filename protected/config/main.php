@@ -46,6 +46,9 @@ $main = array(
         //ImageMagic setup path
         //'params'=>array('directory'=>'opt/local/bin'),
         ),
+        'search' => array(
+            'class' => 'SearchManager'
+        ),
         'sphinxsearch' => array(
             'class' => 'ext.DGSphinxSearch.DGSphinxSearch',
             'server' => '50.17.39.80',
@@ -141,7 +144,7 @@ $main = array(
                 array('/ratings/activity', 'pattern' => 'api/<format:json|xml>/user/(<user_id:\d+>/)?activity', 'verb' => 'GET'),
                 //REST patterns for RESTAURANTS SEARCHING
                 array(
-                    'restaurants/<searchtype>',
+                    'restaurants/searchrestaurants',
                     //pattern for search restaurants with Google Places API
                     'pattern' => 'api/<format:json|xml>/<model:restaurants>/<searchtype:(nearbysearch|textsearch)>',
                     'verb' => 'GET'

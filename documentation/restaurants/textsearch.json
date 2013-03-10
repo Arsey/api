@@ -14,9 +14,22 @@
                 "paramType":"query"
             },
             {
-                "name":"radius",
-
-                "description":"raduis is simple digit like 200 that equals 200 meters. Maximum is 50 000",
+                "name":"limit",
+                "description":"limit of found restaurants per request",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"offset",
+                "description":"Just offset",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"inmeals",
+                "description":"Must be equal \"true\" to search in meals to",
                 "allowMultiple":"false",
                 "dataType":"integer",
                 "paramType":"query"

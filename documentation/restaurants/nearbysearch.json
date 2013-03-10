@@ -12,13 +12,6 @@
                 "dataType":"String",
                 "paramType":"query"
             },
-             {
-                "name":"nextpagetoken",
-                "description":"The token to get next page of results from searching. Token can be given with search results if there is more than 20. If you using nextpagetoken, that's don't need to use other parameters like location, query, radius",
-                "allowMultiple":"false",
-                "dataType":"String",
-                "paramType":"query"
-            },
             {
                 "name":"query",
                 "description":"Query string like New York Makke",
@@ -29,6 +22,27 @@
             {
                 "name":"radius",
                 "description":"raduis is simple digit like 200 that equals 200 meters. Maximum is 50 000",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+             {
+                "name":"limit",
+                "description":"limit of found restaurants per request",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"offset",
+                "description":"Just offset",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"inmeals",
+                "description":"Must be equal \"true\" to search in meals to",
                 "allowMultiple":"false",
                 "dataType":"integer",
                 "paramType":"query"
