@@ -22,7 +22,12 @@ class RestaurantsController extends ApiController {
         /* Setting Sphinx Search index */
         $search->index = $search_index;
         /* Geting test search results */
-        $results = $search->goSearch;
+        try {
+            $results = $search->goSearch;
+        } catch (DGSphinxSearchException $e) {
+            $this->_apiHelper->sendResponse(500,array('message'=>'Some problems with search server occurred'));
+        }
+
 
         if (!empty($results))
             $this->_apiHelper->sendResponse(200, array('results' => $results));
