@@ -7,7 +7,7 @@ class helper extends CApplicationComponent {
      * @param array $parsed_attributes
      * @return integer
      */
-    public static function getOffset($parsed_attributes, $default = 0) {
+    public static function getOffset($parsed_attributes, $default = 0, $not_more = null) {
         $offset = $default;
         if (
                 isset($parsed_attributes['offset']) &&
@@ -15,6 +15,14 @@ class helper extends CApplicationComponent {
                 !empty($parsed_attributes['offset'])
         )
             $offset = $parsed_attributes['offset'];
+
+       if ($offset < 0)
+            $offset = $offset * -1;
+
+        if (!is_null($not_more) && $offset > $not_more)
+            $offset = $not_more;
+
+
 
         return $offset;
     }
@@ -24,7 +32,7 @@ class helper extends CApplicationComponent {
      * @param array $parsed_attributes
      * @return integer
      */
-    public static function getLimit($parsed_attributes, $default = 10) {
+    public static function getLimit($parsed_attributes, $default = 10, $not_more = null) {
         $limit = $default;
         if (
                 isset($parsed_attributes['limit']) &&
@@ -32,6 +40,12 @@ class helper extends CApplicationComponent {
                 !empty($parsed_attributes['limit'])
         )
             $limit = $parsed_attributes['limit'];
+
+        if ($limit < 0)
+            $limit = $limit * -1;
+
+        if (!is_null($not_more) && $limit > $not_more)
+            $limit = $not_more;
 
         return $limit;
     }

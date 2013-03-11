@@ -22,31 +22,31 @@ class SearchManager extends CApplicationComponent {
 
     /**
      * Index name for SphinxSearch
-     * @var string 
+     * @var string
      */
     private $_index;
 
     /**
      *
-     * @var integer 
+     * @var integer
      */
     private $_limit = 25;
 
     /**
      *
-     * @var integer 
+     * @var integer
      */
     private $_offset = 0;
 
     /**
      *
-     * @var integer 
+     * @var integer
      */
-    private $_max = 100;
+    private $_max = 101;
 
     /**
      *
-     * @var type 
+     * @var type
      */
     private $_search_results = array();
 
@@ -64,7 +64,7 @@ class SearchManager extends CApplicationComponent {
 
     /**
      *
-     * @var type 
+     * @var type
      */
     private $_with_meals = false;
 
@@ -112,7 +112,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $lat
      * @return \SearchManager
      */
@@ -122,7 +122,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $lng
      * @return \SearchManager
      */
@@ -142,7 +142,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $limit
      * @return \SearchManager
      */
@@ -152,7 +152,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $offset
      * @return \SearchManager
      */
@@ -162,7 +162,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $max
      * @return \SearchManager
      */
@@ -172,7 +172,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $attributes
      * @return \SearchManager
      */
@@ -192,7 +192,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @return type
      */
     function getOffset() {
@@ -200,7 +200,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @return type
      */
     function getLimit() {
@@ -208,7 +208,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @return type
      */
     function getMax() {
@@ -216,7 +216,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @return type
      */
     function getGoSearch() {
@@ -249,11 +249,17 @@ class SearchManager extends CApplicationComponent {
 
         $this->_search_results = $results['matches'];
 
-        return $this->_rebuildResults($this->_search_results);
+        $restaurants = $this->_rebuildResults($this->_search_results);
+        $total_found = $results['total_found'];
+
+        return array(
+            'total_found' => $total_found,
+            'restaurants' => $restaurants
+        );
     }
 
     /**
-     * 
+     *
      * @return type
      */
     private function _rebuildResults() {

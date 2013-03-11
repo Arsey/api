@@ -8,24 +8,18 @@ class RestaurantsController extends ApiController {
      * @param radius
      */
     public function actionSearchRestaurants() {
+        $search_index = $this->_getSearchIndex();
+
         $search = Yii::app()->search;
+
+        $search->max = Restaurants::getNumberOfRestaurants();
         /* maximum restaurants per response */
         $search->limit = (int) helper::getLimit($this->_parsed_attributes, $search->limit);
 
-        $search->offset = (int) helper::getOffset($this->_parsed_attributes, $search->offset);
+        $search->offset = (int) helper::getOffset($this->_parsed_attributes, $search->offset, $search->max - 1);
 
         $search->requestAttributes = ($this->_parsed_attributes);
         /* Setting Sphinx Search index */
-        if (isset($this->_parsed_attributes['inmeals']) && $this->_parsed_attributes['inmeals'] === 'true') {
-            $search_index = helper::yiiparam('restaurants_and_meals_search_index');
-        } else {
-            $search_index = helper::yiiparam('restaurants_search_index');
-        }
-        
-        if($search_index===''){
-            $this->_apiHelper->sendResponse(500);
-        }
-        
         $search->index = $search_index;
         /* Geting test search results */
         $results = $search->goSearch;
@@ -49,6 +43,23 @@ class RestaurantsController extends ApiController {
         $model->not_model_attributes = $restaurant;
 
         $this->_apiHelper->sendResponse(200, array('results' => $model->filterByRole($this->_user_role)));
+    }
+
+    private function _getSearchIndex() {
+
+        if (
+                isset($this->_parsed_attributes['inmeals']) &&
+                $this->_parsed_attributes['inmeals'] === 'true'
+        ) {
+            $search_index = helper::yiiparam('restaurants_and_meals_search_index');
+        } else {
+            $search_index = helper::yiiparam('restaurants_search_index');
+        }
+
+        if ($search_index === '' || !$search_index)
+            $this->_apiHelper->sendResponse(500);
+
+        return $search_index;
     }
 
 }

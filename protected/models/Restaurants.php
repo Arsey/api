@@ -179,6 +179,11 @@ class Restaurants extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+
+    public static function getNumberOfRestaurants($access_status = Constants::ACCESS_STATUS_PUBLISHED) {
+        return Yii::app()->db->createCommand("SELECT COUNT(id) FROM `restaurants` WHERE `access_status`=:access_status")->queryScalar(array(':access_status' => $access_status));
+    }
+
     public function getCityAndHigherLocation($restaurant_id) {
         $location = false;
         $restaurant = Yii::app()->db->createCommand()
