@@ -32,20 +32,23 @@ class RatingsController extends ApiController {
         /*
          * Check if existing user had rate some meals
          */
-        if (!$ratings = Yii::app()->ratings->getUserRatings($user_id))
+
+        $offset = helper::getOffset($this->_parsed_attributes);
+        $limit = helper::getLimit($this->_parsed_attributes);
+
+        if (!$ratings = Yii::app()->ratings->getUserRatings($user_id, $offset, $limit))
             $this->_apiHelper->sendResponse(404, array('message' => sprintf(Constants::NO_USER_RATINGS, $user->username)));
 
         /*
          * Getting all required user information for this action
          */
-        $user_activity_info = Yii::app()->usersManager->setUserId($user_id)->getUserActivityInfo();
+        if ($offset == 0) {
+            $results['user'] = Yii::app()->usersManager->setUserId($user_id)->getUserActivityInfo();
+        }
 
-        $this->_apiHelper->sendResponse(200, array(
-            'results' => array(
-                'user' => $user_activity_info,
-                'ratings' => $ratings
-            )
-        ));
+        $results['ratings'] = $ratings;
+
+        $this->_apiHelper->sendResponse(200, array('results' => $results));
     }
 
     function actionRateMeal($meal_id) {

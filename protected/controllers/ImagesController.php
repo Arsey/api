@@ -92,7 +92,7 @@ class ImagesController extends ApiController {
     public function actionAddMealPhoto($id) {
 
         /* is meal with $id exists */
-        $meal = BaseChecker::isMeal($id, $this->_apiHelper);
+        $meal = BaseChecker::isMeal($id, $this->_apiHelper,  Constants::ACCESS_STATUS_NEEDS_FOR_ACTION);
 
 
         if ($meal->access_status !== Constants::ACCESS_STATUS_NEEDS_FOR_ACTION)
@@ -210,7 +210,7 @@ class ImagesController extends ApiController {
                 if ($meal->access_status === Constants::ACCESS_STATUS_NEEDS_FOR_ACTION) {
                     $meal->accessStatus(Constants::ACCESS_STATUS_PUBLISHED);
                 }
-                
+
                 Photos::makeDefaultPhoto($meal->id);
                 $rating->updateByPk($rating_id, array('access_status' => Constants::ACCESS_STATUS_PUBLISHED, 'photo_id' => $this->_photo->id));
 

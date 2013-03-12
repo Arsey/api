@@ -177,14 +177,14 @@ class Ratings extends PlantEatersARMain {
                         ->queryAll();
     }
 
-    public static function getUserRatings($user_id) {
+    public static function getUserRatings($user_id, $offset = 0, $limit = 25) {
         return Yii::app()->db->createCommand()
                         ->select(
                                 array(
                                     'meal_id',
-                                    '(SELECT `meals`.`name` FROM `meals` WHERE `meals`.`id`=`ratings`.`meal_id`) 
+                                    '(SELECT `meals`.`name` FROM `meals` WHERE `meals`.`id`=`ratings`.`meal_id`)
                                       AS meal_name',
-                                    '(SELECT COUNT(*) FROM `ratings` WHERE `ratings`.`meal_id`=`ratings`.`meal_id`) 
+                                    '(SELECT COUNT(*) FROM `ratings` WHERE `ratings`.`meal_id`=`ratings`.`meal_id`)
                                       AS number_of_ratings',
                                     'comment',
                                     'rating',
@@ -196,6 +196,8 @@ class Ratings extends PlantEatersARMain {
                         ->where(array('and', 'access_status=:access_status', 'user_id=:user_id')
                                 , array(':access_status' => Constants::ACCESS_STATUS_PUBLISHED, ':user_id' => $user_id))
                         ->from('ratings')
+                        ->offset($offset)
+                        ->limit($limit)
                         ->queryAll();
     }
 

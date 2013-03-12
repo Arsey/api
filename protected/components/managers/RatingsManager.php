@@ -6,10 +6,10 @@ class RatingsManager extends CApplicationComponent {
      * This method returns list of ratings for user by id
      * @return false if _user_id is null or list of ratings
      */
-    function getUserRatings($user_id) {
+    function getUserRatings($user_id, $offset = 0, $limit = 25) {
 
         /* getting all published ratings from user */
-        if (!$ratings = Ratings::getUserRatings($user_id))
+        if (!$ratings = Ratings::getUserRatings($user_id, $offset, $limit))
             return false;
         /* foreach rating if it have photo, we must get photo thumbnails */
         foreach ($ratings as $key => $rating)

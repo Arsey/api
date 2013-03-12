@@ -230,19 +230,27 @@ class SearchManager extends CApplicationComponent {
                 ->limit($this->_offset, $this->_limit, $this->_max)
                 ->setArrayResult(true);
 
+        /*
+         * If user searching with current location we must add geo filter
+         * and order by @geodist
+         */
         if (
                 !is_null($this->_current_lat) && !empty($this->_current_lat) &&
                 !is_null($this->_current_lng) && !empty($this->_current_lng)
         ) {
-            $search->filters(array(
-                'geo' => array(
-                    'min' => 0.0,
-                    'buffer' => $this->_radius,
-                    'point' => "POINT({$this->_current_lat} $this->_current_lng)",
-                    'lat_field_name' => 'lat',
-                    'lng_field_name' => 'lng',
-                )
-            ));
+            $search
+                    ->filters(
+                            array(
+                                'geo' => array(
+                                    'min' => 0.0,
+                                    'buffer' => $this->_radius,
+                                    'point' => "POINT({$this->_current_lat} $this->_current_lng)",
+                                    'lat_field_name' => 'lat',
+                                    'lng_field_name' => 'lng',
+                                )
+                            )
+                    )
+                    ->orderby('@geodist ASC');
         }
 
         $results = $search->searchRaw();

@@ -207,9 +207,9 @@ class Meals extends PlantEatersARMain {
                         Yii::app()->db->createCommand()
                         ->select(
                                 array(
+                                    "$meals_table.id as id",
                                     "$restaurants_table.id as restaurant_id",
-                                    "$meals_table.id as meal_id",
-                                    "$meals_table.name as meal_name",
+                                    "$meals_table.name as name",
                                     "$restaurants_table.name as restaurant_name",
                                     "$meals_table.veg",
                                     "$meals_table.gluten_free",
