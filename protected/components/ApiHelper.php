@@ -49,6 +49,7 @@ class ApiHelper extends CApplicationComponent {
         header($status_header);
         /* and the content type (json/xml) */
         header('Content-type:' . $this->_format);
+        header('Access-Control-Allow-Origin: *');
 
         /* body of response */
 

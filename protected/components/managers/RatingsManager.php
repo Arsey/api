@@ -12,10 +12,12 @@ class RatingsManager extends CApplicationComponent {
         if (!$ratings = Ratings::getUserRatings($user_id, $offset, $limit))
             return false;
         /* foreach rating if it have photo, we must get photo thumbnails */
-        foreach ($ratings as $key => $rating)
+        foreach ($ratings as $key => $rating) {
             if (!empty($rating['photo_name'])) {
                 $ratings[$key]['photo_thumbnails'] = ImagesManager::getMealPhotoThumbnails($rating['meal_id'], $rating['photo_name']);
             }
+            unset($ratings[$key]['cur_meal_id']);
+        }
 
         return $ratings;
     }

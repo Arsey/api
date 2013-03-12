@@ -182,9 +182,10 @@ class Ratings extends PlantEatersARMain {
                         ->select(
                                 array(
                                     'meal_id',
+                                    'meal_id AS cur_meal_id',
                                     '(SELECT `meals`.`name` FROM `meals` WHERE `meals`.`id`=`ratings`.`meal_id`)
                                       AS meal_name',
-                                    '(SELECT COUNT(*) FROM `ratings` WHERE `ratings`.`meal_id`=`ratings`.`meal_id`)
+                                    '(SELECT COUNT(*) FROM `ratings` WHERE `ratings`.`meal_id`=`cur_meal_id` AND `access_status`=\'published\')
                                       AS number_of_ratings',
                                     'comment',
                                     'rating',
