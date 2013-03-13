@@ -198,6 +198,7 @@ class Ratings extends PlantEatersARMain {
                                 , array(':access_status' => Constants::ACCESS_STATUS_PUBLISHED, ':user_id' => $user_id))
                         ->from('ratings')
                         ->offset($offset)
+                ->order('createtime  DESC')
                         ->limit($limit)
                         ->queryAll();
     }

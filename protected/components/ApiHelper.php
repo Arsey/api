@@ -10,17 +10,17 @@
  *
  */
 class ApiHelper extends CApplicationComponent {
-    //constant CUSTOM message for 401 status message on api response
+//constant CUSTOM message for 401 status message on api response
 
     const CUSTOM_MESSAGE_401 = 'You must be authorized to view this page.';
 
-    //CUSTOM message for 404
+//CUSTOM message for 404
     const CUSTOM_MESSAGE_404 = 'The requested URL was not found.';
     const CUSTOM_MESSAGE_404_BEGIN = 'The requested URL ';
     const CUSTOM_MESSAGE_404_END = 'was not found.';
-    //CUSTOM message for 500
+//CUSTOM message for 500
     const CUSTOM_MESSAGE_500 = 'The server encountered an error processing your request.';
-    //CUSTOM message for 501
+//CUSTOM message for 501
     const CUSTOM_MESSAGE_501 = 'The requested method is not implemented.';
 
     /* standard messages for codes below */
@@ -44,17 +44,34 @@ class ApiHelper extends CApplicationComponent {
      * @param string $_format
      */
     public function sendResponse($status = 200, $body = array()) {
-        /* set the status */
-        $status_header = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
-        header($status_header);
-        /* and the content type (json/xml) */
-        header('Content-type:' . $this->_format);
-        header('Access-Control-Allow-Origin: *');
-
+        $this->_setHeaders($status);
         /* body of response */
-
         echo Yii::app()->apiHelper->getResponseBody($status, $body);
         Yii::app()->end();
+    }
+
+    private function _setHeaders($status) {
+        /* Set header for content type */
+        $headers[] = 'Content-type:' . $this->_format;
+        /* Set header for status code of response */
+        $headers[] = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
+
+        if (isset($_SERVER['HTTP_ORIGIN']) || isset($_SERVER['HTTP_REFERER'])) {
+            if (isset($_SERVER['HTTP_ORIGIN']))
+                $origin = $_SERVER['HTTP_ORIGIN'];
+            else {
+                preg_match('/(https?:\/\/[^\/]+)/', $_SERVER['HTTP_REFERER'], $out);
+                $origin = $out[1];
+            }
+
+            $headers[] = "Access-Control-Allow-Origin: " . (in_array($origin, helper::yiiparam('allowed_origins')) ? $origin : 'none');
+            $headers[] = "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS";
+            $headers[] = "Access-Control-Allow-Headers: Content-Type, *";
+            $headers[] = "Access-Control-Allow-Credentials: true";
+        }
+
+        foreach ($headers as $header)
+            header($header);
     }
 
     /**
@@ -121,12 +138,12 @@ class ApiHelper extends CApplicationComponent {
         $body_return['status'] = $this->getStatusCodeMessage($status);
 
         if (isset($_GET['var_dump_response'])) {
-             header('Content-type: text/html');
+            header('Content-type: text/html');
             var_dump($body_return);
             Yii::app()->end();
         }
 
-        //at the end we need to encode data into json or xml based on $this->_format variable
+//at the end we need to encode data into json or xml based on $this->_format variable
         return $this->_encode($body_return);
     }
 
@@ -171,10 +188,10 @@ class ApiHelper extends CApplicationComponent {
      */
     public function getParsedQueryParams() {
         $params = array();
-        //array for parameters from $_GET
+//array for parameters from $_GET
         $_GET_params = array();
 
-        //$_GET not empty, assigne one by one parameters from $_GET to $_GET_params arrray;
+//$_GET not empty, assigne one by one parameters from $_GET to $_GET_params arrray;
         if (!empty($_GET)) {
             foreach ($_GET as $key => $value) {
                 $_GET_params[$key] = $value;
@@ -182,7 +199,7 @@ class ApiHelper extends CApplicationComponent {
         }
 
         $_SERVER_params = array();
-        //variables from $_SERVER, that begins from 'HTTP_X_'
+//variables from $_SERVER, that begins from 'HTTP_X_'
         if (!empty($_SERVER)) {
             foreach ($_SERVER as $key => $val) {
                 if (preg_match('/^' . Constants::SERVER_VARIABLE_PREFIX . '/', $key)) {
