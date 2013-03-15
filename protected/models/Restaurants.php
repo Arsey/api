@@ -187,7 +187,7 @@ class Restaurants extends PlantEatersARMain {
     public function getCityAndHigherLocation($restaurant_id) {
         $location = false;
         $restaurant = Yii::app()->db->createCommand()
-                ->select(array('city', 'state', 'country'))
+                ->select(array('city', 'state', 'country','name'))
                 ->from(self::model()->tableName())
                 ->where('id=:id', array(':id' => $restaurant_id))
                 ->queryRow();
