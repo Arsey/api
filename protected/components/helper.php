@@ -16,7 +16,7 @@ class helper extends CApplicationComponent {
         )
             $offset = $parsed_attributes['offset'];
 
-       if ($offset < 0)
+        if ($offset < 0)
             $offset = $offset * -1;
 
         if (!is_null($not_more) && $offset > $not_more)
@@ -94,6 +94,14 @@ class helper extends CApplicationComponent {
      * @return mixed
      */
     public static function yiiparam($name, $default = null) {
+
+        if (
+                Yii::app()->hasComponent('config') &&
+                ($config_param = Yii::app()->config->getValue($name)) &&
+                $config_param !== ''
+        )
+            return $config_param;
+
         if (isset(Yii::app()->params[$name]))
             return Yii::app()->params[$name];
         else

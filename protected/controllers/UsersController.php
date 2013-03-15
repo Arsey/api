@@ -174,7 +174,7 @@ class UsersController extends ApiController {
                     'username' => $this->_user_info['username'],
                     'email' => $this->_user_info['email'],
                     'avatar_thumbnails' => $avatar
-                    ))
+                ))
             );
         }
     }
@@ -187,11 +187,11 @@ class UsersController extends ApiController {
         if (
                 (isset($this->_parsed_attributes['new_username']) && !empty($this->_parsed_attributes['new_username'])) ||
                 (isset($this->_parsed_attributes['new_email']) && !empty($this->_parsed_attributes['new_email'])) ||
-                (isset($this->_parsed_attributes['new_password']) && !empty($this->_parsed_attributes['new_password'])
-                )
+                (isset($this->_parsed_attributes['new_password']) && !empty($this->_parsed_attributes['new_password']) )
         ) {
 
-            $user = Users::model()->findByPk($this->_user_info['id']);
+            if (!$user = Users::model()->findByPk($this->_user_info['id']))
+                $this->_apiHelper->sendResponse(500);
             /* if user send some username, we must assign this value to username field of Users model */
             isset($this->_parsed_attributes['new_username']) && !empty($this->_parsed_attributes['new_username']) ? $user->username = $this->_parsed_attributes['new_username'] : false;
             /* if user send some email, we must assign this value to email field of Users model */

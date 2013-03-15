@@ -10,6 +10,9 @@
  *
  */
 class ApiHelper extends CApplicationComponent {
+
+    private $_content_length = null;
+
 //constant CUSTOM message for 401 status message on api response
 
     const CUSTOM_MESSAGE_401 = 'You must be authorized to view this page.';
@@ -44,19 +47,23 @@ class ApiHelper extends CApplicationComponent {
      * @param string $_format
      */
     public function sendResponse($status = 200, $body = array()) {
+        $content = Yii::app()->apiHelper->getResponseBody($status, $body);
         $this->_setHeaders($status);
         /* body of response */
-        echo Yii::app()->apiHelper->getResponseBody($status, $body);
+        echo $content;
         Yii::app()->end();
     }
 
     private function _setHeaders($status) {
         /* Set header for content type */
         $headers[] = 'Content-type:' . $this->_format;
+      //  $headers['Content-Length'] = $this->_content_length;
         /* Set header for status code of response */
         $headers[] = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
 
-        if (isset($_SERVER['HTTP_ORIGIN']) || isset($_SERVER['HTTP_REFERER'])) {
+        $allowed_origins = helper::yiiparam('allowed_origins');
+
+        if ((isset($_SERVER['HTTP_ORIGIN']) || isset($_SERVER['HTTP_REFERER'])) && !empty($allowed_origins)) {
             if (isset($_SERVER['HTTP_ORIGIN']))
                 $origin = $_SERVER['HTTP_ORIGIN'];
             else {
@@ -64,9 +71,9 @@ class ApiHelper extends CApplicationComponent {
                 $origin = $out[1];
             }
 
-            $headers[] = "Access-Control-Allow-Origin: " . (in_array($origin, helper::yiiparam('allowed_origins')) ? $origin : 'none');
+            $headers[] = "Access-Control-Allow-Origin: " . (in_array($origin, $allowed_origins) ? $origin : 'none');
             $headers[] = "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS";
-            $headers[] = "Access-Control-Allow-Headers: Content-Type, *";
+            $headers[] = "Access-Control-Allow-Headers: Content-Type, accept, origin";
             $headers[] = "Access-Control-Allow-Credentials: true";
         }
 
@@ -144,7 +151,9 @@ class ApiHelper extends CApplicationComponent {
         }
 
 //at the end we need to encode data into json or xml based on $this->_format variable
-        return $this->_encode($body_return);
+        $encoded = $this->_encode($body_return);
+        $this->_content_length = strlen($encoded);
+        return $encoded;
     }
 
     /**

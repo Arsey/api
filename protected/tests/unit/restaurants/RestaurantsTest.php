@@ -20,8 +20,7 @@ class RestaurantsTest extends MainCTestCase {
      */
     function testNearbysearch() {
         //$this->markTestSkipped();
-        $response = $this->_rest->get('api/json/restaurants/nearbysearch', array('location' => '-33.8670522,151.1957362'));
-        $response = helper::jsonDecode($response);
+        $response = helper::jsonDecode($this->_rest->get('api/json/restaurants/nearbysearch', array('location' => '-33.8670522,151.1957362', 'radius' => '500000000','limit'=>5)));
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertTrue(isset($response['results']));
         $this->assertNotEmpty($response['results']);
@@ -34,13 +33,14 @@ class RestaurantsTest extends MainCTestCase {
      * and relying in role information must be a little different
      */
     function testGetInfoAboutRestaurantByID($response) {
+        
         $rest = helper::curlInit($this->_server);
-        $response = $rest->get('api/json/restaurant/' . $response['results'][0]['id']);
-        $response = helper::jsonDecode($response);
+        $response = helper::jsonDecode($rest->get('api/json/restaurant/' . $response['results']['restaurants'][0]['id']));
+
         $this->assertTrue(isset($response['results']) && !empty($response['results']));
         $this->assertNotEmpty($response['results']['id']);
         $this->assertNotEmpty($response['results']['name']);
-        
+
         $this->assertNotEmpty($response['results']['rating']);
     }
 

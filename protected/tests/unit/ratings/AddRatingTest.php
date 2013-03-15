@@ -7,7 +7,7 @@ class AddRatingTest extends MainCTestCase {
     protected function setUp() {
         $id = Yii::app()->db->createCommand("select id from meals where access_status='published' limit 1")->queryScalar();
         $this->_uri = 'api/json/meal/' . $id . '/ratemeal';
-        
+
     }
 
     function testGoToRatingUrlWithoutLogin() {
@@ -21,9 +21,9 @@ class AddRatingTest extends MainCTestCase {
         $this->setLoginCookie();
         /* without photo */
         $response = helper::jsonDecode($this->_rest->post($this->_uri, $this->_meal));
-        helper::p($response);
+        //helper::p($response);
         $this->assertEquals(Constants::RATING_NEED_ACTION_MESSAGE, $response['message']);
-        helper::p($response);
+        //helper::p($response);
     }
 
 }

@@ -12,7 +12,6 @@ class MealReportTest extends MainCTestCase {
     }
 
     function testWrongUrl() {
-
         $response = helper::jsonDecode($this->_rest->post($this->_uri));
         $this->assertEquals(ApiHelper::MESSAGE_404, $response['status']);
     }
@@ -29,7 +28,7 @@ class MealReportTest extends MainCTestCase {
     function testWithLogin() {
         $this->setLoginCookie();
         $response = helper::jsonDecode($this->_rest->post($this->_uri . Reports::NOT_GLUTEN_FREE));
-        helper::P($response);
+        //helper::p($response);
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
     }
 

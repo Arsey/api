@@ -8,14 +8,9 @@ class ReportsController extends ApiController {
      * @param string $report
      */
     function actionMealReport($id, $report) {
-
-
-        if (!$meal_model = Meals::model()->findByPk($id))
-            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_MEAL_WAS_FOUND, $id)));
-
-        /*
-         * Fill report fields
-         */
+        /* Check if is meal with given $id exits */
+        $meal_model = BaseChecker::isMeal($id, $this->_apiHelper, Constants::ACCESS_STATUS_PUBLISHED);
+        /* Fill report fields */
         $report_model = new Reports;
         $report_model->meal_id = $meal_model->id;
         $report_model->user_id = $this->_user_info['id'];

@@ -17,7 +17,7 @@ class ActivityTest extends MainCTestCase {
     function testUrl() {
         $this->setLoginCookie();
         $response = helper::jsonDecode($this->_rest->get($this->_uri));
-        helper::p($response);
+        //helper::p($response);
     }
 
 }

@@ -44,7 +44,7 @@ $main = array(
             //GD or ImageMagic
             'driver' => 'GD',
         //ImageMagic setup path
-        //'params'=>array('directory'=>'opt/local/bin'),
+//'params'=>array('directory'=>'opt/local/bin'),
         ),
         'search' => array(
             'class' => 'SearchManager'
@@ -119,8 +119,10 @@ $main = array(
             'urlFormat' => 'path',
             'showScriptName' => false,
             'rules' => array(
+                array('api/allowoptions', 'pattern' => 'api/<format:json|xml>/([\s\S]*)', 'verb' => 'OPTIONS'),
                 array('testData/import', 'pattern' => 'import/<filename:\w+\.xls>'),
-//REST patterns for USERS
+                array('api/serversettings', 'pattern' => 'api/<format:json|xml>/settings', 'verb' => 'GET, PUT'),
+                /* REST patterns for USERS */
                 /* Join */
                 array('users/join', 'pattern' => 'api/<format:json|xml>/user/join', 'verb' => 'POST'),
                 /* Account Activation */
@@ -193,21 +195,15 @@ $main = array(
             ),
         ),
     ),
-    // application-level parameters that can be accessed
-// using Yii::app()->params['paramName']
     'params' => array(
-//using on restaurants search throught Google Places API
-        'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian',
-        'sizes_for_photos_of_meals ' => array(
-            'meal_gallery_small' => array('320', '240'),
-            'meal_gallery_big' => array('640', '480'),
-            'meal_table_small' => array('70', '70'),
-            'meal_table_big' => array('140', '140'),
+        'allowed_params_to_update_from_backend' => array(
+            'send_from',
+            'support_email',
+            'restaurants_search_index',
+            'restaurants_and_meals_search_index',
         ),
-        'sizes_for_user_avatar' => array(
-            'meal_gallery_small' => array('95', '95'),
-            'meal_gallery_big' => array('190', '190'),
-        )
+        /* using on restaurants search throught Google Places API */
+        'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian',
     ),
 );
 

@@ -157,8 +157,8 @@ class Restaurants extends PlantEatersARMain {
         $criteria->compare('access_status', $this->access_status);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+        ));
     }
 
     ////////////////////////////////
@@ -198,6 +198,9 @@ class Restaurants extends PlantEatersARMain {
                 $location.=', ' . $restaurant['state'];
             elseif (!empty($restaurant['country']))
                 $location.=', ' . $restaurant['country'];
+
+            if (!$location && !empty($restaurant['name']))
+                $location = $restaurant['name'];
         }
 
         return $location;

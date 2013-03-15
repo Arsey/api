@@ -94,6 +94,7 @@ class ApiController extends Controller {
                     'searchrestaurants',
                     'viewrestaurant',
                     'restaurantmeals',
+                    'allowoptions'
                 ),
                 'users' => array('*'),
             ),
@@ -113,17 +114,54 @@ class ApiController extends Controller {
                     'activity',
                     'getmealwithratings',
                     'canuserratemeal',
+                    'logout',
+                ),
+                'users' => array('@'),
+            ),
+            array(
+                'allow',
+                'actions' => array(
                     'list',
                     'view',
                     'create',
                     'update',
                     'delete',
-                    'logout',
+                    'serversettings',
                 ),
                 'users' => array('@'),
+                'expression' => 'Yii::app()->user->isAdmin()'
             ),
             array('deny'),
         );
+    }
+
+    function actionServerSettings() {
+        $allowed_params = helper::yiiparam('allowed_params_to_update_from_backend');
+        if (!empty($allowed_params)) {
+            if (Yii::app()->request->isPutRequest) {
+                if (empty($this->_parsed_attributes))
+                    $this->_apiHelper->sendResponse(404);
+
+                foreach ($this->_parsed_attributes as $key => $value) {
+                    $config = Yii::app()->config;
+                    if (in_array($key, $allowed_params) && !empty($value)) {
+                        $config->setValue($key, $value, true);
+                    }
+                }
+                $this->_apiHelper->sendResponse(200);
+            } else {
+                $params_to_send = array();
+                foreach ($allowed_params as $param) {
+                    $params_to_send[$param] = helper::yiiparam($param);
+                }
+                $this->_apiHelper->sendResponse(200, array('results' => $params_to_send));
+            }
+        }
+        $this->_apiHelper->sendResponse(403);
+    }
+
+    function actionAllowOptions() {
+        $this->_apiHelper->sendResponse(200);
     }
 
     /* Actions */

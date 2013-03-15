@@ -132,7 +132,7 @@ class UsersManager extends CApplicationComponent {
 
 
         $message->addTo($user->email);
-        $message->from = helper::yiiparam('sendFrom');
+        $message->from = helper::yiiparam('send_from');
         Yii::app()->mail->send($message);
 
         return;
@@ -156,7 +156,7 @@ class UsersManager extends CApplicationComponent {
 
         $message->setSubject('Reset your PlantEaters password');
         $message->addTo($user->email);
-        $message->from = helper::yiiparam('sendFrom');
+        $message->from = helper::yiiparam('send_from');
         Yii::app()->mail->send($message);
         return;
     }
@@ -179,7 +179,7 @@ class UsersManager extends CApplicationComponent {
 
         $message->setSubject(strtr('New password for {username}', array('{username}' => $user->username)));
         $message->addTo($user->email);
-        $message->from = helper::yiiparam('sendFrom');
+        $message->from = helper::yiiparam('send_from');
         Yii::app()->mail->send($message);
         return;
     }
