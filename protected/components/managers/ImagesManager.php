@@ -56,7 +56,7 @@ class ImagesManager extends CApplicationComponent {
         $this->_lastSavedThumbnails = array();
         $image = Yii::app()->image->load($this->_image_path);
         foreach ($this->_sizes as $size) {
-            $image->resize($size[0], $size[1])->quality(75)->sharpen(15);
+            $image->resize($size[0], $size[1]);
             $image_path = $this->_save_to . '/' . $this->_prefix . $size[0] . '.' . $this->_ext;
             $image->save($image_path);
             $this->_lastSavedThumbnails[self::$_thumbnail_prefix . $size[0]] = $image_path;

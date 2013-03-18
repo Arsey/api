@@ -92,7 +92,7 @@ class ImagesController extends ApiController {
     public function actionAddMealPhoto($id) {
 
         /* is meal with $id exists */
-        $meal = BaseChecker::isMeal($id, $this->_apiHelper,  Constants::ACCESS_STATUS_NEEDS_FOR_ACTION);
+        $meal = BaseChecker::isMeal($id, $this->_apiHelper, Constants::ACCESS_STATUS_NEEDS_FOR_ACTION);
 
 
         if ($meal->access_status !== Constants::ACCESS_STATUS_NEEDS_FOR_ACTION)
@@ -122,7 +122,7 @@ class ImagesController extends ApiController {
                         'user_id' => $this->_user_info['id'],
                         'photo_id' => NULL,
                         'access_status' => Constants::ACCESS_STATUS_NEEDS_FOR_ACTION
-                            ));
+                    ));
                     if ($rating) {
                         Ratings::model()->updateByPk($rating->id, array(
                             'access_status' => Constants::ACCESS_STATUS_PUBLISHED,
@@ -222,7 +222,7 @@ class ImagesController extends ApiController {
                                 ->setImagePath(ImagesManager::getMealWebPath($meal->id) . $this->_photo->name)
                                 ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
                                 ->getImageThumbnails()
-                        )));
+                )));
             } else {
                 $this->_photo->accessStatus(Constants::ACCESS_STATUS_REMOVED);
                 $this->_apiHelper->sendResponse(400, array('errors' => $this->_photo->image->error));
@@ -270,8 +270,6 @@ class ImagesController extends ApiController {
                             ->imagesManager
                             ->setSizes($avatar_sizes)
                             ->delete($this->_user_info['avatar']);
-
-
                 if ($user = Users::model()->updateByPk($this->_user_info['id'], array('avatar' => $image->name))) {
                     /*
                      * geting avatar thumbnails
@@ -288,8 +286,6 @@ class ImagesController extends ApiController {
                         'results' => $avatar_thumbs,
                         'message' => 'Avatar uploaded successfully')
                     );
-                } else {
-                    $this->_apiHelper->sendResponse(400, array('errors' => $user->errors));
                 }
             } else {
                 $this->_apiHelper->sendResponse(400, array('errors' => $image->avatar->error));

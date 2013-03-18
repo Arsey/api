@@ -33,7 +33,7 @@ class ApiController extends Controller {
         }
 
 
-        $this->_fillUserRequiredData();
+
         /*
          * set is mobile client device
          */
@@ -69,6 +69,8 @@ class ApiController extends Controller {
          * creating instanse of apiHelper and setting the format
          */
         $this->_apiHelper = Yii::app()->apiHelper->setFormat($this->_format);
+
+        $this->_fillUserRequiredData();
 
         return parent::beforeAction($action);
     }
@@ -318,8 +320,15 @@ class ApiController extends Controller {
      */
     protected function _fillUserRequiredData() {
         $this->_user_role = Yii::app()->user->role;
+
         if ($this->_user_role !== Users::GUEST) {
             $this->_user_info = Users::getUserFastByPk(Yii::app()->user->id);
+            return;
+        }
+        //echo Yii::app()->user->id;die;
+        if (is_numeric($user_id = Yii::app()->user->id) && !Users::getUserFastByPk($user_id)) {
+            Yii::app()->user->logout();
+            $this->_apiHelper->sendResponse(401, array('errors' => 'Your user ID is not found in our database. Please try to relogin to fix this problem.'));
         }
     }
 
