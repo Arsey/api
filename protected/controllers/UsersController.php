@@ -55,23 +55,11 @@ class UsersController extends ApiController {
     public function actionLogin() {
         if (
                 !empty($this->_parsed_attributes) &&
-                ( isset($this->_parsed_attributes['username']) || isset($this->_parsed_attributes['email'])) &&
+                isset($this->_parsed_attributes['email']) &&
                 isset($this->_parsed_attributes['password'])
         ) {
 
-            $user = false;
-
-            if (isset($this->_parsed_attributes['username'])) {
-                $user = Users::model()->find('username=:username', array(':username' => $this->_parsed_attributes['username']));
-            }
-
-            // try to authenticate via email
-            if (!$user && isset($this->_parsed_attributes['email'])) {
-                if ($user_by_email = Users::model()->find('email = :email', array(':email' => $this->_parsed_attributes['email'])))
-                    $user = $user_by_email;
-            }
-
-            if ($user) {
+            if ($user = Users::model()->find('email = :email', array(':email' => $this->_parsed_attributes['email']))) {
                 if ($this->authenticate($user, $this->_parsed_attributes['password'])) {
                     $auth_token = Yii::app()->session->sessionID;
                     $this->_apiHelper->sendResponse(200, array('results' => array('auth_token' => $auth_token)));

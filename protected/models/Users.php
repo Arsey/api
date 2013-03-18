@@ -84,11 +84,11 @@ class Users extends CActiveRecord {
                 'min' => 3,
                 'message' => 'Username length needs to be between 3 and 20 characters',
             ),
-            array(
-                'username',
-                'unique',
-                'message' => 'This user\'s name already exists.',
-            ),
+            /*   array(
+              'username',
+              'unique',
+              'message' => 'This user\'s name already exists.',
+              ), */
             array(
                 'username',
                 'match',
@@ -179,8 +179,8 @@ class Users extends CActiveRecord {
         $criteria->compare('role', $this->role, true);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+        ));
     }
 
     ////////////////////////////////
@@ -359,7 +359,8 @@ class Users extends CActiveRecord {
         if ($activate) {
             $this->activation_key = $activate;
             $this->save(false, array('activation_key'));
-        } else
+        }
+        else
             $this->activation_key = UsersManager::encrypt(microtime() . $this->password, $this->salt);
 
         if (!$this->isNewRecord) {
@@ -409,7 +410,8 @@ class Users extends CActiveRecord {
 
                     return $user;
                 }
-            }else
+            }
+            else
                 return -2;
         }
         return false;

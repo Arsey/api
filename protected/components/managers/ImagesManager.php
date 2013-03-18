@@ -52,11 +52,22 @@ class ImagesManager extends CApplicationComponent {
         return $this->_lastSavedThumbnails;
     }
 
+    /**
+     * This method making thumbnails for avatars or meal photos,
+     * and looking in configuration for different sizes
+     * For avatars sizes needed params must be stored in array Yii parameter "with sizes_for_photos_of_meals" name,
+     * where each element is array, that can contains 3 elements.
+     * element 0 is width,
+     * element 1 is height,
+     * element 2 option to crop(true) image with given size or not(false).
+     * For meal photo needed params of sizes must be stored in array Yii parameter "with sizes_for_user_avatar" name.
+     */
     public function makeThumbnails() {
         $this->_lastSavedThumbnails = array();
         $image = Yii::app()->image->load($this->_image_path);
         foreach ($this->_sizes as $size) {
-            
+
+            /* crop or not crop */
             if (isset($size[2]) && $size[2]) {
                 $image->resize($size[0], $size[1], Image::HEIGHT)->crop($size[0], $size[1]);
             } else {
