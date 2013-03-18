@@ -339,39 +339,39 @@ class Image {
 				chmod($new_image, $chmod);
 			}
 		}
-		
+
 		// Reset actions. Subsequent save() or render() will not apply previous actions.
 		if ($keep_actions === FALSE)
 			$this->actions = array();
-		
+
 		return $status;
 	}
-	
-	/** 
-	 * Output the image to the browser. 
-	 * 
+
+	/**
+	 * Output the image to the browser.
+	 *
 	 * @param   boolean  keep or discard image process actions
-	 * @return	object 
-	 */ 
-	public function render($keep_actions = FALSE) 
-	{ 
-		$new_image = $this->image['file']; 
-	
-		// Separate the directory and filename 
-		$dir  = pathinfo($new_image, PATHINFO_DIRNAME); 
-		$file = pathinfo($new_image, PATHINFO_BASENAME); 
-	
-		// Normalize the path 
-		$dir = str_replace('\\', '/', realpath($dir)).'/'; 
-	
-		// Process the image with the driver 
-		$status = $this->driver->process($this->image, $this->actions, $dir, $file, $render = TRUE); 
-		
+	 * @return	object
+	 */
+	public function render($keep_actions = FALSE)
+	{
+		$new_image = $this->image['file'];
+
+		// Separate the directory and filename
+		$dir  = pathinfo($new_image, PATHINFO_DIRNAME);
+		$file = pathinfo($new_image, PATHINFO_BASENAME);
+
+		// Normalize the path
+		$dir = str_replace('\\', '/', realpath($dir)).'/';
+
+		// Process the image with the driver
+		$status = $this->driver->process($this->image, $this->actions, $dir, $file, $render = TRUE);
+
 		// Reset actions. Subsequent save() or render() will not apply previous actions.
 		if ($keep_actions === FALSE)
 			$this->actions = array();
-		
-		return $status; 
+
+		return $status;
 	}
 
 	/**
