@@ -30,24 +30,18 @@ $main = array(
     'modules' => array(),
     // application components
     'components' => array(
-        'meals' => array(
-            'class' => 'MealsManager'
-        ),
-        'ratings' => array(
-            'class' => 'RatingsManager'
-        ),
-        'imagesManager' => array(
-            'class' => 'ImagesManager',
-        ),
+        'meals' => array('class' => 'MealsManager'),
+        'ratings' => array('class' => 'RatingsManager'),
+        'imagesManager' => array('class' => 'ImagesManager',),
+        'search' => array('class' => 'SearchManager'),
+        'device' => array('class' => 'Device',),
+        'usersManager' => array('class' => 'UsersManager',),
+        'apiHelper' => array('class' => 'ApiHelper'),
+        'restHttpRequest' => array('class' => 'RestHttpRequest'),
         'image' => array(
             'class' => 'application.extensions.image.CImageComponent',
             //GD or ImageMagic
             'driver' => 'GD',
-        //ImageMagic setup path
-//'params'=>array('directory'=>'opt/local/bin'),
-        ),
-        'search' => array(
-            'class' => 'SearchManager'
         ),
         'sphinxsearch' => array(
             'class' => 'ext.DGSphinxSearch.DGSphinxSearch',
@@ -60,9 +54,6 @@ $main = array(
                 'name' => 10000,
                 'keywords' => 100,
             ),
-        ),
-        'device' => array(
-            'class' => 'Device',
         ),
         'session' => array(
             'class' => 'CDbHttpSession',
@@ -87,27 +78,16 @@ $main = array(
             'logging' => true,
             'dryRun' => false
         ),
-        'usersManager' => array(
-            'class' => 'UsersManager',
-        ),
-        'apiHelper' => array(
-            'class' => 'application.components.ApiHelper'
-        ),
         'user' => array(
             'class' => 'WebUser',
             'allowAutoLogin' => true,
             'loginUrl' => null,
         ),
-        'cache' => array(
-            'class' => 'CDummyCache',
-        ),
+        'cache' => array('class' => 'CDummyCache',),
         'config' => array(
             'class' => 'ext.FileConfig',
             'configFile' => 'protected/config/planteaters.conf',
             'strictMode' => false,
-        ),
-        'rest' => array(
-            'class' => 'RestApiManager',
         ),
         //google places component
         'gp' => array(
@@ -201,6 +181,8 @@ $main = array(
             'support_email',
             'restaurants_search_index',
             'restaurants_and_meals_search_index',
+            'aws_access_key_id',
+            'aws_secret_key',
         ),
         /* using on restaurants search throught Google Places API */
         'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian',

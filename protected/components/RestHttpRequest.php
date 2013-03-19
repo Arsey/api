@@ -8,7 +8,8 @@ class RestHttpRequest extends CHttpRequest {
      * return all posible params from request
      * @return array()
      */
-    public function getAllRestParams($ignorInlineParams = false) {
+    public function getAllRequestParams($ignorInlineParams = false) {
+        $this->parseJsonParams();
         if ($this->_restParams === array())
             $this->_restParams = array_merge(($this->getIsDeleteRequest() || $this->getIsPutRequest()) ? $this->getRestParams() : $_REQUEST, $this->_restParams);
         if ($ignorInlineParams) {
@@ -33,7 +34,12 @@ class RestHttpRequest extends CHttpRequest {
         if ($contentType == 'application/json') {
 
             $requestBody = file_get_contents("php://input");
-            $this->_restParams = array_merge((array) json_decode($requestBody), $this->_restParams);
+
+            if (is_null($decodeRequestBody = json_decode($requestBody)))
+                Yii::app()->apiHelper->sendResponse(400, array('errors' => array(helper::getJsonLastError())));
+
+
+            $this->_restParams = array_merge((array) $decodeRequestBody, $this->_restParams);
         }
 
         return $this->_restParams;

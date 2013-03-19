@@ -2,6 +2,14 @@
 
 class helper extends CApplicationComponent {
 
+    const JSON_ERROR_NONE_MEANING = 'No error has occurred';
+    const JSON_ERROR_DEPTH_MEANING = 'JSON error. The maximum stack depth has been exceeded';
+    const JSON_ERROR_STATE_MISMATCH_MEANING = 'Invalid or malformed JSON';
+    const JSON_ERROR_CTRL_CHAR_MEANING = 'Control character error, possibly incorrectly encoded in JSON';
+    const JSON_ERROR_SYNTAX_MEANING = 'JSON syntax error';
+    const JSON_ERROR_UTF8_MEANING = 'JSON error. Malformed UTF-8 characters, possibly incorrectly encoded';
+    const JSON_UNKNOWN_ERROR = 'Unknown JSON error';
+
     /**
      * Using for setting offset
      * @param array $parsed_attributes
@@ -162,10 +170,38 @@ class helper extends CApplicationComponent {
         return $rest;
     }
 
+    /**
+     * 
+     * @param type $data
+     * @return type
+     */
     public static function jsonDecode($data) {
         if ($encoded = CJSON::decode($data))
             return $encoded;
         return $data;
+    }
+
+    /**
+     * Returns last error for json
+     * @return string
+     */
+    public static function getJsonLastError() {
+        switch (json_last_error()) {
+            case JSON_ERROR_NONE:
+                return self::JSON_ERROR_NONE_MEANING;
+            case JSON_ERROR_DEPTH:
+                return self::JSON_ERROR_DEPTH_MEANING;
+            case JSON_ERROR_STATE_MISMATCH:
+                return self::JSON_ERROR_STATE_MISMATCH_MEANING;
+            case JSON_ERROR_CTRL_CHAR:
+                return self::JSON_ERROR_CTRL_CHAR_MEANING;
+            case JSON_ERROR_SYNTAX:
+                return self::JSON_ERROR_SYNTAX_MEANING;
+            case JSON_ERROR_UTF8:
+                return self::JSON_ERROR_UTF8_MEANING;
+            default:
+                return self::JSON_UNKNOWN_ERROR;
+        }
     }
 
     public static function getFieldsList($array, $fieldname) {

@@ -70,7 +70,7 @@ class UsersController extends ApiController {
             }
         }
         //send response to a client
-        $this->_apiHelper->sendResponse(401, array('errors' => array('User email/name and password are required!')));
+        $this->_apiHelper->sendResponse(401, array('errors' => array('User email and password are required!')));
     }
 
     /**
@@ -127,11 +127,13 @@ class UsersController extends ApiController {
      *
      */
     public function actionTryResetPassword() {
-        if (isset($this->_parsed_attributes['login_or_email']) && ($user = UsersManager::checkexists($this->_parsed_attributes['login_or_email']))) {
+        if (
+                isset($this->_parsed_attributes['email']) &&
+                ($user = UsersManager::checkexists($this->_parsed_attributes['email']))
+        ) {
 
-            if (!PasswordResetTokens::isCanResetPassword($user->id)) {
+            if (!PasswordResetTokens::isCanResetPassword($user->id))
                 $this->_apiHelper->sendResponse(400, array('message' => 'You can try to reset your password once per 24 hours. Maybe you tried to make recovery password? Please check your email first.'));
-            }
 
             $model = new PasswordResetTokens;
             $model->createResetToken($user);

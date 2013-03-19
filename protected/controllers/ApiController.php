@@ -22,52 +22,24 @@ class ApiController extends Controller {
 
     public function beforeAction($action) {
 
-        if (isset($_GET['showrequest'])) {
-            if (isset($_FILES['avatar'])) {
-                echo CFileHelper::getMimeType($_FILES['avatar']['tmp_name']) . "\n";
-            }
-            var_dump($_REQUEST);
-            var_dump($_FILES);
-            var_dump(file_get_contents('php://input'));
-            Yii::app()->end();
-        }
-
-
-
-        /*
-         * set is mobile client device
-         */
+        /* set is mobile client device */
         $this->is_mobile_client_device = Yii::app()->device->isMobile();
 
-        /*
-         * fill request params
-         */
-        $rest_http_request = new RestHttpRequest();
-        $rest_http_request->parseJsonParams();
-        $this->_parsed_attributes = $rest_http_request->getAllRestParams();
 
-        /*
-         * Default response format either 'json' or 'xml'
-         */
+        /* fill request params */
+        $this->_parsed_attributes = Yii::app()->restHttpRequest->getAllRequestParams();
 
+
+        /* Default response format either 'json' or 'xml' */
         $this->_format = Constants::APPLICATION_JSON;
-
-        /*
-         * if URL have format in query than we get it
-         */
+        /* if URL has format in query than we get it */
         $this->_format_url = Yii::app()->request->getQuery('format', '');
-
-
-        /*
-         * by default format is json, but if variable format in URL equal xml that change defaul json to xml
-         */
-        if (!empty($this->_format_url) && $this->_format_url === 'xml') {
+        /* by default format is json, but if variable format in URL equal xml that change defaul json to xml */
+        if (!empty($this->_format_url) && $this->_format_url === 'xml')
             $this->_format = Constants::APPLICATION_XML;
-        }
 
-        /*
-         * creating instanse of apiHelper and setting the format
-         */
+
+        /* creating instanse of apiHelper and setting the format */
         $this->_apiHelper = Yii::app()->apiHelper->setFormat($this->_format);
 
         $this->_fillUserRequiredData();
