@@ -34,10 +34,10 @@ class RestHttpRequest extends CHttpRequest {
         if ($contentType == 'application/json') {
 
             $requestBody = file_get_contents("php://input");
+            $decodeRequestBody = json_decode($requestBody);
 
-            if (is_null($decodeRequestBody = json_decode($requestBody)))
+            if (!empty($requestBody) && is_null($decodeRequestBody))
                 Yii::app()->apiHelper->sendResponse(400, array('errors' => array(helper::getJsonLastError())));
-
 
             $this->_restParams = array_merge((array) $decodeRequestBody, $this->_restParams);
         }
