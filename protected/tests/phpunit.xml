@@ -1,13 +1,40 @@
 <phpunit bootstrap="bootstrap.php"
-		colors="false"
-		convertErrorsToExceptions="true"
-		convertNoticesToExceptions="true"
-		convertWarningsToExceptions="true"
-		stopOnFailure="false">
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false">
 
-	<selenium>
-		<browser name="Internet Explorer" browser="*iexplore" />
-		<browser name="Firefox" browser="*firefox" />
-	</selenium>
+    <selenium>
+        <browser name="Internet Explorer" browser="*iexplore" />
+        <browser name="Firefox" browser="*firefox" />
+    </selenium>
+
+    <testsuites>
+        <testsuite name="AllTests">
+            <!--Components-->
+            <directory>unit/components</directory>
+            <!--Users-->
+            <file>unit/users/RegistrationTest.php</file>
+            <file>unit/users/LoginLogoutTest.php</file>
+            <file>unit/users/PasswordRecoveryTest.php</file>
+            <file>unit/users/ProfileTest.php</file>
+            <file>unit/users/AvatarTest.php</file>
+            <file>unit/users/ActivityTest.php</file>
+            <!--Feedbacks-->
+            <directory>unit/feedbacks</directory>
+            <!--Meals-->
+            <file>unit/meals/RestaurantMealsTest.php</file>
+            <file>unit/meals/AddMealTest.php</file>
+            <file>unit/meals/UploadPhotoTest.php</file>
+            <file>unit/meals/GetMealPhotosTest.php</file>
+            <!--Ratings-->
+            <directory>unit/ratings</directory>
+            <!--Reports-->
+            <directory>unit/reports</directory>
+            <!--Restaurants-->
+            <directory>unit/restaurants</directory>
+        </testsuite>
+    </testsuites>
 
 </phpunit>

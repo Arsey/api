@@ -3,13 +3,13 @@
 class FeedbacksTest extends MainCTestCase {
 
     function testSendFeedbackWithoutLogin() {
-        $response = helper::jsonDecode($this->_rest->post('api/json/feedback', $this->_feedback));
+        $response = helper::jsonDecode($this->_rest->post('feedback', $this->_feedback));
         $this->assertEquals(ApiHelper::MESSAGE_403, $response['status']);
     }
 
     function testSendWithLogin() {
         $this->setLoginCookie();
-        $response = helper::jsonDecode($this->_rest->post('api/json/feedback', $this->_feedback));
+        $response = helper::jsonDecode($this->_rest->post('feedback', $this->_feedback));
 
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertTrue(isset($response['results']['id']));

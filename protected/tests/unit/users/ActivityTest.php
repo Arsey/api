@@ -6,7 +6,7 @@ class ActivityTest extends MainCTestCase {
 
     protected function setUp() {
         $id = Yii::app()->db->createCommand("select id from users limit 1")->queryScalar();
-        $this->_uri = "api/json/user/{$id}/activity";
+        $this->_uri = "user/{$id}/activity";
     }
 
     function testUrlWithoutLogin() {

@@ -8,7 +8,7 @@ class MealReportTest extends MainCTestCase {
 
     protected function setUp() {
         $id = Yii::app()->db->createCommand("select id from meals limit 1")->queryScalar();
-        $this->_uri = 'api/json/meal/' . $id . '/report/';
+        $this->_uri = 'meal/' . $id . '/report/';
     }
 
     function testWrongUrl() {

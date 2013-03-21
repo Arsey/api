@@ -4,7 +4,7 @@ header('Content-type: application/json');
 echo'{
     "apiVersion": "0.2",
     "swaggerVersion": "1.1",
-    "basePath": "https://' . $_SERVER['SERVER_NAME'] . '/api/json",
+    "basePath": "https://' . $_SERVER['SERVER_NAME'] . '",
     "resourcePath": "/mealreport",
     "apis":[{';
 echo file_get_contents('mealreport.json');

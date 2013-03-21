@@ -10,7 +10,7 @@ class UserRegistrationTest extends MainCTestCase {
 
         /* send request with all needed POST fields for user registration */
         $rest = helper::curlInit($this->_server);
-        $response = $rest->post('api/json/user/join', $this->_users['demo']);
+        $response = $rest->post('user/join', $this->_users['demo']);
         $response = helper::jsonDecode($response);
 
 
@@ -37,7 +37,6 @@ class UserRegistrationTest extends MainCTestCase {
 
         $user = Users::model()->findByPk($find->id);
 
-
         $activation_url = $user->getActivationUrl();
         $this->assertRegExp('/https.*key.*/', $activation_url);
 
@@ -45,6 +44,7 @@ class UserRegistrationTest extends MainCTestCase {
 
         $response = $this->_rest->get($activation_url[1]);
         $user = Users::model()->findByPk($find->id);
+        //helper::p($user->attributes);
         $this->assertTrue($user->status == Users::STATUS_ACTIVE);
     }
 

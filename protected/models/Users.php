@@ -40,7 +40,7 @@ class Users extends CActiveRecord {
     //User statuses
 
     const STATUS_INACTIVE = 'inactive';
-    const STATUS_ACTIVE = 'acitve';
+    const STATUS_ACTIVE = 'active';
     const STATUS_BANNED = 'banned';
     const STATUS_REMOVED = 'removed';
     const AVATARS_UPLOAD_DIRECTORY = 'avatars';
@@ -84,11 +84,6 @@ class Users extends CActiveRecord {
                 'min' => 3,
                 'message' => 'Username length needs to be between 3 and 20 characters',
             ),
-            /*   array(
-              'username',
-              'unique',
-              'message' => 'This user\'s name already exists.',
-              ), */
             array(
                 'username',
                 'match',
@@ -380,7 +375,7 @@ class Users extends CActiveRecord {
         $format = isset($_GET['format']) ? $_GET['format'] . '/' : 'json/';
         isset($_SERVER['SERVER_NAME']) ? false : $_SERVER['SERVER_NAME'] = helper::yiiparam('server_name');
 
-        return "https://" . $_SERVER['SERVER_NAME'] . "/api/{$format}user/activation/key/" . $this->activation_key . "/email/" . $this->email;
+        return "https://" . $_SERVER['SERVER_NAME'] . "/{$format}user/activation/key/" . $this->activation_key . "/email/" . $this->email;
     }
 
     /**

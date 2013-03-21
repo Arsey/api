@@ -61,6 +61,10 @@ class Meals extends PlantEatersARMain {
                 'pattern' => '/^[A-Za-z0-9_\s\']+$/u',
                 'message' => 'Incorrect symbol\'s. (A-z0-9)'
             ),
+            array(
+                'name',
+                'uniqueRestaurantMealName'
+            ),
             $this->_access_status_rule,
             $this->_veg,
             array('rating', 'length', 'max' => 4),
@@ -128,8 +132,8 @@ class Meals extends PlantEatersARMain {
         $criteria->compare('access_status', $this->access_status);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+        ));
     }
 
     ////////////////////////////////
@@ -150,6 +154,24 @@ class Meals extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+
+    public function uniqueRestaurantMealName($attribute, $params) {
+
+        $result = Yii::app()
+                ->db
+                ->createCommand("SELECT * FROM meals WHERE restaurant_id=:restaurant_id AND name=:name")
+                ->queryAll(true, array(
+            ':restaurant_id' => $this->restaurant_id,
+            ':name' => $this->$attribute,
+        ));
+
+        if ($result) {
+            if (!isset($params['message']))
+                $params['message'] = 'Such a meal name already exists';
+            $this->addError($attribute, $params['message']);
+        }
+    }
+
     public static function numberOfMeals($restaurant_id, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
 
         $meals_table = self::model()->tableName();

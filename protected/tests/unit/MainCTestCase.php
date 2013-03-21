@@ -49,8 +49,8 @@ class MainCTestCase extends CTestCase {
     protected function login() {
         $rest = helper::curlInit($this->_server);
         $response = $rest->post(
-                'api/json/user/login', array(
-            'username' => $this->_users['demo']['username'],
+                'user/login', array(
+            'email' => $this->_users['demo']['email'],
             'password' => $this->_users['demo']['password'],
                 )
         );

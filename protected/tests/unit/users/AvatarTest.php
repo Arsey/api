@@ -2,7 +2,7 @@
 
 class AvatarTest extends MainCTestCase {
 
-    private $_avatar_url = 'api/json/user/changeavatar';
+    private $_avatar_url = 'user/changeavatar';
 
     function testUploadAvatarWithoutLogin() {
 

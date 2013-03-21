@@ -15,7 +15,7 @@
             }
         ],
         "summary":"User Login",
-        "notes": "This page allows the user to login",
+        "notes": "This page allows the user to login<div><strong style=color:red>On success login, the server will return auth_token in body and in cookie headers.<br> API can see you as  logged in user, if you send this auth_token(like cookie field) and it's value, together with query! </strong></div>",
         "errorResponses":[
             {
                 "code":"401",

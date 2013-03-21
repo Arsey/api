@@ -6,7 +6,7 @@ class UploadMealPhotoTest extends MainCTestCase {
 
     protected function setUp() {
         $id = Yii::app()->db->createCommand("select id from meals where access_status='needs_for_action' limit 1 ")->queryScalar();
-        $this->_uri = 'api/json/meal/' . $id . '/addphoto';
+        $this->_uri = 'meal/' . $id . '/addphoto';
     }
 
     function testUploadPhotoWithoutLogin() {
