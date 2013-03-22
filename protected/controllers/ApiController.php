@@ -68,7 +68,8 @@ class ApiController extends Controller {
                     'searchrestaurants',
                     'viewrestaurant',
                     'restaurantmeals',
-                    'allowoptions'
+                    'allowoptions',
+                    'mealphotos',
                 ),
                 'users' => array('*'),
             ),
@@ -84,7 +85,6 @@ class ApiController extends Controller {
                     'changeuseravatar',
                     'mealreport',
                     'ratemeal',
-                    'mealphotos',
                     'activity',
                     'getmealwithratings',
                     'canuserratemeal',
