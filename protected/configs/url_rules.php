@@ -32,7 +32,7 @@ return array(
     array(
         'restaurants/searchrestaurants',
         //pattern for search restaurants with Google Places API
-        'pattern' => $prefix . '<model:restaurants>/<searchtype:(nearbysearch|textsearch)>',
+        'pattern' => $prefix . '<model:restaurants>/(search|nearbysearch)',
         'verb' => 'GET'
     ),
     //pattern to apply access filter for any model

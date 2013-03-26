@@ -7,7 +7,7 @@ class RestaurantsTest extends MainCTestCase {
      */
     function testTextsearch() {
         //$this->markTestSkipped();
-        $response = $this->_rest->get('restaurants/textsearch', array('query' => 'oil'));
+        $response = $this->_rest->get('restaurants/search', array('query' => 'oil'));
         $response = helper::jsonDecode($response);
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertTrue(isset($response['results']));
@@ -20,7 +20,7 @@ class RestaurantsTest extends MainCTestCase {
      */
     function testNearbysearch() {
         //$this->markTestSkipped();
-        $response = helper::jsonDecode($this->_rest->get('restaurants/nearbysearch', array('location' => '-33.8670522,151.1957362', 'radius' => '500000000', 'limit' => 5)));
+        $response = helper::jsonDecode($this->_rest->get('restaurants/search', array('location' => '-33.8670522,151.1957362', 'radius' => '500000000', 'limit' => 5)));
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertTrue(isset($response['results']));
         $this->assertNotEmpty($response['results']);

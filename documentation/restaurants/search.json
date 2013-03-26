@@ -1,0 +1,55 @@
+"path":"/restaurants/search",
+        "description":"This page allows the user to search restaurants by query text, location and also in meals(means meal name): latitude, longitude",
+        "operations":[
+{
+"httpMethod":"GET",
+        "nickname":"Nearbysearch",
+        "parameters":[
+{
+"name":"location",
+        "description":"location is string, that contains latitude ang longitude values, implodes with coma: -33.8670522,151.1957362 . Location is required field by default, but if you're using valid nextpagetoken, than location not required",
+        "allowMultiple":"false",
+        "dataType":"String",
+        "paramType":"query"
+},
+{
+"name":"query",
+        "description":"Query string like New York Makke",
+        "allowMultiple":"false",
+        "dataType":"String",
+        "paramType":"query"
+},
+{
+"name":"radius",
+        "description":"raduis is simple digit like 200 that equals 200 meters. Maximum is 50 000",
+        "allowMultiple":"false",
+        "dataType":"integer",
+        "paramType":"query"
+},
+{
+"name":"limit",
+        "description":"limit of found restaurants per request",
+        "allowMultiple":"false",
+        "dataType":"integer",
+        "paramType":"query"
+},
+{
+"name":"offset",
+        "description":"Just offset",
+        "allowMultiple":"false",
+        "dataType":"integer",
+        "paramType":"query"
+},
+{
+"name":"inmeals",
+        "description":"Must be equal \"true\" to search in meals to",
+        "allowMultiple":"false",
+        "dataType":"string",
+        "paramType":"query"
+}
+],
+        "summary":"Nearby searching",
+        "notes": "<h3>This page allows the user to search restaurants by:</h3><ul><li>Text(restaurant part name or full name);</li><li>By location(latitude, longitude);</li><li>By meals(means meal name).</li></ul><h3 style=color:red;>If query variable is not empty, the server search only in restaurants looking at restaurant name, address, street name etc..<br><br>If location variable consists of latitude and longitude, the server search in restaurants with applying geo filter.<br><br>For searching in meals too, you need set variable inmeals=true</h3>"
+
+}
+]

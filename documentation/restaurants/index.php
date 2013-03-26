@@ -8,9 +8,7 @@ echo'{
     "basePath": "' . API_HOST . '",
     "resourcePath": "/restaurants",
     "apis":[{';
-echo file_get_contents('textsearch.json');
-echo '},{';
-echo file_get_contents('nearbysearch.json');
+echo file_get_contents('search.json');
 echo '},{';
 echo file_get_contents('view_restaurant_by_id.json');
 echo '}],';

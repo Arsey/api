@@ -45,7 +45,7 @@ $main = array(
         ),
         'sphinxsearch' => array(
             'class' => 'ext.DGSphinxSearch.DGSphinxSearch',
-            'server' => '50.17.39.80',
+            'server' => '54.225.190.234',
             'port' => 9306,
             'maxQueryTime' => 3000,
             'enableProfiling' => 0,
