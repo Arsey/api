@@ -1,10 +1,11 @@
 <?php
 
+require dirname(__FILE__) . '/../docsettings.php';
 header('Content-type: application/json');
 echo'{
     "apiVersion": "0.2",
     "swaggerVersion": "1.1",
-    "basePath": "https://' . $_SERVER['SERVER_NAME'] . '",
+    "basePath": "' . API_HOST . '",
     "resourcePath": "/user",
     "apis":[{';
 echo file_get_contents('join.json');

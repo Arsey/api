@@ -121,8 +121,6 @@ $main = array(
             'support_email',
             'restaurants_search_index',
             'restaurants_and_meals_search_index',
-            'aws_access_key_id',
-            'aws_secret_key',
         ),
         /* using on restaurants search throught Google Places API */
         'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian',

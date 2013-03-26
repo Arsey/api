@@ -70,6 +70,7 @@ class ApiController extends Controller {
                     'restaurantmeals',
                     'allowoptions',
                     'mealphotos',
+                    'index',
                 ),
                 'users' => array('*'),
             ),
@@ -109,16 +110,20 @@ class ApiController extends Controller {
         );
     }
 
+    function actionIndex() {
+        $this->render('index');
+    }
+
     function actionServerSettings() {
         $allowed_params = helper::yiiparam('allowed_params_to_update_from_backend');
         if (!empty($allowed_params)) {
-            if (Yii::app()->request->isPutRequest) {
+            if (Yii::app()->request->isPostRequest) {
                 if (empty($this->_parsed_attributes))
                     $this->_apiHelper->sendResponse(404);
 
                 foreach ($this->_parsed_attributes as $key => $value) {
                     $config = Yii::app()->config;
-                    if (in_array($key, $allowed_params) && !empty($value)) {
+                    if (in_array($key, $allowed_params)) {
                         $config->setValue($key, $value, true);
                     }
                 }

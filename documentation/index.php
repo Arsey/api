@@ -45,7 +45,7 @@
     <script type="text/javascript">
         $(function () {
             window.swaggerUi = new SwaggerUi({
-                discoveryUrl:"https://<?php echo $_SERVER['SERVER_NAME'];?>/documentation/resources.php",
+                discoveryUrl:"http://<?php echo $_SERVER['SERVER_NAME'];?>/resources.php",
 
                 dom_id:"swagger-ui-container",
                 supportHeaderParams: false,
