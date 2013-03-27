@@ -86,7 +86,7 @@ class TestDataController extends CController {
                 $meal = array(
                     'name' => $meal_name,
                     'rating' => rand(1, 5),
-                    'veg' => $this->_getCellOffset($this->_meal_cell_fields_offsets['veg'], 'vegetarian'),
+                    'veg' => preg_replace('/\s/', '_', $this->_getCellOffset($this->_meal_cell_fields_offsets['veg'], 'vegetarian')),
                     'comment' => 'test meal comment',
                     'gluten_free' => $this->_getCellOffset($this->_meal_cell_fields_offsets['gluten_free'], 0),
                     'description' => $this->_getCellOffset($this->_meal_cell_fields_offsets['description'], ''),

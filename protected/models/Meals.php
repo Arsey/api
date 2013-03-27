@@ -57,12 +57,6 @@ class Meals extends PlantEatersARMain {
             array('name', 'length', 'max' => 100),
             array(
                 'name',
-                'match',
-                'pattern' => '/^[A-Za-z0-9_\s\']+$/u',
-                'message' => 'Incorrect symbol\'s. (A-z0-9)'
-            ),
-            array(
-                'name',
                 'uniqueRestaurantMealName'
             ),
             $this->_access_status_rule,

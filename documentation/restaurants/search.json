@@ -14,7 +14,7 @@
 },
 {
 "name":"query",
-        "description":"Query string like New York Makke",
+        "description":"Query string like <strong>New York Makke</strong>. <p style=color:red>If you search with not a complete word, just add asterisk, to make server to search with incomplete words. For example: Burger->Burg*</p>",
         "allowMultiple":"false",
         "dataType":"String",
         "paramType":"query"
