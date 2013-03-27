@@ -14,7 +14,7 @@
 },
 {
 "name":"query",
-        "description":"Query string like <strong>New York Makke</strong>. <p style=color:red>If you search with not a complete word, just add asterisk, to make server to search with incomplete words. For example: Burger->Burg*</p>",
+        "description":"Query string like <strong>New York Makke</strong>. <p style=color:red>For search using an incomplete word, you may add<br><strong>Example: Burger->Burg*</strong></p>",
         "allowMultiple":"false",
         "dataType":"String",
         "paramType":"query"
@@ -49,7 +49,7 @@
 }
 ],
         "summary":"Nearby searching",
-        "notes": "<h3>This page allows the user to search restaurants by:</h3><ul><li>Text(restaurant part name or full name);</li><li>By location(latitude, longitude);</li><li>By meals(means meal name).</li></ul><h3 style=color:red;>If query variable is not empty, the server search only in restaurants looking at restaurant name, address, street name etc..<br><br>If location variable consists of latitude and longitude, the server search in restaurants with applying geo filter.<br><br>For searching in meals too, you need set variable inmeals=true</h3>"
+        "notes": "<h3>This page allows the user to search restaurants by:</h3><ul><li>Text(restaurant part name or full name);</li><li>By location(latitude, longitude);</li><li>By meals(means meal name).</li></ul><h3 style=color:red;>If the query variable is not empty, search will only look at address, street name etc.<br><br>If location variable consist of LAT and LONG we apply the GEO filter.<br><br>When searching meals simply set the variable inmeals=true</h3>"
 
 }
 ]

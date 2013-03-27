@@ -144,7 +144,7 @@ class ApiController extends Controller {
 
     /* Actions */
 
-    public function actionList($status = 'published') {
+    public function actionList() {
 
         /* if model exists */
         if ($model_name = helper::getModelExists($_GET['model'])) {
@@ -152,7 +152,7 @@ class ApiController extends Controller {
             $findCriteria = new CDbCriteria();
             $findCriteria->offset = helper::getOffset($this->_parsed_attributes);
             $findCriteria->limit = helper::getLimit($this->_parsed_attributes, 25, 100);
-            $models = $model_name::model()->findAllByAttributes(array('access_status' => helper::translateAccessStatus($status)), $findCriteria);
+            $models = $model_name::model()->findAll($findCriteria);
         } else {
             /* Model not implemented error */
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_LIST_NOT_IMPLEMENTED, $_GET['model'])));
@@ -165,9 +165,9 @@ class ApiController extends Controller {
             /* Prepare response */
             $results = array();
             foreach ($models as $model)
-                $results['restaurants'][] = $model->attributes;
+                $results[strtolower($model_name)][] = $model->attributes;
 
-            $results['total_found'] = count($results['restaurants']);
+            $results['total_found'] = $model_name::model()->count();
             /* Send the response */
             $this->_apiHelper->sendResponse(200, array('results' => $results));
         }
