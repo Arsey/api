@@ -13,20 +13,7 @@ $main = array(
     //Additional aliases
     'aliases' => array(),
 // autoloading model and component classes
-    'import' => array(
-        'application.models.*',
-        'application.components.*',
-        'application.components.managers.*',
-        'application.controllers.*',
-        //import user models from user module extension
-        'application.extensions.googlePlaces',
-        //curl extension
-        'application.extensions.components.*',
-        //mail extension
-        'application.extensions.yii-mail.*',
-        'ext.DGSphinxSearch.*',
-        'application.helpers.*',
-    ),
+    'import' => require dirname(__FILE__) . '/../configs/import.php',
     'modules' => array(),
     // application components
     'components' => array(
@@ -98,7 +85,7 @@ $main = array(
         'urlManager' => array(
             'urlFormat' => 'path',
             'showScriptName' => false,
-            'rules' => require dirname(__FILE__) . '/../configs/url_rules.php',
+            'rules' => require(dirname(__FILE__) . '/../configs/url_rules.php'),
         ),
         //MySQL database configuration
         'errorHandler' => array(

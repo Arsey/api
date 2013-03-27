@@ -103,8 +103,7 @@ class ApiController extends Controller {
                     'delete',
                     'serversettings',
                 ),
-                'users' => array('@'),
-                'expression' => 'Yii::app()->user->isAdmin()'
+                'roles' => array(Users::ROLE_SUPER)
             ),
             array('deny'),
         );

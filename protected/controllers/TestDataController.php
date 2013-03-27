@@ -5,25 +5,61 @@ class TestDataController extends CController {
     private $_xls_data;
     private $_current_cell;
     private $_auth_token;
-    private $_user = array('username' => 'demoUser', 'password' => 'passwordRE@#');
     private $_server;
+    private $_restaurant_cell_fields_offsets = array(
+        'cid' => 1,
+        'name' => 2,
+        'lat' => 3,
+        'lng' => 4,
+        'street_address' => 5,
+        'street_address_2' => 6,
+        'city' => 7,
+        'state' => 8,
+        'zip' => 9,
+        'country' => 10,
+        'phone' => 11,
+        'email' => 12,
+        'website' => 13,
+        'vegan' => 14,
+    );
+    private $_meal_cell_fields_offsets = array(
+        'cid' => 1,
+        'restaurant_name' => 2,
+        'source_name' => 3,
+        'name' => 4,
+        'description' => 5,
+        'veg' => 6,
+        'gluten_free' => 7,
+        'photo' => 8,
+    );
+
+    public function filters() {
+        return array('accessControl');
+    }
+
+    public function accessRules() {
+        return array(array(
+                'allow',
+                'actions' => array('import'),
+                'roles' => array(Users::ROLE_SUPER)
+            ),
+            array('deny'),);
+    }
 
     function actionImport($filename) {
-
-        if (isset($_GET['password'])) {
-            $this->_user['password'] = $_GET['password'];
-        }
+        ini_set('max_execution_time', 86400);
+        require_once(Yii::getPathOfAlias('ext') . DIRECTORY_SEPARATOR . 'excel_reader2.php');
 
         $this->_configureForApiRequest();
 
-        ini_set('max_execution_time', 86400);
-        require_once(Yii::getPathOfAlias('ext') . DIRECTORY_SEPARATOR . 'excel_reader2.php');
         $this->_xls_data = new Spreadsheet_Excel_Reader();
         $this->_xls_data->setOutputEncoding('CP1251');
         $this->_xls_data->read(Yii::getPathOfAlias('application.data') . DIRECTORY_SEPARATOR . $filename);
 
         $this->_saveRestaurants();
+
         $this->_saveMeals();
+
         Yii::app()->end();
     }
 
@@ -41,21 +77,20 @@ class TestDataController extends CController {
                     return $e['name'];
                 }, $meals);
 
-
-
-
         for ($i = 2; $i <= $c; $i++) {
+
             $this->_current_cell = $this->_xls_data->sheets[1]['cells'][$i];
 
-            if (!in_array($this->_getCellOffset(4, $this->_getCellOffset(3, '')), $meals)) {
+            $meal_name = $this->_getCellOffset($this->_meal_cell_fields_offsets['name'], $this->_getCellOffset($this->_meal_cell_fields_offsets['source_name'], ''));
+            if (!in_array($meal_name, $meals)) {
                 $meal = array(
-                    'name' => $this->_getCellOffset(4, $this->_getCellOffset(3, '')),
+                    'name' => $meal_name,
                     'rating' => rand(1, 5),
-                    'veg' => $this->_getCellOffset(6, 'vegetarian'),
+                    'veg' => $this->_getCellOffset($this->_meal_cell_fields_offsets['veg'], 'vegetarian'),
                     'comment' => 'test meal comment',
-                    'gluten_free' => $this->_getCellOffset(7, 0),
-                    'description' => $this->_getCellOffset(5, ''),
-                    'photo_url' => $this->_getCellOffset(8, ''),
+                    'gluten_free' => $this->_getCellOffset($this->_meal_cell_fields_offsets['gluten_free'], 0),
+                    'description' => $this->_getCellOffset($this->_meal_cell_fields_offsets['description'], ''),
+                    'photo_url' => $this->_getCellOffset($this->_meal_cell_fields_offsets['photo'], ''),
                 );
 
                 $this->_sendMeal($meal, $restaurants_remaped[$this->_getCellOffset(1)]);
@@ -70,7 +105,7 @@ class TestDataController extends CController {
 
         $rest = helper::curlInit($this->_server);
         $rest->option(CURLOPT_COOKIE, "auth_token=" . $this->_auth_token);
-        $response = helper::jsonDecode($rest->post('/api/json/restaurant/' . $restaurant_id . '/meal', $meal));
+        $response = helper::jsonDecode($rest->post('/restaurant/' . $restaurant_id . '/meal', $meal));
         if (isset($response['results'])) {
 
             $meal_id = $response['results']['meal_id'];
@@ -89,7 +124,7 @@ class TestDataController extends CController {
 
                 $rest = helper::curlInit($this->_server);
                 $rest->option(CURLOPT_COOKIE, "auth_token=" . $this->_auth_token);
-                $response = helper::jsonDecode($rest->post("/api/json/meal/$meal_id/addphoto", array('image' => '@' . $test_photo_file_paht)));
+                $response = helper::jsonDecode($rest->post("/meal/$meal_id/addphoto", array('image' => '@' . $test_photo_file_paht)));
             } else {
                 Yii::app()->db->createCommand("UPDATE meals SET access_status='published' WHERE id=$meal_id;UPDATE ratings SET access_status='published' WHERE meal_id=$meal_id")->execute();
             }
@@ -113,13 +148,7 @@ class TestDataController extends CController {
 
     private function _configureForApiRequest() {
         $this->_server = Yii::app()->request->hostInfo;
-        $rest = helper::curlInit($this->_server);
-        $response = helper::jsonDecode($rest->post('/api/json/user/login', $this->_user));
-        if (isset($response['results'])) {
-            $this->_auth_token = $response['results']['auth_token'];
-        } else {
-            Yii::app()->apiHelper->setFormat(Constants::APPLICATION_JSON)->sendResponse(403, array('errors' => $response));
-        }
+        $this->_auth_token = $_COOKIE['auth_token'];
     }
 
     private function _saveRestaurants() {
@@ -132,35 +161,53 @@ class TestDataController extends CController {
 
 
         $c = $this->_xls_data->rowcount(0);
-        for ($i = 2; $i <= $c; $i++) {
-            $this->_current_cell = $this->_xls_data->sheets['0']['cells'][$i];
-            if (!in_array($this->_getCellOffset(1), $restaurants)) {
-                $model = new Restaurants;
-                $model->external_id = $this->_getCellOffset(1);
-                $model->name = $this->_getCellOffset(2);
-                $model->street_address = $this->_getCellOffset(3);
-                $model->street_address_2 = $this->_getCellOffset(4);
-                $model->city = $this->_getCellOffset(5);
-                $model->state = $this->_getCellOffset(6);
-                $model->country = $this->_getCellOffset(8);
-                $model->phone = $this->_getCellOffset(9);
-                $model->email = $this->_getCellOffset(10);
-                $model->website = $this->_getCellOffset(11);
-                $model->rating = 0;
-                $model->veg = $this->_getCellOffset(12, 'vegetarian');
-                /* location */
-                $geocoded_location = GoogleGeocode::parseAddress($model->street_address . ' ' . $model->city . ' ' . $model->state . ' ' . $model->country);
-                if ($geocoded_location) {
-                    $model->location = new CDbExpression("GeomFromText('POINT({$geocoded_location['geometry']['location']['lat']} {$geocoded_location['geometry']['location']['lng']})')");
-                }
 
+        for ($i = 2; $i <= $c; $i++) {
+
+            $this->_current_cell = $this->_xls_data->sheets['0']['cells'][$i];
+
+            if (!in_array($this->_getCellOffset(1), $restaurants)) {
+                $model = $this->_fillRestaurant();
                 if (!$model->save()) {
-                    helper::p($geocoded_location);
+                    helper::p($model->errors);
+                    Yii::app()->end();
+                }
+            } else {
+                $model = $this->_fillRestaurant($this->_getCellOffset($this->_restaurant_cell_fields_offsets['cid']));
+                if (!$model->update()) {
                     helper::p($model->errors);
                     Yii::app()->end();
                 }
             }
         }
+    }
+
+    private function _fillRestaurant($cid = null) {
+        if (is_null($cid)) {
+            $model = new Restaurants;
+            $model->external_id = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['cid']);
+        } else {
+            $model = Restaurants::model()->findByAttributes(array('external_id' => $cid));
+        }
+
+        $model->name = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['name']);
+        $model->street_address = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['street_address']);
+        $model->street_address_2 = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['street_address_2']);
+        $model->city = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['city']);
+        $model->state = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['state']);
+        $model->country = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['country']);
+        $model->phone = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['phone']);
+        $model->email = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['email']);
+        $model->website = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['website']);
+        $model->rating = 0;
+        $model->veg = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['vegan'], 'vegetarian');
+
+
+        $lat = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['lat']);
+        $lng = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['lng']);
+        $model->location = new CDbExpression("GeomFromText('POINT($lat $lng)')");
+
+        return $model;
     }
 
     private function _getCellOffset($offset, $default = '') {

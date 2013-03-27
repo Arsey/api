@@ -4,7 +4,7 @@ $prefix = '(<format:json|xml>/)?';
 
 return array(
     array('api/allowoptions', 'pattern' => $prefix . '([\s\S]*)', 'verb' => 'OPTIONS'),
-    array('testData/import', 'pattern' => 'import/<filename:\w+\.xls>'),
+    array('testData/import', 'pattern' => 'import/<filename:\S+>'),
     array('api/serversettings', 'pattern' => $prefix . 'settings', 'verb' => 'GET, POST'),
     /* REST patterns for USERS */
     /* Join */

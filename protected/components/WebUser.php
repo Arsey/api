@@ -11,17 +11,8 @@ class WebUser extends CWebUser {
         return Users::GUEST;
     }
 
-    function isAdmin() {
-        $user = $this->loadUser(Yii::app()->user->id);
-        return ($user->role == Users::ROLE_SUPER);
-    }
-
-    protected function loadUser($id = null) {
-        if ($this->_model === null) {
-            if ($id !== null)
-                $this->_model = Users::model()->findByPk($id);
-        }
-        return $this->_model;
+    function getId() {
+        return $this->getState('id');
     }
 
     private function getModel() {

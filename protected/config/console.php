@@ -7,12 +7,16 @@ $console = array(
     'name' => 'My Console Application',
     // preloading 'log' component
     'preload' => array('log'),
+    'import' => require dirname(__FILE__) . '/../configs/import.php',
     // application components
     'components' => array(
         //authorization manager
         'authManager' => array(
             'class' => 'CDbAuthManager',
             'connectionID' => 'db',
+            'assignmentTable' => 'auth_assignment',
+            'itemChildTable' => 'auth_item_child',
+            'itemTable' => 'auth_item',
         //'showErrors' => YII_DEBUG
         ),
         'log' => array(

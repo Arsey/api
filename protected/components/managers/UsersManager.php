@@ -69,6 +69,24 @@ class UsersManager extends CApplicationComponent {
         Yii::app()->end();
     }
 
+    public static function reassignUserRole($id, $role = Users::ROLE_NORMAL) {
+        if ($user = Users::model()->findByPk($id)) {
+            $auth = Yii::app()->authManager;
+
+            if ($user->role === Users::ROLE_NORMAL)
+                $auth->revoke(Users::ROLE_NORMAL, $id);
+
+            if ($user->role === Users::ROLE_SUPER)
+                $auth->revoke(Users::ROLE_SUPER, $id);
+
+            $auth->assign($role, $id);
+            $user->role = $role;
+            $user->update();
+            return $user;
+        }
+        return false;
+    }
+
     /**
      * Check if user exists with login or email
      * @param string $login_or_email
