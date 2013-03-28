@@ -223,7 +223,7 @@ class ApiController extends Controller {
     public function actionUpdate() {
 
         if ($model_name = helper::getModelExists($_GET['model'])) {
-            $model = $model_name->findByPk($_GET['id']);
+            $model = $model_name::model()->findByPk($_GET['id']);
         } else {
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_UPDATE_NOT_IMPLEMENTED, $_GET['model'])));
         }
@@ -237,7 +237,7 @@ class ApiController extends Controller {
         $this->_assignModelAttributes($model);
 
         /* Try to save the model */
-        if ($model->save())
+        if ($model->update())
             $this->_apiHelper->sendResponse(200, array('results' => ($model)));
 
         /* Errorss occured */
