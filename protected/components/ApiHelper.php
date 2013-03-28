@@ -57,7 +57,7 @@ class ApiHelper extends CApplicationComponent {
     private function _setHeaders($status) {
         /* Set header for content type */
         $headers[] = 'Content-type:' . $this->_format;
-      //  $headers['Content-Length'] = $this->_content_length;
+        //  $headers['Content-Length'] = $this->_content_length;
         /* Set header for status code of response */
         $headers[] = 'HTTP/1.1 ' . $status . ' ' . Yii::app()->apiHelper->getStatusCodeMessage($status);
 

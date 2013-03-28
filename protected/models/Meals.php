@@ -198,6 +198,7 @@ class Meals extends PlantEatersARMain {
                                 )
                         )
                         ->from($meals_table)
+                        ->order('rating DESC')
                         ->where(
                                 array(
                             'and',

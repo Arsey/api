@@ -228,21 +228,20 @@ class ApiController extends Controller {
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_UPDATE_NOT_IMPLEMENTED, $_GET['model'])));
         }
 
-//Dod we find the requested model? If not, raise an arror
-        if (is_null($model)) {
+        /* Dod we find the requested model? If not, raise an arror */
+        if (is_null($model))
             $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_ON_UPDATE, $_GET['model'], $_GET['id'])));
-        }
 
-//Try to assign PUT parameters to attributes
+
+        /* Try to assign PUT parameters to attributes */
         $this->_assignModelAttributes($model);
 
-//Try to save the model
-        if ($model->save()) {
+        /* Try to save the model */
+        if ($model->save())
             $this->_apiHelper->sendResponse(200, array('results' => ($model)));
-        } else {
-//Errorss occured
-            $this->_apiHelper->sendResponse(500, array('errors' => $model->errors));
-        }
+
+        /* Errorss occured */
+        $this->_apiHelper->sendResponse(500, array('errors' => $model->errors));
     }
 
     public function actionDelete() {
@@ -253,18 +252,16 @@ class ApiController extends Controller {
             $this->_apiHelper->sendResponse(501, array('errors' => sprintf("Mode delete is not implemented for model %s", $_GET['model'])));
         }
 
-//Was a model found? If not, raise an error
-        if (is_null($model)) {
+        /* Was a model found? If not, raise an error */
+        if (is_null($model))
             $this->_apiHelper->sendResponse(400, array('errors' => sprintf("Didn't find any model %s with ID %s", $_GET['model'], $_GET['id'])));
-        }
 
-//Delete the model
-        $num = $model->delete();
-        if ($num > 0) {
+
+        /* Delete the model */
+        if (($num = $model->delete()) > 0)
             $this->_apiHelper->sendResponse(200, $num); //this is the only way to work with backbone
-        } else {
-            $this->_apiHelper->sendResponse(500, array('errors' => sprintf(Constants::MODEL_DELETE_ERROR, $_GET['model'], $_GET['id'])));
-        }
+
+        $this->_apiHelper->sendResponse(500, array('errors' => sprintf(Constants::MODEL_DELETE_ERROR, $_GET['model'], $_GET['id'])));
     }
 
     /*
