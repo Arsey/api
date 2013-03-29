@@ -1588,3 +1588,9 @@ pre code {
   margin: 0;
   padding: 15px 0 5px 0px;
 }
+
+.italic{
+    font-style: italic;
+}
+
+

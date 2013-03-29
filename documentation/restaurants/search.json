@@ -7,35 +7,35 @@
         "parameters":[
 {
 "name":"location",
-        "description":"location is string, that contains latitude ang longitude values, implodes with coma: -33.8670522,151.1957362 . Location is required field by default, but if you're using valid nextpagetoken, than location not required",
+        "description":"<div style=width:550px></div><strong>location</strong> - the latitude/longitude around which to retrieve restaurants. This must be specified as <span class=italic>latitude,longitude</span>",
         "allowMultiple":"false",
-        "dataType":"String",
+        "dataType":"string",
         "paramType":"query"
 },
 {
 "name":"query",
-        "description":"Query string like <strong>New York Makke</strong>. <p style=color:red>For search using an incomplete word, you may add<br><strong>Example: Burger->Burg*</strong></p>",
+        "description":"<strong>query</strong> - the text string on which to search, for example: 'Burger'. The service will return candidate matches based on this string and order the results based on their perceived relevance. <p style=color:red>For search using an incomplete word, you may add<br><strong>Example: Burger->Burg*</strong></p>",
         "allowMultiple":"false",
-        "dataType":"String",
+        "dataType":"string",
         "paramType":"query"
 },
 {
 "name":"radius",
-        "description":"raduis is simple digit like 200 that equals 200 meters. Maximum is 50 000",
+        "description":"<strong>raduis</strong> - defines the distance (in meters) within which to return results. This parameter works, when location paramter have LAT and LONG. <p style=color:red>Default value is 5000 meters</p>",
         "allowMultiple":"false",
         "dataType":"integer",
         "paramType":"query"
 },
 {
 "name":"limit",
-        "description":"limit of found restaurants per request",
+        "description":"<strong>limit</strong> - the number of maximum matches in response from service. <p style=color:red>By default it's equal 25 but not more than 100</p>",
         "allowMultiple":"false",
         "dataType":"integer",
         "paramType":"query"
 },
 {
 "name":"offset",
-        "description":"Just offset",
+        "description":"Use <strong>offset</strong> to specify the starting item offset into the result set returned by your query. Using offset is helpful for paging into large result sets, in scenarios where you need to quickly jump to a particular subset of the entire results.",
         "allowMultiple":"false",
         "dataType":"integer",
         "paramType":"query"
@@ -49,7 +49,7 @@
 }
 ],
         "summary":"Nearby searching",
-        "notes": "<h3>This page allows the user to search restaurants by:</h3><ul><li>Text(restaurant part name or full name);</li><li>By location(latitude, longitude);</li><li>By meals(means meal name).</li></ul><h3 style=color:red;>If the query variable is not empty, search will only look at address, street name etc.<br><br>If location variable consist of LAT and LONG we apply the GEO filter.<br><br>When searching meals simply set the variable inmeals=true</h3>"
+        "notes": "<h3>This page allows the user to search restaurants by:</h3><ul><li> - text(restaurant part name or full name);</li><li> - by location(latitude, longitude);</li><li> - include meals by it name.</li></ul><h3 style=color:red;>If the query variable is not empty, search will only look at address, street name etc.<br><br>If location variable consist of LAT and LONG we apply the GEO filter.<br><br>When searching meals simply set the variable inmeals=true</h3>"
 
 }
 ]
