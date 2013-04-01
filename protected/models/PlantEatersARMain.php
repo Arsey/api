@@ -76,7 +76,7 @@ class PlantEatersARMain extends CActiveRecord {
     private function _notPublicAttributes($model_name, $role) {
         $npa = array(
             'restaurants' => array(
-                'guest' => array('reference', 'external_id', 'access_status', 'phone', 'email'),
+                'guest' => array('reference', 'external_id', 'access_status',),
                 'normal' => array('reference', 'external_id', 'access_status'),
             ),
             'meals' => array(
