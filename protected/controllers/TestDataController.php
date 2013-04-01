@@ -195,12 +195,13 @@ class TestDataController extends CController {
         $model->street_address_2 = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['street_address_2']);
         $model->city = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['city']);
         $model->state = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['state']);
+        $model->zip = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['zip']);
         $model->country = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['country']);
         $model->phone = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['phone']);
         $model->email = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['email']);
         $model->website = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['website']);
         $model->rating = 0;
-        $model->veg = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['vegan'], 'vegetarian');
+        $model->veg = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['vegan'], '');
 
 
         $lat = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['lat']);

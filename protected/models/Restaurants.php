@@ -9,6 +9,7 @@
  * @property string $reference
  * @property string $location
  * @property string $name
+ * @property string $zip
  * @property string $street_address
  * @property string $street_address_2
  * @property string $city
@@ -79,16 +80,17 @@ class Restaurants extends PlantEatersARMain {
             array('name, location', 'required'),
             array('createtime, modifiedtime', 'numerical', 'integerOnly' => true),
             array('external_id, name, street_address, street_address_2, email, website', 'length', 'max' => 255),
+            array('zip', 'length', 'max' => 50),
             array('state', 'length', 'max' => 20),
             array('city, country', 'length', 'max' => 100),
             array('phone', 'length', 'max' => 30),
             array('rating', 'length', 'max' => 4),
             $this->_access_status_rule,
-            $this->_veg_short,
+            $this->_veg_short_with_empty,
             array('access_status', 'length', 'max' => 11),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, external_id, name, street_address, point, street_address_2, city, state, country, phone, email, website, veg, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
+            array('id, external_id, name, street_address, point, street_address_2, zip, city, state, country, phone, email, website, veg, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
         );
     }
 
@@ -114,6 +116,7 @@ class Restaurants extends PlantEatersARMain {
             'name' => 'Name',
             'street_address' => 'Street Address',
             'street_address_2' => 'Street Address 2',
+            'zip'=>'Zip',
             'city' => 'City',
             'state' => 'State',
             'country' => 'Country',
@@ -144,6 +147,7 @@ class Restaurants extends PlantEatersARMain {
         $criteria->compare('name', $this->name, true);
         $criteria->compare('street_address', $this->street_address, true);
         $criteria->compare('street_address_2', $this->street_address_2, true);
+        $criteria->compare('zip', $this->zip, true);
         $criteria->compare('city', $this->city, true);
         $criteria->compare('state', $this->state, true);
         $criteria->compare('country', $this->country, true);
@@ -187,7 +191,7 @@ class Restaurants extends PlantEatersARMain {
     public function getCityAndHigherLocation($restaurant_id) {
         $location = false;
         $restaurant = Yii::app()->db->createCommand()
-                ->select(array('city', 'state', 'country','name'))
+                ->select(array('city', 'state', 'country', 'name'))
                 ->from(self::model()->tableName())
                 ->where('id=:id', array(':id' => $restaurant_id))
                 ->queryRow();
@@ -218,6 +222,7 @@ class Restaurants extends PlantEatersARMain {
                             'Y(location) as longitude',
                             'street_address',
                             'street_address_2',
+                            'zip',
                             'city',
                             'state',
                             'country',

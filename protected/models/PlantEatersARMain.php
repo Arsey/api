@@ -36,6 +36,16 @@ class PlantEatersARMain extends CActiveRecord {
         'allowEmpty' => false,
         'message' => 'Field "veg" must match one of the options: vegan, vegetarian)'
     );
+    protected $_veg_short_with_empty = array(
+        'veg',
+        'in',
+        'range' => array(
+            Constants::VEGAN,
+            Constants::VEGETARIAN,
+        ),
+        'allowEmpty' => true,
+        'message' => 'Field "veg" must match one of the options: vegan, vegetarian)'
+    );
 
     /*
      * This is override CActiveRecord class method delete(),
