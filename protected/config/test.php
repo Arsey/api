@@ -3,7 +3,8 @@
 $test = CMap::mergeArray(
                 require(dirname(__FILE__) . '/main.php'), array(
             'import' => array(
-                'application.tests.unit.*'
+                'application.tests.unit.*',
+                'application.tests.unit.restaurants.*'
             ),
             'components' => array(
                 'fixture' => array(

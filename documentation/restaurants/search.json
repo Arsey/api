@@ -41,6 +41,14 @@
         "paramType":"query"
 },
 {
+"name":"withmeals",
+        "description":"Must be equal \"true\" to search restaurants with meals",
+        "allowMultiple":"false",
+        "dataType":"string",
+        "paramType":"query"
+}
+,
+{
 "name":"inmeals",
         "description":"Must be equal \"true\" to search in meals to",
         "allowMultiple":"false",

@@ -68,13 +68,24 @@ class SearchManager extends CApplicationComponent {
      */
     private $_with_meals = false;
 
+    /**
+     *
+     * @var boolean
+     */
+    private $_restaurants_with_meals = false;
+
     function setWithMeals($boolean) {
         $this->_with_meals = $boolean;
         return $this;
     }
 
+    function setRestaurantsWithMeals($boolean) {
+        $this->_restaurants_with_meals = $boolean;
+        return $this;
+    }
+
     /**
-     * Settern for $_query
+     * Setter for $_query
      * @param string $query
      * @return \SearchManager
      */
@@ -84,7 +95,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * Settern for $_radius
+     * Setter for $_radius
      * @param string $query
      * @return \SearchManager
      */
@@ -94,7 +105,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * Settern for $_radius
+     * Setter for $_radius
      * @param string $query
      * @return \SearchManager
      */
@@ -132,7 +143,7 @@ class SearchManager extends CApplicationComponent {
     }
 
     /**
-     * Settern for $_radius
+     * Setter for $_radius
      * @param string $query
      * @return \SearchManager
      */
@@ -187,6 +198,9 @@ class SearchManager extends CApplicationComponent {
 
             if (isset($attributes['location']))
                 $this->setLocation($attributes['location']);
+
+            if (isset($attributes['withmeals']) && $attributes['withmeals'] === 'true')
+                $this->_restaurants_with_meals = true;
         }
         return $this;
     }
@@ -253,6 +267,19 @@ class SearchManager extends CApplicationComponent {
                     ->orderby('@geodist ASC');
         }
 
+        /* If $_restaurants_with_meals is true, add where expression */
+        if ($this->_restaurants_with_meals) {
+            $search->filters(
+                    array(
+                        'range' => array(
+                            'attribute'=>'number_of_meals',
+                            'min'=>1,
+                            'max'=>10000,
+                        )
+                    )
+            );
+        }
+
         $results = $search->searchRaw();
 
         $this->_search_results = $results['matches'];
@@ -274,26 +301,27 @@ class SearchManager extends CApplicationComponent {
         if (empty($this->_search_results))
             return $this->_search_results;
 
-        $this->_search_results = array_map(function($e) {
-                    if (isset($e['attrs']['@geodist'])) {
-                        $e['attrs']['distance'] = round($e['attrs']['@geodist'], 0);
-                        unset($e['attrs']['@geodist']);
-                    }
-
-                    if (isset($e['attrs']['lat']))
-                        unset($e['attrs']['lat']);
-
-                    if (isset($e['attrs']['lng']))
-                        unset($e['attrs']['lng']);
-
-
-                    $attrs = $e['attrs'];
-                    unset($e['attrs'], $e['weight']);
-
-                    return(array_merge($e, $attrs));
-                }, $this->_search_results);
-
+        $this->_search_results = array_map(array($this, 'filterSearchItem'), $this->_search_results);
         return $this->_search_results;
+    }
+
+    function filterSearchItem($e) {
+
+        if (isset($e['attrs']['@geodist'])) {
+            $e['attrs']['distance'] = round($e['attrs']['@geodist'], 0);
+            unset($e['attrs']['@geodist']);
+        }
+
+        if (isset($e['attrs']['lat']))
+            unset($e['attrs']['lat']);
+
+        if (isset($e['attrs']['lng']))
+            unset($e['attrs']['lng']);
+
+        $attrs = $e['attrs'];
+        unset($e['attrs'], $e['weight']);
+
+        return(array_merge($e, $attrs));
     }
 
     public static function reindex() {

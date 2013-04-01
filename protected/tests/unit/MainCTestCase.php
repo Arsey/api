@@ -2,6 +2,9 @@
 
 class MainCTestCase extends CTestCase {
 
+    protected $_restaurants_search_uri='restaurants/search';
+    protected $_restaurant_single_uri='restaurant/';
+
     protected $_users = array(
         'bad' => array(
             'username' => 'bad_username',

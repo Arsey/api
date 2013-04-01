@@ -25,7 +25,10 @@ class RestaurantsController extends ApiController {
         try {
             $results = $search->goSearch;
         } catch (DGSphinxSearchException $e) {
-            $this->_apiHelper->sendResponse(500,array('message'=>'Some problems with search server occurred'));
+            if (!Yii::app()->user->isGuest)
+                Yii::app()->authManager->isAssigned(Users::ROLE_SUPER, Yii::app()->user->id);
+
+            $this->_apiHelper->sendResponse(500, array('message' => 'Some problems with search server occurred'));
         }
 
 

@@ -275,6 +275,8 @@ class DGSphinxSearch extends CApplicationComponent {
 
                     $this->client->setFilterFloatRange('@geodist', $min, (float) $vol['buffer']);
                     // usual filter
+                }else if($fil==='range'){
+                    $this->client->SetFilterRange($vol['attribute'], $vol['min'], $vol['max']);
                 } else if ($vol) {
                     $this->client->SetFilter($fil, (is_array($vol)) ? $vol : array($vol));
                 }
