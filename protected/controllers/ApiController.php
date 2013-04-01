@@ -19,6 +19,7 @@ class ApiController extends Controller {
      */
     protected $_user_role;
     protected $_user_info;
+    protected $_is_user_super = false;
 
     public function beforeAction($action) {
 
@@ -110,7 +111,7 @@ class ApiController extends Controller {
     }
 
     function actionIndex() {
-        $this->render('index');
+        $this->render('index', array('is_user_super' => $this->_is_user_super));
     }
 
     function actionServerSettings() {
@@ -297,11 +298,18 @@ class ApiController extends Controller {
     protected function _fillUserRequiredData() {
         $this->_user_role = Yii::app()->user->role;
 
-        if ($this->_user_role !== Users::GUEST) {
-            $this->_user_info = Users::getUserFastByPk(Yii::app()->user->id);
+        if (!Yii::app()->user->isGuest) {
+
+            $user_id = Yii::app()->user->id;
+
+            if (Yii::app()->authManager->isAssigned(Users::ROLE_SUPER, $user_id))
+                $this->_is_user_super = true;
+
+            $this->_user_info = Users::getUserFastByPk($user_id);
+
             return;
         }
-        //echo Yii::app()->user->id;die;
+
         if (is_numeric($user_id = Yii::app()->user->id) && !Users::getUserFastByPk($user_id)) {
             Yii::app()->user->logout();
             $this->_apiHelper->sendResponse(401, array('errors' => 'Your user ID is not found in our database. Please try to relogin to fix this problem.'));

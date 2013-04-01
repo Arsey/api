@@ -1,10 +1,29 @@
+-- phpMyAdmin SQL Dump
+-- version 3.3.7deb7
+-- http://www.phpmyadmin.net
+--
+-- Хост: localhost
+-- Время создания: Апр 01 2013 г., 11:05
+-- Версия сервера: 5.1.66
+-- Версия PHP: 5.3.3-7+squeeze14
+
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
+--
+-- База данных: `planteatrs`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `auth_assignment`
+--
 
 CREATE TABLE IF NOT EXISTS `auth_assignment` (
   `itemname` varchar(64) NOT NULL,
@@ -13,6 +32,12 @@ CREATE TABLE IF NOT EXISTS `auth_assignment` (
   `data` text,
   PRIMARY KEY (`itemname`,`userid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `auth_item`
+--
 
 CREATE TABLE IF NOT EXISTS `auth_item` (
   `name` varchar(64) NOT NULL,
@@ -23,6 +48,12 @@ CREATE TABLE IF NOT EXISTS `auth_item` (
   PRIMARY KEY (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `auth_item_child`
+--
+
 CREATE TABLE IF NOT EXISTS `auth_item_child` (
   `parent` varchar(64) NOT NULL,
   `child` varchar(64) NOT NULL,
@@ -30,12 +61,24 @@ CREATE TABLE IF NOT EXISTS `auth_item_child` (
   KEY `child` (`child`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `db_session`
+--
+
 CREATE TABLE IF NOT EXISTS `db_session` (
   `id` char(32) NOT NULL,
   `expire` int(11) DEFAULT NULL,
   `data` longblob,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `feedbacks`
+--
 
 CREATE TABLE IF NOT EXISTS `feedbacks` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -45,7 +88,13 @@ CREATE TABLE IF NOT EXISTS `feedbacks` (
   `access_status` enum('removed','published','pending','unpublished') NOT NULL DEFAULT 'published',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Table to store user feedbacks' AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Table to store user feedbacks' AUTO_INCREMENT=9 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `meals`
+--
 
 CREATE TABLE IF NOT EXISTS `meals` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -63,7 +112,13 @@ CREATE TABLE IF NOT EXISTS `meals` (
   KEY `restaurant_id` (`restaurant_id`),
   KEY `user_id` (`user_id`),
   KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Table to store meals of restaurant' AUTO_INCREMENT=720 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Table to store meals of restaurant' AUTO_INCREMENT=3904 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `password_reset_tokens`
+--
 
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -74,7 +129,13 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `token` (`token`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `photos`
+--
 
 CREATE TABLE IF NOT EXISTS `photos` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -90,7 +151,13 @@ CREATE TABLE IF NOT EXISTS `photos` (
   KEY `meal_id` (`meal_id`),
   KEY `name` (`name`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Table to store photos of meals' AUTO_INCREMENT=147 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Table to store photos of meals' AUTO_INCREMENT=317 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `ratings`
+--
 
 CREATE TABLE IF NOT EXISTS `ratings` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -106,7 +173,11 @@ CREATE TABLE IF NOT EXISTS `ratings` (
   PRIMARY KEY (`id`),
   KEY `meal_id` (`meal_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=772 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3972 ;
+
+--
+-- Триггеры `ratings`
+--
 DROP TRIGGER IF EXISTS `update_ratings_in_meals_and_restaurants_on_inserting_new_rating`;
 DELIMITER //
 CREATE TRIGGER `update_ratings_in_meals_and_restaurants_on_inserting_new_rating` AFTER INSERT ON `ratings`
@@ -117,7 +188,7 @@ SET @veg_var_for_meal:=(SELECT `veg` FROM `ratings` WHERE `access_status`='publi
 SET @veg:=(SELECT veg FROM (SELECT veg, count(*) AS magnitude FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published' GROUP BY veg  ORDER BY magnitude DESC LIMIT 1) AS t);
 SET @vegetarian:=(SELECT STRCMP(@veg,'vegetarian'));
 SET @vegetarian_on_request:=(SELECT STRCMP(@veg,'vegetarian_on_request'));
-SET @veg_var_for_restaurant:=(SELECT IF(@vegetarian='0' OR @vegetarian_on_request='0','vegetarian','vegan'));
+
 
 UPDATE `meals` SET 
 `meals`.`rating`=(SELECT AVG(rating) FROM ratings WHERE meal_id=NEW.meal_id AND access_status='published'), 
@@ -126,8 +197,7 @@ UPDATE `meals` SET
 WHERE `id`=NEW.meal_id;
 
 UPDATE `restaurants` SET 
-`restaurants`.`rating`=(SELECT AVG(rating) FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published'), 
-`restaurants`.`veg`=@veg_var_for_restaurant 
+`restaurants`.`rating`=(SELECT AVG(rating) FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published')
 WHERE `id`=@restaurant_id_var;
 END
 //
@@ -144,7 +214,7 @@ SET @veg_var_for_meal:=(SELECT `veg` FROM `ratings` WHERE `access_status`='publi
 SET @veg:=(SELECT veg FROM (SELECT veg, count(*) AS magnitude FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published' GROUP BY veg  ORDER BY magnitude DESC LIMIT 1) AS t);
 SET @vegetarian:=(SELECT STRCMP(@veg,'vegetarian'));
 SET @vegetarian_on_request:=(SELECT STRCMP(@veg,'vegetarian_on_request'));
-SET @veg_var_for_restaurant:=(SELECT IF(@vegetarian='0' OR @vegetarian_on_request='0','vegetarian','vegan'));
+
 
 UPDATE `meals` SET 
 `meals`.`rating`=(SELECT AVG(rating) FROM ratings WHERE meal_id=OLD.meal_id AND access_status='published'), 
@@ -152,8 +222,7 @@ UPDATE `meals` SET
 `meals`.`veg`=@veg_var_for_meal 
 WHERE `id`=OLD.meal_id;
 UPDATE `restaurants` SET 
-`restaurants`.`rating`=(SELECT AVG(rating) FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published'), 
-`restaurants`.`veg`=@veg_var_for_restaurant 
+`restaurants`.`rating`=(SELECT AVG(rating) FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published')
 WHERE `id`=@restaurant_id_var;
 END
 //
@@ -170,7 +239,7 @@ SET @veg_var_for_meal:=(SELECT `veg` FROM `ratings` WHERE `access_status`='publi
 SET @veg:=(SELECT veg FROM (SELECT veg, count(*) AS magnitude FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published' GROUP BY veg  ORDER BY magnitude DESC LIMIT 1) AS t);
 SET @vegetarian:=(SELECT STRCMP(@veg,'vegetarian'));
 SET @vegetarian_on_request:=(SELECT STRCMP(@veg,'vegetarian_on_request'));
-SET @veg_var_for_restaurant:=(SELECT IF(@vegetarian='0' OR @vegetarian_on_request='0','vegetarian','vegan'));
+
 
 UPDATE `meals` SET 
 `meals`.`rating`=(SELECT AVG(rating) FROM ratings WHERE meal_id=OLD.meal_id AND access_status='published'), 
@@ -178,12 +247,17 @@ UPDATE `meals` SET
 `meals`.`veg`=@veg_var_for_meal 
 WHERE `id`=OLD.meal_id;
 UPDATE `restaurants` SET 
-`restaurants`.`rating`=(SELECT AVG(rating) FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published'), 
-`restaurants`.`veg`=@veg_var_for_restaurant 
+`restaurants`.`rating`=(SELECT AVG(rating) FROM meals WHERE restaurant_id=@restaurant_id_var AND access_status='published') 
 WHERE `id`=@restaurant_id_var;
 END
 //
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `reports`
+--
 
 CREATE TABLE IF NOT EXISTS `reports` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -195,7 +269,13 @@ CREATE TABLE IF NOT EXISTS `reports` (
   PRIMARY KEY (`id`),
   KEY `meal_id` (`meal_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=28 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `restaurants`
+--
 
 CREATE TABLE IF NOT EXISTS `restaurants` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -203,6 +283,7 @@ CREATE TABLE IF NOT EXISTS `restaurants` (
   `reference` text NOT NULL,
   `location` point NOT NULL,
   `name` varchar(255) NOT NULL,
+  `zip` varchar(50) DEFAULT '',
   `street_address` varchar(255) NOT NULL,
   `street_address_2` varchar(255) DEFAULT NULL,
   `city` varchar(100) DEFAULT NULL,
@@ -211,7 +292,7 @@ CREATE TABLE IF NOT EXISTS `restaurants` (
   `phone` varchar(30) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
-  `veg` enum('vegan','vegetarian') NOT NULL DEFAULT 'vegetarian',
+  `veg` enum('vegan','vegetarian') DEFAULT NULL,
   `rating` decimal(4,3) NOT NULL DEFAULT '0.000',
   `createtime` int(10) NOT NULL DEFAULT '0',
   `modifiedtime` int(10) NOT NULL DEFAULT '0',
@@ -220,7 +301,13 @@ CREATE TABLE IF NOT EXISTS `restaurants` (
   KEY `name` (`name`),
   KEY `external_id` (`external_id`),
   KEY `street_address` (`street_address`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Table to store restaurants' AUTO_INCREMENT=908 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Table to store restaurants' AUTO_INCREMENT=50 ;
+
+-- --------------------------------------------------------
+
+--
+-- Дублирующая структура для представления `restaurants_with_lat_lng`
+--
 CREATE TABLE IF NOT EXISTS `restaurants_with_lat_lng` (
 `id` bigint(20) unsigned
 ,`external_id` varchar(255)
@@ -243,6 +330,12 @@ CREATE TABLE IF NOT EXISTS `restaurants_with_lat_lng` (
 ,`latitude` double
 ,`longitude` double
 );
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `users`
+--
+
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `password` varchar(128) NOT NULL,
@@ -257,33 +350,60 @@ CREATE TABLE IF NOT EXISTS `users` (
   `lastvisit` int(10) NOT NULL DEFAULT '0',
   `lastaction` int(10) NOT NULL DEFAULT '0',
   `lastpasswordchange` int(10) NOT NULL DEFAULT '0',
-  `status` enum('acitve','inactive','banned','removed') NOT NULL DEFAULT 'inactive',
+  `status` enum('active','inactive','banned','removed') NOT NULL DEFAULT 'inactive',
   `role` varchar(45) NOT NULL DEFAULT 'normal',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=31 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=46 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура для представления `restaurants_with_lat_lng`
+--
 DROP TABLE IF EXISTS `restaurants_with_lat_lng`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`planteatrs`@`%` SQL SECURITY DEFINER VIEW `restaurants_with_lat_lng` AS select `restaurants`.`id` AS `id`,`restaurants`.`external_id` AS `external_id`,`restaurants`.`reference` AS `reference`,`restaurants`.`location` AS `location`,`restaurants`.`name` AS `name`,`restaurants`.`street_address` AS `street_address`,`restaurants`.`street_address_2` AS `street_address_2`,`restaurants`.`city` AS `city`,`restaurants`.`state` AS `state`,`restaurants`.`country` AS `country`,`restaurants`.`phone` AS `phone`,`restaurants`.`email` AS `email`,`restaurants`.`website` AS `website`,`restaurants`.`veg` AS `veg`,`restaurants`.`rating` AS `rating`,`restaurants`.`createtime` AS `createtime`,`restaurants`.`modifiedtime` AS `modifiedtime`,`restaurants`.`access_status` AS `access_status`,x(`restaurants`.`location`) AS `latitude`,y(`restaurants`.`location`) AS `longitude` from `restaurants`;
 
+--
+-- Ограничения внешнего ключа сохраненных таблиц
+--
 
+--
+-- Ограничения внешнего ключа таблицы `feedbacks`
+--
 ALTER TABLE `feedbacks`
   ADD CONSTRAINT `feedbacks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+--
+-- Ограничения внешнего ключа таблицы `meals`
+--
 ALTER TABLE `meals`
-  ADD CONSTRAINT `meals_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `meals_ibfk_3` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `meals_ibfk_3` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `meals_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+--
+-- Ограничения внешнего ключа таблицы `password_reset_tokens`
+--
 ALTER TABLE `password_reset_tokens`
   ADD CONSTRAINT `password_reset_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+--
+-- Ограничения внешнего ключа таблицы `photos`
+--
 ALTER TABLE `photos`
   ADD CONSTRAINT `photos_ibfk_1` FOREIGN KEY (`meal_id`) REFERENCES `meals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `photos_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+--
+-- Ограничения внешнего ключа таблицы `ratings`
+--
 ALTER TABLE `ratings`
   ADD CONSTRAINT `ratings_ibfk_5` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `ratings_ibfk_6` FOREIGN KEY (`meal_id`) REFERENCES `meals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+--
+-- Ограничения внешнего ключа таблицы `reports`
+--
 ALTER TABLE `reports`
-  ADD CONSTRAINT `reports_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `reports_ibfk_3` FOREIGN KEY (`meal_id`) REFERENCES `meals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `reports_ibfk_3` FOREIGN KEY (`meal_id`) REFERENCES `meals` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `reports_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
