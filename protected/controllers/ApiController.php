@@ -153,6 +153,19 @@ class ApiController extends Controller {
             $findCriteria = new CDbCriteria();
             $findCriteria->offset = helper::getOffset($this->_parsed_attributes);
             $findCriteria->limit = helper::getLimit($this->_parsed_attributes, 25, 100);
+
+            $with = false;
+            if (
+                    isset($this->_parsed_attributes['with']) &&
+                    !empty($this->_parsed_attributes['with'])
+            ) {
+                $model_relations = $model_name::model()->relations();
+                if (isset($model_relations[$this->_parsed_attributes['with']])) {
+                    $findCriteria->with = array('user');
+                    $with = true;
+                }
+            }
+
             $models = $model_name::model()->findAll($findCriteria);
         } else {
             /* Model not implemented error */
@@ -165,8 +178,14 @@ class ApiController extends Controller {
         } else {
             /* Prepare response */
             $results = array();
-            foreach ($models as $model)
-                $results[strtolower($model_name)][] = $model->attributes;
+            foreach ($models as $model) {
+                $result = array();
+                $result = $model->attributes;
+                if ($with)
+                    $result[$this->_parsed_attributes['with']] = $model->{$this->_parsed_attributes['with']}->attributes;
+
+                $results[strtolower($model_name)][] = $result;
+            }
 
             $results['total_found'] = $model_name::model()->count();
             /* Send the response */
