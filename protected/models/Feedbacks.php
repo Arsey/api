@@ -89,8 +89,8 @@ class Feedbacks extends PlantEatersARMain {
         $criteria->compare('access_status', $this->access_status);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+        ));
     }
 
     public function behaviors() {
@@ -98,6 +98,7 @@ class Feedbacks extends PlantEatersARMain {
             'timestamps' => array(
                 'class' => 'zii.behaviors.CTimestampBehavior',
                 'createAttribute' => 'createtime',
+                'updateAttribute' => 'createtime',
             ),
         );
     }

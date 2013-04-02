@@ -222,16 +222,18 @@ class ApiController extends Controller {
     }
 
     public function actionUpdate() {
+        if (empty($this->_parsed_attributes))
+            $this->_apiHelper->sendResponse(400, array('errors' => array('Nothing to update')));
 
         if ($model_name = helper::getModelExists($_GET['model'])) {
             $model = $model_name::model()->findByPk($_GET['id']);
         } else {
-            $this->_apiHelper->sendResponse(501, array('errors' => sprintf(Constants::MODE_UPDATE_NOT_IMPLEMENTED, $_GET['model'])));
+            $this->_apiHelper->sendResponse(501, array('errors' => array(sprintf(Constants::MODE_UPDATE_NOT_IMPLEMENTED, $_GET['model']))));
         }
 
         /* Dod we find the requested model? If not, raise an arror */
         if (is_null($model))
-            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::ZERO_RESULTS_ON_UPDATE, $_GET['model'], $_GET['id'])));
+            $this->_apiHelper->sendResponse(400, array('errors' => array(sprintf(Constants::ZERO_RESULTS_ON_UPDATE, $_GET['model'], $_GET['id']))));
 
 
         /* Try to assign PUT parameters to attributes */
