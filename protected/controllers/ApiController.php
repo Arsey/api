@@ -166,7 +166,7 @@ class ApiController extends Controller {
                 $withArray = array();
                 foreach ($this->_parsed_attributes['with'] as $w) {
                     if (isset($model_relations[$w]))
-                        $withArray[]=$w;
+                        $withArray[] = $w;
                 }
                 if (!empty($withArray)) {
                     $findCriteria->with = $withArray;
@@ -188,8 +188,11 @@ class ApiController extends Controller {
             $results = array();
             foreach ($models as $model) {
                 $result = $model->attributes;
-                if ($with)
-                    $result[$this->_parsed_attributes['with']] = $model->{$this->_parsed_attributes['with']}->attributes;
+                if ($with) {
+                    foreach ($this->_parsed_attributes['with'] as $w) {
+                        $result[$w] = $model->$w->attributes;
+                    }
+                }
                 $results[strtolower($model_name)][] = $result;
             }
 
