@@ -126,6 +126,7 @@ class Reports extends PlantEatersARMain {
             'timestamps' => array(
                 'class' => 'zii.behaviors.CTimestampBehavior',
                 'createAttribute' => 'createtime',
+                'updateAttribute' => 'createtime'
             ),
         );
     }
