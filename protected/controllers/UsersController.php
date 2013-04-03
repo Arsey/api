@@ -146,6 +146,26 @@ class UsersController extends ApiController {
         $this->_apiHelper->sendResponse(400, array('message' => 'User not found'));
     }
 
+    public function actionGetUserAvatar() {
+        /* by default user identifier is equal to logged in user identifier */
+
+        $user_id = $this->_user_info['id'];
+        /* if exists user id in URL, then change user id */
+        if (isset($this->_parsed_attributes['user_id']))
+            $user_id = $this->_parsed_attributes['user_id'];
+        /*
+         * Check is user with given id exists
+         */
+        if (!$user = Users::model()->findByPk($user_id))
+            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_USER_WAS_FOUND, $user_id)));
+
+        $avatar_thumbnails=UsersManager::getAvatarThumbnails($user->avatar);
+        if (($user->avatar === '')||empty($avatar_thumbnails))
+            $this->_apiHelper->sendResponse(404, array('errors' => 'Current user have no avatar'));
+
+        $this->_apiHelper->sendResponse(200, array('results' => array('avatar_thumbnails'=>$avatar_thumbnails)));
+    }
+
     /**
      * Returns response with user profile data for logged in users
      */

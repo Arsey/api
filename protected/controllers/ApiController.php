@@ -85,6 +85,7 @@ class ApiController extends Controller {
                     'profile',
                     'changeprofile',
                     'changeuseravatar',
+                    'getuseravatar',
                     'mealreport',
                     'ratemeal',
                     'activity',
@@ -336,8 +337,6 @@ class ApiController extends Controller {
                 $this->_is_user_super = true;
 
             $this->_user_info = Users::getUserFastByPk($user_id);
-
-            return;
         }
 
         if (is_numeric($user_id = Yii::app()->user->id) && !Users::getUserFastByPk($user_id)) {

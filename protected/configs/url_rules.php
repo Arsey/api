@@ -23,7 +23,7 @@ return array(
     /* Change Profile Info */
     array('/users/changeprofile', 'pattern' => $prefix . 'user/profile', 'verb' => 'PUT'),
     /* Get User Avatar */
-    array('/users/avatar', 'pattern' => $prefix . 'user/avatar', 'verb' => 'GET'),
+    array('/users/getuseravatar', 'pattern' => $prefix . 'user/(<user_id:\d+>/)?avatar', 'verb' => 'GET'),
     /* Change user avatar */
     array('/images/changeuseravatar', 'pattern' => $prefix . 'user/changeavatar', 'verb' => 'POST'),
     /* Get User Activity */
