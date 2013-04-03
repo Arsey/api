@@ -155,13 +155,21 @@ class ApiController extends Controller {
             $findCriteria->limit = helper::getLimit($this->_parsed_attributes, 25, 100);
 
             $with = false;
+
             if (
                     isset($this->_parsed_attributes['with']) &&
                     !empty($this->_parsed_attributes['with'])
             ) {
+                $this->_parsed_attributes['with'] = explode(':', $this->_parsed_attributes['with']);
                 $model_relations = $model_name::model()->relations();
-                if (isset($model_relations[$this->_parsed_attributes['with']])) {
-                    $findCriteria->with = array('user');
+
+                $withArray = array();
+                foreach ($this->_parsed_attributes['with'] as $w) {
+                    if (isset($model_relations[$w]))
+                        $withArray[]=$w;
+                }
+                if (!empty($withArray)) {
+                    $findCriteria->with = $withArray;
                     $with = true;
                 }
             }
@@ -174,16 +182,14 @@ class ApiController extends Controller {
         /* If got some results */
         if (empty($models)) {
             /* No */
-            $this->_apiHelper->sendResponse(200, array('errors', sprintf(Constants::ZERO_RESULTS, $_GET['model'])));
+            $this->_apiHelper->sendResponse(200, array('errors' => sprintf(Constants::ZERO_RESULTS, $_GET['model'])));
         } else {
             /* Prepare response */
             $results = array();
             foreach ($models as $model) {
-                $result = array();
                 $result = $model->attributes;
                 if ($with)
                     $result[$this->_parsed_attributes['with']] = $model->{$this->_parsed_attributes['with']}->attributes;
-
                 $results[strtolower($model_name)][] = $result;
             }
 
