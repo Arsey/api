@@ -60,9 +60,10 @@ class ImagesController extends ApiController {
         /*
          * Is meal have photos
          */
-        if (!$photos = Photos::model()->findAllByAttributes(array('access_status' => Constants::ACCESS_STATUS_PUBLISHED, 'meal_id' => $meal->id)))
-            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_MEAL_IMAGES, $meal_id)));
 
+
+        if (!$photos = Photos::getMealPhotos($meal_id))
+            $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_MEAL_IMAGES, $meal_id)));
 
         $results = array();
         $this->_meal_dir = ImagesManager::getMealWebPath($meal->id);
@@ -73,11 +74,11 @@ class ImagesController extends ApiController {
         foreach ($photos as $photo) {
 
             $photo_thumbnails = $imagesManager
-                    ->setImagePath($this->_meal_dir . $photo->name)
+                    ->setImagePath($this->_meal_dir . $photo['name'])
                     ->setSizes(helper::yiiparam('sizes_for_photos_of_meals'))
                     ->getImageThumbnails();
 
-            $photo_info = $photo->filterByRole($this->_user_role);
+            $photo_info = $photo;
             $photo_info['thumbnails'] = $photo_thumbnails;
             $results[] = $photo_info;
         }
@@ -89,7 +90,7 @@ class ImagesController extends ApiController {
      * With this action user can upload photos for meal
      * @param integer $id of existing meal
      */
-    public function actionAddMealPhoto($id) {
+    function actionAddMealPhoto($id) {
 
         /* is meal with $id exists */
         $meal = BaseChecker::isMeal($id, $this->_apiHelper, Constants::ACCESS_STATUS_NEEDS_FOR_ACTION);
@@ -236,7 +237,7 @@ class ImagesController extends ApiController {
      * Upload image to change or set user avatar image.
      * Uploaded image apply to current logged in user.
      */
-    public function actionChangeUserAvatar() {
+    function actionChangeUserAvatar() {
         $this->_checkForExtension('avatar');
 
         /* trying to validate file that uploading */

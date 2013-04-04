@@ -112,8 +112,8 @@ class Photos extends PlantEatersARMain {
         $criteria->compare('access_status', $this->access_status);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+        ));
     }
 
     ////////////////////////////////
@@ -145,6 +145,28 @@ class Photos extends PlantEatersARMain {
     public function accessStatus($status) {
         $this->access_status = $status;
         $this->update('access_status');
+    }
+
+    public static function getMealPhotos($meal_id, $offset = 0, $limit = 25, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
+        $photos_table = Photos::model()->tableName();
+        $ratings_table = Ratings::model()->tableName();
+        return Yii::app()->db->createCommand()
+                        ->select(array(
+                            'id',
+                            'mime',
+                            'size',
+                            'name',
+                            'createtime',
+                            'default',
+                            "(SELECT COUNT(*) FROM `{$ratings_table}` WHERE photo_id=`{$photos_table}`.`id`) AS number_of_ratings",
+                            "(SELECT `{$ratings_table}`.`rating` FROM `{$ratings_table}` WHERE photo_id=`{$photos_table}`.`id` ORDER BY `{$ratings_table}`.`rating` DESC LIMIT 1) AS biggest_rating",
+                        ))
+                        ->where(array('and', 'access_status=:access_status', 'meal_id=:meal_id'), array(':access_status' => $access_status, ':meal_id' => $meal_id))
+                        ->limit($limit)
+                        ->offset($offset)
+                        ->from($photos_table)
+                        ->order('number_of_ratings DESC, biggest_rating DESC, createtime DESC')
+                        ->queryAll();
     }
 
     public static function makeDefaultPhoto($meal_id) {
