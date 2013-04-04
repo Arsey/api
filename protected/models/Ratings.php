@@ -131,8 +131,8 @@ class Ratings extends PlantEatersARMain {
         $criteria->compare('access_status', $this->access_status);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+        ));
     }
 
     ////////////////////////////////
@@ -178,6 +178,13 @@ class Ratings extends PlantEatersARMain {
                         ->queryAll();
     }
 
+    /**
+     * This method returns all published user ratings
+     * @param integer $user_id
+     * @param integer $offset
+     * @param integer $limit
+     * @return object of rows from db
+     */
     public static function getUserRatings($user_id, $offset = 0, $limit = 25) {
         return Yii::app()->db->createCommand()
                         ->select(
@@ -191,15 +198,14 @@ class Ratings extends PlantEatersARMain {
                                     'comment',
                                     'rating',
                                     "(SELECT `photos`.`name` FROM `photos` WHERE `photos`.`id`=
-                                        (SELECT `photos`.`id` FROM `photos` WHERE `photos`.`meal_id`=`ratings`.`meal_id` AND `photos`.`default`=1)
+                                        (SELECT `photos`.`id` FROM `photos` WHERE `photos`.`meal_id`=`ratings`.`meal_id` AND `photos`.`user_id`={$user_id})
                                      ) AS photo_name",
                                 )
                         )
-                        ->where(array('and', 'access_status=:access_status', 'user_id=:user_id')
-                                , array(':access_status' => Constants::ACCESS_STATUS_PUBLISHED, ':user_id' => $user_id))
+                        ->where(array('and', 'access_status=:access_status', 'user_id=:user_id'), array(':access_status' => Constants::ACCESS_STATUS_PUBLISHED, ':user_id' => $user_id))
                         ->from('ratings')
                         ->offset($offset)
-                ->order('createtime  DESC')
+                        ->order('createtime  DESC')
                         ->limit($limit)
                         ->queryAll();
     }
