@@ -15,7 +15,7 @@
             }
         ],
         "summary":"Meal Photos",
-        "notes": "This page allows the user to get all photos for meal by it id"
+        "notes": "This page allows the user to get all photos for meal by it id.<p>Photo that contains <strong>default=1</strong>, is default for meal. Photo can be default when is have more number of ratings or if rating for this photo bigger that others.</p>"
 
     }
 ]
