@@ -86,6 +86,11 @@ class Users extends CActiveRecord {
             ),
             array(
                 'username',
+                'unique',
+                'message' => 'That username is already taken',
+            ),
+            array(
+                'username',
                 'match',
                 'pattern' => '/^[A-Za-z0-9_]+$/u',
                 'message' => 'Incorrect symbol\'s. (A-z0-9)',
