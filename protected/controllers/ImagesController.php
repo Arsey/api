@@ -212,8 +212,9 @@ class ImagesController extends ApiController {
                     $meal->accessStatus(Constants::ACCESS_STATUS_PUBLISHED);
                 }
 
-                Photos::makeDefaultPhoto($meal->id);
                 $rating->updateByPk($rating_id, array('access_status' => Constants::ACCESS_STATUS_PUBLISHED, 'photo_id' => $this->_photo->id));
+
+                Photos::makeDefaultPhoto($meal->id);
 
                 $this->_apiHelper->sendResponse(200, array(
                     'message' => Constants::IMAGE_UPLOADED_SUCCESSFULLY,

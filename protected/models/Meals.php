@@ -199,16 +199,7 @@ class Meals extends PlantEatersARMain {
                         )
                         ->from($meals_table)
                         ->order('rating DESC, name ASC')
-                        ->where(
-                                array(
-                            'and',
-                            'restaurant_id=:restaurant_id',
-                            'access_status=:access_status'
-                                ), array(
-                            ':restaurant_id' => $restaurant_id,
-                            ':access_status' => $access_status,
-                                )
-                        )
+                        ->where(array('and', 'restaurant_id=:restaurant_id', 'access_status=:access_status'), array(':restaurant_id' => $restaurant_id, ':access_status' => $access_status,))
                         ->limit($limit)
                         ->offset($offset)
                         ->queryAll(true, array());

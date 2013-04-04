@@ -171,8 +171,7 @@ class Photos extends PlantEatersARMain {
 
     public static function makeDefaultPhoto($meal_id) {
         $db = Yii::app()->db;
-        $db->createCommand("UPDATE  `photos` SET  `default` =  '0' WHERE  `photos`.`meal_id`=:meal_id")
-                ->execute(array(':meal_id' => $meal_id));
+        $db->createCommand("UPDATE  `photos` SET  `default` =  '0' WHERE  `photos`.`meal_id`=:meal_id")->execute(array(':meal_id' => $meal_id));
         $db->createCommand(
                         "UPDATE  `photos`
                     SET  `default` =  '1'
@@ -181,7 +180,7 @@ class Photos extends PlantEatersARMain {
                                 ((SELECT *, COUNT(*) as magnitude
                                     FROM
                                         ((SELECT meal_id,photo_id,rating,createtime
-                                            FROM `ratings` WHERE access_status='published' AND meal_id=:meal_id) as r)
+                                            FROM `ratings` WHERE access_status='published' AND meal_id=:meal_id AND `ratings`.`photo_id` IS NOT NULL) as r)
                                             GROUP BY photo_id
                                             ORDER BY magnitude DESC, rating DESC,createtime DESC LIMIT 1
                                  ) as p))")
