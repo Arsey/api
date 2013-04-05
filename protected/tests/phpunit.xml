@@ -12,15 +12,15 @@
 
     <testsuites>
         <testsuite name="AllTests">
-            <!--Components-->
-            <directory>unit/components</directory>
+
             <!--Users-->
             <file>unit/users/RegistrationTest.php</file>
+            <!--Components-->
+            <directory>unit/components</directory>
             <file>unit/users/LoginLogoutTest.php</file>
             <file>unit/users/PasswordRecoveryTest.php</file>
             <file>unit/users/ProfileTest.php</file>
             <file>unit/users/AvatarTest.php</file>
-            <file>unit/users/ActivityTest.php</file>
             <!--Feedbacks-->
             <directory>unit/feedbacks</directory>
             <!--Meals-->
@@ -30,10 +30,11 @@
             <file>unit/meals/GetMealPhotosTest.php</file>
             <!--Ratings-->
             <directory>unit/ratings</directory>
+            <file>unit/users/ActivityTest.php</file>
             <!--Reports-->
             <directory>unit/reports</directory>
             <!--Restaurants-->
-            <directory>unit/restaurants</directory>
+            <directory>unit/restaurants</directory>-->
         </testsuite>
     </testsuites>
 

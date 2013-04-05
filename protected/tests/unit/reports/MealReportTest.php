@@ -26,6 +26,7 @@ class MealReportTest extends MainCTestCase {
     /* without login but with valid url */
 
     function testWithLogin() {
+        $this->_login_user = $this->_users_for_registration['super'];
         $this->setLoginCookie();
         $response = helper::jsonDecode($this->_rest->post($this->_uri . Reports::NOT_GLUTEN_FREE));
         //helper::p($response);

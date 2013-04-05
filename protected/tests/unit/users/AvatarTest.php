@@ -5,13 +5,13 @@ class AvatarTest extends MainCTestCase {
     private $_avatar_url = 'user/changeavatar';
 
     function testUploadAvatarWithoutLogin() {
-
         $response = helper::jsonDecode($this->_rest->post($this->_avatar_url));
         $this->assertNotEquals(ApiHelper::MESSAGE_404, $response['status']);
         $this->assertEquals(ApiHelper::MESSAGE_403, $response['status']);
     }
 
     function testUploadAvatar() {
+        $this->_login_user=$this->_users_for_registration['demo'];
         $this->setLoginCookie();
         /* upload without image field */
 

@@ -2,9 +2,67 @@
 
 class MainCTestCase extends CTestCase {
 
-    protected $_restaurants_search_uri='restaurants/search';
-    protected $_restaurant_single_uri='restaurant/';
-
+    protected $_restaurants_search_uri = 'restaurants/search';
+    protected $_restaurant_single_uri = 'restaurant/';
+    protected $_meal_test_image_path;
+    protected $_login_user;
+    protected $_users_for_registration = array(
+        'demo' => array(
+            'username' => 'demoUser',
+            'password' => 'password',
+            'email' => 'planteaters.test@gmail.com',
+            'must_be_registered' => true
+        ),
+        'the_same_username' => array(
+            'username' => 'demoUser',
+            'password' => 'password',
+            'email' => 'planteaters.test.123@gmail.com',
+            'error' => Users::TAKEN_USERNAME
+        ),
+        'the_same_email' => array(
+            'username' => 'useruser',
+            'password' => 'password',
+            'email' => 'planteaters.test@gmail.com',
+            'error' => Users::EMAIL_EXISTS
+        ),
+        'a_little_password' => array(
+            'username' => 'demoUserdd',
+            'password' => 'pa',
+            'email' => 'planteaters.test.123@gmail.com',
+            'error' => Users::PASSWORD_TO_SHORT,
+        ),
+        'an_empty_username' => array(
+            'username' => '',
+            'password' => 'password',
+            'email' => 'planteaters.test.123@gmail.com',
+            'error' => 'Username cannot be blank.'
+        ),
+        'an_empty_password' => array(
+            'username' => 'userblah',
+            'password' => '',
+            'email' => 'planteaters.test.123@gmail.com',
+            'error' => 'Password cannot be blank.'
+        ),
+        'an_empty_email' => array(
+            'username' => 'userblah',
+            'password' => 'password',
+            'email' => '',
+            'error' => 'Email cannot be blank.'
+        ),
+        'not_valid_email' => array(
+            'username' => 'userblah',
+            'password' => 'password',
+            'email' => 'email',
+            'error' => 'Email is not a valid email address.'
+        ),
+        'super' => array(
+            'username' => 'superUser',
+            'password' => 'password',
+            'email' => 'planteaters.test.2@gmail.com',
+            'super' => true,
+            'must_be_registered' => true
+        )
+    );
     protected $_users = array(
         'bad' => array(
             'username' => 'bad_username',
@@ -20,16 +78,18 @@ class MainCTestCase extends CTestCase {
         ),
         'demo' => array(
             'username' => 'demoUser',
-            'password' => 'passwordRE@#',
-            'email' => 'arseysensector@gmail.com',
-        )
+            'password' => 'password',
+            'email' => 'planteaters.test@gmail.com',
+        ),
     );
-    protected $_meal = array(
-        'name' => 'test meal name',
-        'rating' => '3',
-        'veg' => 'vegetarian',
-        'comment' => 'test meal comment',
-        'gluten_free' => '1',
+    protected $_meals = array(
+        'meal' => array(
+            'name' => 'test meal name',
+            'rating' => '3',
+            'veg' => 'vegetarian',
+            'comment' => 'test meal comment',
+            'gluten_free' => '1',
+        )
     );
     protected $_feedback = array(
         'text' => 'Test feedback text',
@@ -41,6 +101,7 @@ class MainCTestCase extends CTestCase {
     protected $_restaurant_id = 1;
 
     public function __construct() {
+        $this->_meal_test_image_path=  dirname(__FILE__).'/../res/meal_test_photo.jpg';
         $this->_server = helper::yiiparam('rest_api_server_base_url');
         $this->_initCurl();
     }
@@ -53,8 +114,8 @@ class MainCTestCase extends CTestCase {
         $rest = helper::curlInit($this->_server);
         $response = $rest->post(
                 'user/login', array(
-            'email' => $this->_users['demo']['email'],
-            'password' => $this->_users['demo']['password'],
+            'email' => $this->_login_user['email'],
+            'password' => $this->_login_user['password'],
                 )
         );
         $response = helper::jsonDecode($response);

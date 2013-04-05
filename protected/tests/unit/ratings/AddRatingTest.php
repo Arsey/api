@@ -18,10 +18,11 @@ class AddRatingTest extends MainCTestCase {
     }
 
     function testAddRating() {
+        $this->_login_user = $this->_users_for_registration['super'];
         $this->setLoginCookie();
         /* without photo */
         $response = helper::jsonDecode($this->_rest->post($this->_uri, $this->_meal));
-        //helper::p($response);
+        helper::p($response);
         $this->assertEquals(Constants::RATING_NEED_ACTION_MESSAGE, $response['message']);
         //helper::p($response);
     }

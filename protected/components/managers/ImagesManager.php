@@ -9,17 +9,8 @@ class ImagesManager extends CApplicationComponent {
     private $_ext;
     private $_prefix = null;
     private $_sizes = array();
-    public static $allowed_img_ext = array(
-        'gif',
-        'png',
-        'jpg',
-        'jpeg'
-    );
-    public static $allowed_img_mimes = array(
-        'image/gif',
-        'image/png',
-        'image/jpeg'
-    );
+    public static $allowed_img_ext = array('gif', 'png', 'jpg', 'jpeg');
+    public static $allowed_img_mimes = array('image/gif', 'image/png', 'image/jpeg');
     public static $uploads_folder = '/uploads/';
     private $_lastSavedThumbnails = array();
 
@@ -84,12 +75,12 @@ class ImagesManager extends CApplicationComponent {
         $thumbs = array();
 
         $this->_ext = CFileHelper::getExtension($this->_image_path);
-        $file_name = pathinfo($this->_image_path, PATHINFO_FILENAME);
+        $file = pathinfo($this->_image_path, PATHINFO_FILENAME);
         $web_path = pathinfo($this->_image_path, PATHINFO_DIRNAME);
 
         if (!empty($this->_sizes)) {
             foreach ($this->_sizes as $size) {
-                $thumb_web_path = $web_path . '/' . $file_name . '_' . $size[0] . '.' . $this->_ext;
+                $thumb_web_path = $web_path . '/' . $file . '_' . $size[0] . '.' . $this->_ext;
                 if (@GetImageSize($thumb_web_path)) {
                     $thumbs['thumb_' . $size[0]] = $thumb_web_path;
                 } else {
@@ -229,6 +220,88 @@ class ImagesManager extends CApplicationComponent {
                         ->setImagePath($image_path)
                         ->setSizes(helper::yiiparam('sizes_for_user_avatar'))
                         ->getImageThumbnails();
+    }
+
+
+    /**
+     *
+     * @var type
+     */
+    private $_photo=false;
+    public function getPhoto(){
+        return $this->_photo;
+    }
+    /**
+     * Field name, that must contain image
+     * @var string
+     */
+    private $_image_field = 'image';
+
+    /**
+     * New name for image
+     * @var string
+     */
+    private $_new_image_name;
+
+    /**
+     * Setter for $_image_field
+     * @param string $image_field
+     * @return \ImagesManager
+     */
+    public function setImageField($image_field) {
+        $this->_image_field = $image_field;
+        return $this;
+    }
+
+    public function getMealImageFromRequest() {
+
+        if (empty($_FILES)||!isset($_FILES[$this->_image_field]))
+            return $this;
+
+        $this->setImageExtInRequestFile($this->_image_field);
+
+        /* apply available attributes to Photos model */
+        $this->setNewImageName();
+
+        $photo = new Photos;
+        $photo->image = CUploadedFile::getInstanceByName($this->_image_field);
+        $photo->user_id = Yii::app()->user->id;
+        $photo->meal_id = 1; //fake meal id
+        $photo->name = $this->_new_image_name . '.' . $photo->image->extensionName; //rename file
+        $photo->mime = CFileHelper::getMimeTypeByExtension($photo->name);
+        $photo->size = $photo->image->size;
+
+        $this->_photo = $photo;
+        return $this;
+    }
+
+    public function setImageExtInRequestFile($file) {
+        if (
+                isset($_FILES[$file]) &&
+                ($_FILES[$file]['error'] == 0) &&
+                !self::isValidExtension($_FILES[$file]['tmp_name']) &&
+                ($ext = self::isValidMime($_FILES[$file]['tmp_name']))
+        ) {
+            $_FILES[$file]['name'].='.' . $ext;
+        }
+    }
+
+    /**
+     * Setter for $_new_image_name
+     * @param string $image_name
+     * @return \ImagesController
+     */
+    public function setNewImageName($image_name = null) {
+        if (!is_null($image_name)) {
+            $this->_new_image_name = $image_name;
+        } else {
+            $this->_new_image_name = self::generateNewName(24, null, true);
+        }
+        return $this;
+    }
+
+    public function getNewImageName() {
+        return $this->_new_image_name;
     }
 
 }

@@ -95,6 +95,7 @@ class Constants {
     //message wich sey to user foolow instructions for password recovery
     const INSTRUCTIONS_SENT = 'Instructions have been sent to you. Please check your email.';
     const NO_USER_WAS_FOUND = 'No user was found with id=%d';
+    const RESET_ONCE_A_DAY= 'You can try to reset your password once per 24 hours. Maybe you tried to make recovery password? Please check your email first.';
     /*
      * authenticate method
      */

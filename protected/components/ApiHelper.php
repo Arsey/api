@@ -28,6 +28,7 @@ class ApiHelper extends CApplicationComponent {
 
     /* standard messages for codes below */
     const MESSAGE_200 = 'OK';
+    const MESSAGE_201 = 'Created';
     const MESSAGE_400 = 'Bad Request';
     const MESSAGE_401 = 'Unathorized';
     const MESSAGE_402 = 'Payment Required';
@@ -180,6 +181,7 @@ class ApiHelper extends CApplicationComponent {
     public function getStatusCodeMessage($status) {
         $codes = array(
             200 => self::MESSAGE_200,
+            201 => self::MESSAGE_201,
             400 => self::MESSAGE_400,
             401 => self::MESSAGE_401,
             402 => self::MESSAGE_402,

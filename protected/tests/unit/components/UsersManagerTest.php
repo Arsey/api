@@ -14,19 +14,20 @@ class UsersManagerTest extends MainCTestCase {
         $is_user_exists = Yii::app()->usersManager->checkexists('non_existing_login');
         $this->assertFalse(($is_user_exists));
         /*
-         * with non existing email  
+         * with non existing email
          */
         $is_user_exists = Yii::app()->usersManager->checkexists('non@email.com');
         $this->assertFalse(($is_user_exists));
 
-        
+
         /*
-         * with existing email  
+         * with existing email
          */
-        $is_user_exists = Yii::app()->usersManager->checkexists('arseysensector@gmail.com');
+        $is_user_exists = Yii::app()->usersManager->checkexists($this->_users_for_registration['super']['email']);
+        $is_user_exists = Yii::app()->usersManager->checkexists($this->_users_for_registration['demo']['email']);
         $this->assertTrue(!empty($is_user_exists) && $is_user_exists);
         /*
-         * with existing username  
+         * with existing username
          */
         $is_user_exists = Yii::app()->usersManager->checkexists('demoUser');
         $this->assertTrue(!empty($is_user_exists) && $is_user_exists);

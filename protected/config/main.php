@@ -103,6 +103,7 @@ $main = array(
         ),
     ),
     'params' => array(
+        'current_http'=>'http',
         'allowed_params_to_update_from_backend' => array(
             'send_from',
             'support_email',

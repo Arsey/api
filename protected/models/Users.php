@@ -45,6 +45,11 @@ class Users extends CActiveRecord {
     const STATUS_REMOVED = 'removed';
     const AVATARS_UPLOAD_DIRECTORY = 'avatars';
 
+    //messages
+    const TAKEN_USERNAME = 'That username is already taken.';
+    const EMAIL_EXISTS = 'That email is already exists.';
+    const PASSWORD_TO_SHORT = 'Passwrod is too short (minimum is 6 characters).';
+
     //////////////////////////////
     //BASE METHODS CREATED BY GII
     //////////////////////////////
@@ -75,7 +80,7 @@ class Users extends CActiveRecord {
             array('createtime, lastvisit, lastaction, lastpasswordchange', 'numerical', 'integerOnly' => true),
             array('password, salt, activation_key', 'length', 'max' => 128),
             array('email, city, country, avatar', 'length', 'max' => 255),
-            array('password', 'length', 'min' => 6),
+            array('password', 'length', 'min' => 6, 'tooShort' => self::PASSWORD_TO_SHORT),
             array('email', 'CEmailValidator'),
             array(
                 'username',
@@ -87,19 +92,18 @@ class Users extends CActiveRecord {
             array(
                 'username',
                 'unique',
-                'message' => 'That username is already taken',
+                'message' => self::TAKEN_USERNAME,
             ),
             array(
                 'username',
                 'match',
                 'pattern' => '/^[A-Za-z0-9_]+$/u',
                 'message' => 'Incorrect symbol\'s. (A-z0-9)',
-            //'on'=>'insert,change_profile',
             ),
             array(
                 'email',
                 'unique',
-                'message' => 'This email already exists.'
+                'message' => self::EMAIL_EXISTS
             ),
             array(
                 'status',
@@ -380,7 +384,7 @@ class Users extends CActiveRecord {
         $format = isset($_GET['format']) ? $_GET['format'] . '/' : 'json/';
         isset($_SERVER['SERVER_NAME']) ? false : $_SERVER['SERVER_NAME'] = helper::yiiparam('server_name');
 
-        return "https://" . $_SERVER['SERVER_NAME'] . "/{$format}user/activation/key/" . $this->activation_key . "/email/" . $this->email;
+        return helper::yiiparam('current_html')."://" . $_SERVER['SERVER_NAME'] . "/{$format}user/activation/key/" . $this->activation_key . "/email/" . $this->email;
     }
 
     /**

@@ -133,7 +133,7 @@ class UsersController extends ApiController {
         ) {
 
             if (!PasswordResetTokens::isCanResetPassword($user->id))
-                $this->_apiHelper->sendResponse(400, array('message' => 'You can try to reset your password once per 24 hours. Maybe you tried to make recovery password? Please check your email first.'));
+                $this->_apiHelper->sendResponse(400, array('message' =>  Constants::RESET_ONCE_A_DAY));
 
             $model = new PasswordResetTokens;
             $model->createResetToken($user);

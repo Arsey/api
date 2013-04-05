@@ -5,7 +5,7 @@ class ActivityTest extends MainCTestCase {
     private $_uri;
 
     protected function setUp() {
-        $id = Yii::app()->db->createCommand("select id from users limit 1")->queryScalar();
+        $id = Yii::app()->db->createCommand("select id from users where email='{$this->_users_for_registration['demo']}'")->queryScalar();
         $this->_uri = "user/{$id}/activity";
     }
 

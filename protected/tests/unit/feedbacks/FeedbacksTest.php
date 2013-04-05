@@ -8,6 +8,7 @@ class FeedbacksTest extends MainCTestCase {
     }
 
     function testSendWithLogin() {
+        $this->_login_user = $this->_users_for_registration['demo'];
         $this->setLoginCookie();
         $response = helper::jsonDecode($this->_rest->post('feedback', $this->_feedback));
 
