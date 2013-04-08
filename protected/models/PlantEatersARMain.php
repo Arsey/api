@@ -24,7 +24,8 @@ class PlantEatersARMain extends CActiveRecord {
             Constants::VEGETARIAN_ON_REQUEST,
         ),
         'allowEmpty' => false,
-        'message' => 'Field "veg" must match one of the options: vegan, vegan_on_request, vegetarian, vegetarian_on_request)'
+        'message' => 'Field "veg" must match one of the options: vegan, vegan_on_request, vegetarian, vegetarian_on_request',
+        'except'=>'add_meal_with_rating'
     );
     protected $_veg_short = array(
         'veg',

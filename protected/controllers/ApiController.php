@@ -307,6 +307,13 @@ class ApiController extends Controller {
         }
     }
 
+    protected function _getAttribute($attribute_name) {
+        if (isset($this->_parsed_attributes[$attribute_name])) {
+            return $this->_parsed_attributes[$attribute_name];
+        }
+        return null;
+    }
+
     /**
      *
      * @param array $vars

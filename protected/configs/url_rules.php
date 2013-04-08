@@ -3,6 +3,9 @@
 $prefix = '(<format:json|xml>/)?';
 
 return array(
+    'gii' => 'gii',
+    'gii/<controller:\w+>' => 'gii/<controller>',
+    'gii/<controller:\w+>/<action:\w+>' => 'gii/<controller>/<action>',
     array('api/allowoptions', 'pattern' => $prefix . '([\s\S]*)', 'verb' => 'OPTIONS'),
     array('testData/import', 'pattern' => 'import/<filename:\S+>'),
     array('api/serversettings', 'pattern' => $prefix . 'settings', 'verb' => 'GET, POST'),
@@ -47,19 +50,15 @@ return array(
     ////
     array('api/update', 'pattern' => $prefix . '<model:\w+>/<id:\d+>', 'verb' => 'PUT'),
     array('api/delete', 'pattern' => $prefix . '<model:\w+>/<id:\d+>', 'verb' => 'DELETE'),
-
     array('reports/mealreport', 'pattern' => $prefix . 'meal/<id:\d+>/report/<report:\w+>'),
-    /*Add Meal*/
-
-    array('ratings/addrating','pattern'=>$prefix.'restaurant/<restaurant_id:\d+>/addmeal','verb'=>'POST'),
+    /* Add Meal */
+    array('ratings/addrating', 'pattern' => $prefix . 'restaurant/<restaurant_id:\d+>/addmeal', 'verb' => 'POST'),
     array('ratings/addrating', 'pattern' => $prefix . 'meal/<meal_id:\d+>/addrating', 'verb' => 'POST'),
-
-
     array('meals/addmealtorestaurant', 'pattern' => $prefix . 'restaurant/<restaurant_id:\d+>/meal', 'verb' => 'POST'),
     array('ratings/ratemeal', 'pattern' => $prefix . 'meal/<meal_id:\d+>/ratemeal', 'verb' => 'POST'),
     //photo upload
     array('images/addratingphoto', 'pattern' => $prefix . 'rating/<rating_id:\d+>/addphoto', 'verb' => 'POST'),
-    /*Add Meal Photo*/
+    /* Add Meal Photo */
     array('images/addmealphoto', 'pattern' => $prefix . 'meal/<id:\d+>/addphoto', 'verb' => 'POST'),
     array('feedbacks/addfeedback', 'pattern' => $prefix . 'feedback', 'verb' => 'POST'),
     array('api/create', 'pattern' => $prefix . '<model:\w+>', 'verb' => 'POST'),

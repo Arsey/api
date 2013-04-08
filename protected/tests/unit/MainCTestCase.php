@@ -88,7 +88,8 @@ class MainCTestCase extends CTestCase {
             'rating' => '3',
             'veg' => 'vegetarian',
             'comment' => 'test meal comment',
-            'gluten_free' => '1',
+            'gluten_free' => 1,
+            'image'=>true
         )
     );
     protected $_feedback = array(

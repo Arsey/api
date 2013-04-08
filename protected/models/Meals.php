@@ -55,17 +55,15 @@ class Meals extends PlantEatersARMain {
             array('gluten_free, createtime, modifiedtime', 'numerical', 'integerOnly' => true),
             array('restaurant_id, user_id', 'length', 'max' => 20),
             array('name', 'length', 'max' => 100),
-            array(
-                'name',
-                'uniqueRestaurantMealName'
-            ),
+            array('name', 'uniqueRestaurantMealName'),
             $this->_access_status_rule,
             $this->_veg,
-            array('rating', 'length', 'max' => 4),
+            array('rating', 'length', 'max' => 4, 'on' => 'save'),
             array('description', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, restaurant_id, user_id, name, description, veg, gluten_free, rating, createtime, modifiedtime, access_status', 'safe', 'on' => 'search'),
+            array('veg, gluten_free, rating', 'unsafe', 'on' => 'add_meal_with_rating')
         );
     }
 
@@ -153,11 +151,11 @@ class Meals extends PlantEatersARMain {
 
         $result = Yii::app()
                 ->db
-                ->createCommand("SELECT * FROM meals WHERE restaurant_id=:restaurant_id AND name=:name")
-                ->queryAll(true, array(
-            ':restaurant_id' => $this->restaurant_id,
-            ':name' => $this->$attribute,
-        ));
+                ->createCommand()
+                ->select(array('id'))
+                ->from(self::model()->tableName())
+                ->where(array('and', 'restaurant_id=:restaurant_id', 'name=:name'), array(':restaurant_id' => $this->restaurant_id, ':name' => $this->$attribute))
+                ->queryAll();
 
         if ($result) {
             if (!isset($params['message']))
