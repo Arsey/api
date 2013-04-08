@@ -197,9 +197,7 @@ class Ratings extends PlantEatersARMain {
                                       AS number_of_ratings',
                                     'comment',
                                     'rating',
-                                    "(SELECT `photos`.`name` FROM `photos` WHERE `photos`.`id`=
-                                        (SELECT `photos`.`id` FROM `photos` WHERE `photos`.`meal_id`=`ratings`.`meal_id` AND `photos`.`user_id`={$user_id})
-                                     ) AS photo_name",
+                                    "(SELECT `photos`.`name` FROM `photos` WHERE `photos`.`id`=`ratings`.`photo_id`) AS photo_name",
                                 )
                         )
                         ->where(array('and', 'access_status=:access_status', 'user_id=:user_id'), array(':access_status' => Constants::ACCESS_STATUS_PUBLISHED, ':user_id' => $user_id))

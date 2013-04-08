@@ -83,13 +83,22 @@ class MainCTestCase extends CTestCase {
         ),
     );
     protected $_meals = array(
-        'meal' => array(
+        'meal_without_image' => array(
             'name' => 'test meal name',
             'rating' => '3',
             'veg' => 'vegetarian',
             'comment' => 'test meal comment',
             'gluten_free' => 1,
-            'image'=>true
+            'image' => false,
+            'error' => ''
+        ),
+        'meal2' => array(
+            'name' => 'test meal name',
+            'rating' => '3',
+            'veg' => 'vegetarian',
+            'comment' => 'test meal comment',
+            'gluten_free' => 1,
+            'image' => true
         )
     );
     protected $_feedback = array(
@@ -102,7 +111,7 @@ class MainCTestCase extends CTestCase {
     protected $_restaurant_id = 1;
 
     public function __construct() {
-        $this->_meal_test_image_path=  dirname(__FILE__).'/../res/meal_test_photo.jpg';
+        $this->_meal_test_image_path = dirname(__FILE__) . '/../res/meal_test_photo.jpg';
         $this->_server = helper::yiiparam('rest_api_server_base_url');
         $this->_initCurl();
     }
@@ -123,12 +132,23 @@ class MainCTestCase extends CTestCase {
         return $response;
     }
 
-    protected function setLoginCookie() {
+    protected function setLoginCookie(&$curl = null, $auth_token = null) {
+
+        if (!is_null($curl) && !is_null($auth_token)) {
+            $curl->option(CURLOPT_COOKIE, "auth_token=" . $auth_token);
+            return;
+        }
+
         $login_response = $this->login();
         if (isset($login_response['results'])) {
-            $this->_rest->option(CURLOPT_COOKIE, "auth_token=" . $login_response['results']['auth_token']);
             $this->_auth_token = $login_response['results']['auth_token'];
-            return $login_response['results']['auth_token'];
+
+            if (!is_null($curl)) {
+                $curl->option(CURLOPT_COOKIE, "auth_token=" . $this->_auth_token);
+            } else {
+                $this->_rest->option(CURLOPT_COOKIE, "auth_token=" . $this->_auth_token);
+            }
+            return $this->_auth_token;
         } else {
             helper::p($login_response);
         }
