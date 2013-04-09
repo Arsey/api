@@ -334,7 +334,7 @@ class SearchManager extends CApplicationComponent {
         }
 
         return array(
-            'total_found' => $total_found,
+            'total_found' => (int)$total_found,
             'restaurants' => $restaurants
         );
     }
