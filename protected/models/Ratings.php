@@ -28,6 +28,11 @@ class Ratings extends PlantEatersARMain {
     const LIKED_IT = 4;
     const LOVED_IT = 5;
 
+    //Messages
+    const RATING_NOT_LESS = 'Rating must be not less than 1';
+    const VEG_CANNOT_BE_BLANK = 'Field "veg" (Vegetarian|Vegan) cannot be blank.';
+    const GLUTEN_FREE_CANNOT_BE_BLANK='Field "gluten_free" cannot be blank.';
+
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
@@ -51,7 +56,9 @@ class Ratings extends PlantEatersARMain {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('meal_id, user_id, veg, gluten_free', 'required'),
+            array('meal_id, user_id', 'required'),
+            array('veg', 'required', 'message' => self::VEG_CANNOT_BE_BLANK),
+            array('gluten_free', 'required', 'message' => self::GLUTEN_FREE_CANNOT_BE_BLANK),
             array('createtime,  gluten_free', 'numerical', 'integerOnly' => true),
             array('meal_id, user_id, photo_id', 'length', 'max' => 20),
             array('comment', 'safe'),
@@ -61,7 +68,7 @@ class Ratings extends PlantEatersARMain {
                 'integerOnly' => true,
                 'min' => 1,
                 'max' => 5,
-                'tooSmall' => 'Rating must be not less than 1',
+                'tooSmall' => self::RATING_NOT_LESS,
                 'tooBig' => 'Maximum value for rating is 5',
             ),
             array(
@@ -186,22 +193,24 @@ class Ratings extends PlantEatersARMain {
      * @return object of rows from db
      */
     public static function getUserRatings($user_id, $offset = 0, $limit = 25) {
+        $meals_table=Meals::model()->tableName();
+        $restaurants_table=  Restaurants::model()->tableName();
+        $ratings_table=  Ratings::model()->tableName();
         return Yii::app()->db->createCommand()
                         ->select(
                                 array(
                                     'meal_id',
                                     'meal_id AS cur_meal_id',
-                                    '(SELECT `meals`.`name` FROM `meals` WHERE `meals`.`id`=`ratings`.`meal_id`)
-                                      AS meal_name',
-                                    '(SELECT COUNT(*) FROM `ratings` WHERE `ratings`.`meal_id`=`cur_meal_id` AND `access_status`=\'published\')
-                                      AS number_of_ratings',
+                                    "(SELECT `{$meals_table}`.`name` FROM `{$meals_table}` WHERE `{$meals_table}`.`id`=`{$ratings_table}`.`meal_id`) AS meal_name",
+                                    "(SELECT `{$restaurants_table}`.`name` FROM `{$restaurants_table}` WHERE `{$restaurants_table}`.`id`=(SELECT `restaurant_id` FROM `{$meals_table}` WHERE `{$meals_table}`.`id`=`{$ratings_table}`.`meal_id`)) AS `place_name`",
+                                    "(SELECT COUNT(*) FROM `{$ratings_table}` WHERE `{$ratings_table}`.`meal_id`=`cur_meal_id` AND `access_status`='published') AS number_of_ratings",
                                     'comment',
                                     'rating',
-                                    "(SELECT `photos`.`name` FROM `photos` WHERE `photos`.`id`=`ratings`.`photo_id`) AS photo_name",
+                                    "(SELECT `photos`.`name` FROM `photos` WHERE `photos`.`id`=`{$ratings_table}`.`photo_id`) AS photo_name",
                                 )
                         )
                         ->where(array('and', 'access_status=:access_status', 'user_id=:user_id'), array(':access_status' => Constants::ACCESS_STATUS_PUBLISHED, ':user_id' => $user_id))
-                        ->from('ratings')
+                        ->from($ratings_table)
                         ->offset($offset)
                         ->order('createtime  DESC')
                         ->limit($limit)

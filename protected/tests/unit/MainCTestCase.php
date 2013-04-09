@@ -90,16 +90,49 @@ class MainCTestCase extends CTestCase {
             'comment' => 'test meal comment',
             'gluten_free' => 1,
             'image' => false,
-            'error' => ''
+            'error' => Constants::IMAGE_REQUIRED
         ),
-        'meal2' => array(
+        'meal_with_fake_image' => array(
             'name' => 'test meal name',
             'rating' => '3',
             'veg' => 'vegetarian',
             'comment' => 'test meal comment',
             'gluten_free' => 1,
-            'image' => true
-        )
+            'image' => 'fake image',
+            'error' => Constants::IMAGE_REQUIRED
+        ),
+        'meal_without_name' => array(
+            'rating' => '3',
+            'veg' => 'vegetarian',
+            'comment' => 'test meal comment',
+            'gluten_free' => 1,
+            'image' => true,
+            'error' => Meals::MEAL_NAME_REQUIRED
+        ),
+        'meal_without_rating' => array(
+            'name' => 'test meal name',
+            'veg' => 'vegetarian',
+            'comment' => 'test meal comment',
+            'gluten_free' => 1,
+            'image' => true,
+            'error' => Ratings::RATING_NOT_LESS
+        ),
+        'meal_without_veg' => array(
+            'name' => 'test meal name',
+            'rating' => '3',
+            'comment' => 'test meal comment',
+            'gluten_free' => 1,
+            'image' => true,
+            'error' => Ratings::VEG_CANNOT_BE_BLANK
+        ),
+        'meal_without_gluten_free' => array(
+            'name' => 'test meal name',
+            'rating' => '3',
+            'veg' => 'vegetarian',
+            'comment' => 'test meal comment',
+            'image' => true,
+            'error' => Ratings::GLUTEN_FREE_CANNOT_BE_BLANK
+        ),
     );
     protected $_feedback = array(
         'text' => 'Test feedback text',
@@ -111,7 +144,7 @@ class MainCTestCase extends CTestCase {
     protected $_restaurant_id = 1;
 
     public function __construct() {
-        $this->_meal_test_image_path = dirname(__FILE__) . '/../res/meal_test_photo.jpg';
+        $this->_meal_test_image_path = realpath(dirname(__FILE__) . '/../res/meal_test_photo.jpg');
         $this->_server = helper::yiiparam('rest_api_server_base_url');
         $this->_initCurl();
     }

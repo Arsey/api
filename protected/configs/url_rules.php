@@ -30,7 +30,7 @@ return array(
     /* Change user avatar */
     array('/images/changeuseravatar', 'pattern' => $prefix . 'user/changeavatar', 'verb' => 'POST'),
     /* Get User Activity */
-    array('/ratings/activity', 'pattern' => $prefix . 'user/(<user_id:\d+>/)?activity', 'verb' => 'GET'),
+    array('/ratings/useractivity', 'pattern' => $prefix . 'user/(<user_id:\d+>/)?activity', 'verb' => 'GET'),
     //REST patterns for RESTAURANTS SEARCHING
     array(
         'restaurants/searchrestaurants',

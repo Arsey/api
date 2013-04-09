@@ -89,7 +89,7 @@ class ApiController extends Controller {
                     'getuseravatar',
                     'mealreport',
                     'ratemeal',
-                    'activity',
+                    'useractivity',
                     'getmealwithratings',
                     'canuserratemeal',
                     'logout',

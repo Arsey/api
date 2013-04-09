@@ -164,7 +164,7 @@ class RatingsController extends ApiController {
         /* Fill model "Photo" */
         $this->_meal_photo = Yii::app()->imagesManager->mealImageFromRequest;
         if (!$photo = $this->_meal_photo->photo)
-            $this->_apiHelper->sendResponse(400, array('errors' => array(Constants::IMAGE_REQUIRED)));
+            $this->_apiHelper->sendResponse(400, array('errors' => array('image'=>array(Constants::IMAGE_REQUIRED))));
 
         /* Validate photo */
         if (!$photo->validate())
@@ -226,7 +226,7 @@ class RatingsController extends ApiController {
         $this->_apiHelper->sendResponse(200, array('message' => 'Can rate this meal'));
     }
 
-    function actionActivity() {
+    function actionUserActivity() {
         /* by default user identifier is equal to logged in user identifier */
         $user_id = $this->_user_info['id'];
         /* if exists user id in URL, then change user id */

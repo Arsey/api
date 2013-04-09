@@ -25,6 +25,8 @@
  */
 class Meals extends PlantEatersARMain {
 
+    const MEAL_NAME_REQUIRED='Meal name cannot be blank.';
+
     //////////////////////////////
     //BASE METHODS CREATED BY GII
     //////////////////////////////
@@ -51,7 +53,8 @@ class Meals extends PlantEatersARMain {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('restaurant_id, user_id, name', 'required'),
+            array('restaurant_id, user_id', 'required'),
+            array('name','required','message'=>self::MEAL_NAME_REQUIRED),
             array('gluten_free, createtime, modifiedtime', 'numerical', 'integerOnly' => true),
             array('restaurant_id, user_id', 'length', 'max' => 20),
             array('name', 'length', 'max' => 100),
