@@ -17,6 +17,8 @@ class MealTest extends MainCTestCase {
         $this->_login_user = $this->_users_for_registration['demo'];
         $auth_token = $this->setLoginCookie();
 
+        $db = Yii::app()->db;
+
         foreach ($this->_meals as $key => $meal) {
 
             if (!$meal['image']) {
@@ -29,15 +31,35 @@ class MealTest extends MainCTestCase {
             $this->setLoginCookie($rest, $auth_token);
             $response = helper::jsonDecode($rest->post($this->_uri, $meal));
 
-            if (isset($response['errors']) && isset($meal['error'])) {
-                foreach ($response['errors'] as $error) {
-                    $this->assertEquals($meal['error'], $error[0]);
-                    break;
-                }
-            } elseif (isset($response['errors'])) {
-                helper::p($response);
+            if (isset($meal['error'])&&!$meal['error']) {
+                $this->assertEquals(ApiHelper::MESSAGE_201, $response['status']);
+                $this->assertTrue(is_numeric($response['results']['meal_id']));
+
+                $meal_in_db = $db->createCommand("SELECT * FROM meals WHERE id=" . $response['results']['meal_id'])->queryRow();
+
+                $this->assertTrue(!is_null($meal_in_db));
+                $this->assertEquals(Constants::ACCESS_STATUS_PUBLISHED, $meal_in_db['access_status']);
+                $this->assertEquals($meal['rating'], $meal_in_db['rating']);
+                $this->assertEquals($meal['gluten_free'], $meal_in_db['gluten_free']);
+
+                $rating = $db->createCommand("SELECT * FROM ratings WHERE meal_id=" . $response['results']['meal_id'])->queryRow();
+                $this->assertTrue(!is_null($rating));
+                $this->assertEquals(Constants::ACCESS_STATUS_PUBLISHED, $rating['access_status']);
+
+                $photo = $db->createCommand("SELECT * FROM photos WHERE meal_id=" . $response['results']['meal_id'])->queryRow();
+                $this->assertTrue(!is_null($photo));
+                $this->assertEquals(Constants::ACCESS_STATUS_PUBLISHED, $photo['access_status']);
             } else {
-                helper::p($response);
+                if (isset($response['errors']) && isset($meal['error'])) {
+                    foreach ($response['errors'] as $error) {
+                        $this->assertEquals($meal['error'], $error[0]);
+                        break;
+                    }
+                } elseif (isset($response['errors'])) {
+                    helper::p($response);
+                } else {
+                    helper::p($response);
+                }
             }
         }
     }

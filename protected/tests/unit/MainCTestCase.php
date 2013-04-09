@@ -133,6 +133,34 @@ class MainCTestCase extends CTestCase {
             'image' => true,
             'error' => Ratings::GLUTEN_FREE_CANNOT_BE_BLANK
         ),
+        'normal_meal' => array(
+            'name' => 'test meal name',
+            'rating' => '3',
+            'veg' => 'vegetarian',
+            'comment' => 'test meal comment',
+            'gluten_free' => 1,
+            'image' => true,
+            'error' => false
+        ),
+        'meal_with_the_same_name' => array(
+            'name' => 'test meal name',
+            'rating' => '3',
+            'veg' => 'vegetarian',
+            'comment' => 'test meal comment',
+            'gluten_free' => 1,
+            'image' => true,
+            'error' => Meals::MEAL_NAME_EXISTS
+        ),
+        'meal_with_the_same_name' => array(
+            'name' => 'test meal name 2',
+            'rating' => '1',
+            'veg' => 'vegan',
+            'comment' => 'test meal comment',
+            'description'=>'description',
+            'gluten_free' => 0,
+            'image' => true,
+            'error'=>false
+        ),
     );
     protected $_feedback = array(
         'text' => 'Test feedback text',

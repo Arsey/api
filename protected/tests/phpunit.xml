@@ -24,6 +24,7 @@
             <!--Feedbacks-->
             <directory>unit/feedbacks</directory>
             <!--Meals-->
+            <file>unit/meals/MealTest.php</file>
             <file>unit/meals/RestaurantMealsTest.php</file>
             <file>unit/meals/AddMealTest.php</file>
             <file>unit/meals/UploadPhotoTest.php</file>

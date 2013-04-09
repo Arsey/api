@@ -26,6 +26,7 @@
 class Meals extends PlantEatersARMain {
 
     const MEAL_NAME_REQUIRED='Meal name cannot be blank.';
+    const MEAL_NAME_EXISTS='Such a meal name already exists';
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -162,7 +163,7 @@ class Meals extends PlantEatersARMain {
 
         if ($result) {
             if (!isset($params['message']))
-                $params['message'] = 'Such a meal name already exists';
+                $params['message'] = self::MEAL_NAME_EXISTS;
             $this->addError($attribute, $params['message']);
         }
     }
