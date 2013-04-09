@@ -53,7 +53,10 @@ return array(
     array('reports/mealreport', 'pattern' => $prefix . 'meal/<id:\d+>/report/<report:\w+>'),
     /* Add Meal */
     array('ratings/addrating', 'pattern' => $prefix . 'restaurant/<restaurant_id:\d+>/addmeal', 'verb' => 'POST'),
+    array('ratings/addrating', 'pattern' => $prefix . 'restaurant/<restaurant_id:0>/addmeal', 'verb' => 'POST'),
     array('ratings/addrating', 'pattern' => $prefix . 'meal/<meal_id:\d+>/addrating', 'verb' => 'POST'),
+
+    /////////
     array('meals/addmealtorestaurant', 'pattern' => $prefix . 'restaurant/<restaurant_id:\d+>/meal', 'verb' => 'POST'),
     array('ratings/ratemeal', 'pattern' => $prefix . 'meal/<meal_id:\d+>/ratemeal', 'verb' => 'POST'),
     //photo upload

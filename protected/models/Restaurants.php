@@ -51,6 +51,8 @@ class Restaurants extends PlantEatersARMain {
     public $longitude;
     public $not_model_attributes = null;
 
+    const EXTERNAL_ID_NOT_UNIQUE = 'Such restaurant set in reference already exists in our database.';
+
     //////////////////////////////
     //BASE METHODS CREATED BY GII
     //////////////////////////////
@@ -80,6 +82,7 @@ class Restaurants extends PlantEatersARMain {
             array('name, location', 'required'),
             array('createtime, modifiedtime', 'numerical', 'integerOnly' => true),
             array('external_id, name, street_address, street_address_2, email, website', 'length', 'max' => 255),
+            array('external_id', 'uniqueExternalId', 'on' => 'from_google_reference_details'),
             array('zip', 'length', 'max' => 50),
             array('state', 'length', 'max' => 20),
             array('city, country', 'length', 'max' => 100),
@@ -116,7 +119,7 @@ class Restaurants extends PlantEatersARMain {
             'name' => 'Name',
             'street_address' => 'Street Address',
             'street_address_2' => 'Street Address 2',
-            'zip'=>'Zip',
+            'zip' => 'Zip',
             'city' => 'City',
             'state' => 'State',
             'country' => 'Country',
@@ -183,6 +186,23 @@ class Restaurants extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+    public function uniqueExternalId($attribute, $params) {
+
+        $result = Yii::app()
+                ->db
+                ->createCommand()
+                ->select(array('external_id','id'))
+                ->from(self::model()->tableName())
+                ->where(array('and', 'external_id=:external_id'), array(':external_id' => $this->$attribute))
+                ->queryAll();
+
+        if ($result) {
+            if (!isset($params['message']))
+                $params['message'] = self::EXTERNAL_ID_NOT_UNIQUE;
+            $this->addError($attribute, $params['message']);
+            $this->addError('restaurant_id', $result[0]['id']);
+        }
+    }
 
     public static function getNumberOfRestaurants($access_status = Constants::ACCESS_STATUS_PUBLISHED) {
         return Yii::app()->db->createCommand("SELECT COUNT(id) FROM `restaurants` WHERE `access_status`=:access_status")->queryScalar(array(':access_status' => $access_status));

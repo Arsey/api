@@ -23,6 +23,8 @@ echo '},{';
 echo file_get_contents('changeavatar.json');
 echo '},{';
 echo file_get_contents('activity.json');
+echo '},{';
+echo file_get_contents('activity_without_id.json');
 echo '}],';
 echo file_get_contents('models.json');
 echo '}';

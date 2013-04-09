@@ -58,7 +58,7 @@
 ,
 {
 "name":"ingoogleplaces",
-        "description":"Must be equal \"true\" to get additional restaurants from Google Places API",
+        "description":"Must be equal \"true\" to get additional restaurants from Google Places API. If parameter <strong>withmeals</strong> set to true, searching in google will not happen",
         "allowMultiple":"false",
         "dataType":"string",
         "paramType":"query"

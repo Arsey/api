@@ -1,0 +1,10 @@
+"path":"/user/activity",
+"description":"This page allows the current user to get activity information about himself",
+"operations":[
+    {
+        "httpMethod":"GET",
+        "nickname":"GetUserActivity",
+        "summary":"Get User Activity(Profile)",
+        "notes": "This page allows the current user to get activity information about himself"
+    }
+]

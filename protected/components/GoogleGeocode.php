@@ -7,6 +7,7 @@ class GoogleGeocode extends CApplicationComponent {
     const TYPE_CITY = 'locality';
     const TYPE_STATE = 'administrative_area_level_1';
     const TYPE_COUNTRY = 'country';
+    const TYPE_POSTAL_CODE = 'postal_code';
 
     /**
      * It takes address and geting results from google geocode, returns parsed address
@@ -60,6 +61,15 @@ class GoogleGeocode extends CApplicationComponent {
             return $state;
         }
         return false;
+    }
+
+    /**
+     *
+     * @param type $results
+     * @return type
+     */
+    public static function getPostalCode($results) {
+        return self::getLongNameByType($results['address_components'], self::TYPE_POSTAL_CODE);
     }
 
     /**
