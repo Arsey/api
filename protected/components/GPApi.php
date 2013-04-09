@@ -41,10 +41,12 @@ class GPApi extends CApplicationComponent {
         $this->_googlePlaces->setKeyword(helper::yiiparam('google_places_keywords'));
     }
 
-    public function textsearch($query) {
+    public function textsearch($query, $location = false) {
         $this->_initializeGooglePlaces(); //initialize google places
         $this->_googlePlaces->setQuery($query);
-
+        if ($location) {
+            $this->_googlePlaces->setLocation($location);
+        }
         return $this->_googlePlaces->textSearch();
     }
 
@@ -66,7 +68,7 @@ class GPApi extends CApplicationComponent {
         return $this->_googlePlaces->textsearchRepeat($next_page_token); //sending request
     }
 
-    public function getDetails($reference){
+    public function getDetails($reference) {
         $this->_initializeGooglePlaces();
         $this->_googlePlaces->setReference($reference);
         return $this->_googlePlaces->details();

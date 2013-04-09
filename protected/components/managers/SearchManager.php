@@ -74,6 +74,12 @@ class SearchManager extends CApplicationComponent {
      */
     private $_restaurants_with_meals = false;
 
+    /**
+     *
+     * @var boolean
+     */
+    private $_in_google_places = false;
+
     function setWithMeals($boolean) {
         $this->_with_meals = $boolean;
         return $this;
@@ -81,6 +87,11 @@ class SearchManager extends CApplicationComponent {
 
     function setRestaurantsWithMeals($boolean) {
         $this->_restaurants_with_meals = $boolean;
+        return $this;
+    }
+
+    function setInGooglePlaces($boolean) {
+        $this->_in_google_places = $boolean;
         return $this;
     }
 
@@ -201,6 +212,9 @@ class SearchManager extends CApplicationComponent {
 
             if (isset($attributes['withmeals']) && $attributes['withmeals'] === 'true')
                 $this->_restaurants_with_meals = true;
+
+            if (isset($attributes['ingoogleplaces']) && $attributes['ingoogleplaces'] === 'true')
+                $this->_in_google_places = true;
         }
         return $this;
     }
@@ -235,6 +249,7 @@ class SearchManager extends CApplicationComponent {
      */
     function getGoSearch() {
 
+        $is_lat_lng = $this->_isLatLng();
         $search = Yii::app()->sphinxsearch;
 
         $search
@@ -248,10 +263,7 @@ class SearchManager extends CApplicationComponent {
          * If user searching with current location we must add geo filter
          * and order by @geodist
          */
-        if (
-                !is_null($this->_current_lat) && !empty($this->_current_lat) &&
-                !is_null($this->_current_lng) && !empty($this->_current_lng)
-        ) {
+        if ($is_lat_lng) {
             $search
                     ->filters(
                             array(
@@ -272,9 +284,9 @@ class SearchManager extends CApplicationComponent {
             $search->filters(
                     array(
                         'range' => array(
-                            'attribute'=>'number_of_meals',
-                            'min'=>1,
-                            'max'=>10000,
+                            'attribute' => 'number_of_meals',
+                            'min' => 1,
+                            'max' => 10000,
                         )
                     )
             );
@@ -287,10 +299,94 @@ class SearchManager extends CApplicationComponent {
         $restaurants = $this->_rebuildResults($this->_search_results);
         $total_found = $results['total_found'];
 
+        if ($this->_in_google_places && (($c = count($restaurants)) < $this->_limit) && $total_found < $this->_limit) {
+
+            $additional_search = Yii::app()->gp->setRadius($this->_radius);
+
+            if (!empty($this->_query)) {
+                $results = $additional_search->textsearch($this->_query, $is_lat_lng ? $this->_current_lat . ',' . $this->_current_lng : false);
+            } elseif ($is_lat_lng) {
+                $results = $additional_search->nearbysearch($this->_current_lat . ',' . $this->_current_lng);
+            }
+
+            if (!empty($results['results'])) {
+
+                $filtered_additional_search = $this->filterRequiredDataFromPlacesAPIResonse($results['results'], $is_lat_lng);
+                $restaurants_names = array();
+
+                foreach ($restaurants as $r) {
+                    $restaurants_names[] = $r['name'];
+                }
+
+                foreach ($filtered_additional_search as $add) {
+                    if ($c < $this->_limit && !in_array($add['name'], $restaurants_names)) {
+                        $total_found++;
+                        $restaurants[] = $add;
+                    }
+                    $c++;
+                }
+            }
+        }
+
+
+
         return array(
             'total_found' => $total_found,
             'restaurants' => $restaurants
         );
+    }
+
+    public function filterRequiredDataFromPlacesAPIResonse($results, $sort = false) {
+        if (!empty($results)) {
+            $restaurants = array();
+            foreach ($results as $result) {
+                if ($r = $this->filterRestaurant($result))
+                    $restaurants[] = $r;
+            }
+            if ($sort) {
+                return $this->_sortByDistance($restaurants);
+            }else{
+                return $restaurants;
+            }
+        }
+        return false;
+    }
+
+    private function _sortByDistance($restaurants) {
+        if (!$this->_isLatLng()) {
+            usort($restaurants, function($a, $b) {
+                        if ($a['distance'] == $b['distance']) {
+                            return 0;
+                        }
+                        return ($a['distance'] < $b['distance']) ? -1 : 1;
+                    });
+        }
+        return $restaurants;
+    }
+
+    public function filterRestaurant($restaurant) {
+        $r = array();
+        $r['name'] = $restaurant['name'];
+        $r['reference'] = $restaurant['reference'];
+        $r['latitude'] = $restaurant['geometry']['location']['lat'];
+        $r['longitude'] = $restaurant['geometry']['location']['lng'];
+
+        if ($this->_isLatLng()) {
+            $r['distance'] = round((helper::distance($this->_current_lat, $this->_current_lng, $r['latitude'], $r['longitude'], false)) * 1000, 0);
+            if ($r['distance'] > $this->_radius) {
+                return false;
+            }
+        }
+        if (isset($restaurant['formatted_address'])) {
+            $parsed_address = GoogleGeocode::parseAddress($restaurant['formatted_address']);
+            $street_address = GoogleGeocode::getStreet($parsed_address);
+            $r['street_address'] = $street_address ? $street_address : $restaurant['formatted_address'];
+        } elseif (isset($restaurant['vicinity'])) {
+            $parsed_address = GoogleGeocode::parseAddress($restaurant['vicinity']);
+            $street_address = GoogleGeocode::getStreet($parsed_address);
+            $r['street_address'] = $street_address ? $street_address : $restaurant['vicinity'];
+        }
+        return $r;
     }
 
     /**
@@ -330,6 +426,10 @@ class SearchManager extends CApplicationComponent {
 
     public static function rotateIndexes() {
         shell_exec('indexer --rotate --all');
+    }
+
+    private function _isLatLng() {
+        return (!is_null($this->_current_lat) && !empty($this->_current_lat) && !is_null($this->_current_lng) && !empty($this->_current_lng));
     }
 
 }

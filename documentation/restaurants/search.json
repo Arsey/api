@@ -55,6 +55,14 @@
         "dataType":"string",
         "paramType":"query"
 }
+,
+{
+"name":"ingoogleplaces",
+        "description":"Must be equal \"true\" to get additional restaurants from Google Places API",
+        "allowMultiple":"false",
+        "dataType":"string",
+        "paramType":"query"
+}
 ],
         "summary":"Nearby searching",
         "notes": "<h3>This page allows the user to search restaurants by:</h3><ul><li> - text(restaurant part name or full name);</li><li> - by location(latitude, longitude);</li><li> - include meals by it name.</li></ul><h3 style=color:red;>If the query variable is not empty, search will only look at address, street name etc.<br><br>If location variable consist of LAT and LONG we apply the GEO filter.<br><br>When searching meals simply set the variable inmeals=true</h3>"

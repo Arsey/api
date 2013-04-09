@@ -17,7 +17,7 @@ class GoogleGeocode extends CApplicationComponent {
         $address = urlencode($unformatted_address);
         if ($parsed = file_get_contents("http://maps.google.com/maps/api/geocode/json?address=" . $address . "&sensor=false")) {
             $parsed = CJSON::decode($parsed);
-            if (isset($parsed['results'])&&isset($parsed['results'][0])) {
+            if (isset($parsed['results']) && isset($parsed['results'][0])) {
                 return $parsed['results'][0];
             }
         }
@@ -25,7 +25,7 @@ class GoogleGeocode extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $results
      * @return boolean
      */
@@ -41,7 +41,7 @@ class GoogleGeocode extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $results
      * @return type
      */
@@ -50,7 +50,7 @@ class GoogleGeocode extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $results
      * @return type
      */
@@ -63,7 +63,7 @@ class GoogleGeocode extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $results
      * @return type
      */
@@ -72,15 +72,18 @@ class GoogleGeocode extends CApplicationComponent {
     }
 
     /**
-     * 
+     *
      * @param type $address_components
      * @param type $type
      * @return boolean
      */
     private static function getLongNameByType($address_components, $type) {
-        foreach ($address_components as $ac) {
-            if (isset($ac['types'][0]) && $ac['types'][0] == $type) {
-                return $ac['long_name'];
+
+        if (!empty($address_components)) {
+            foreach ($address_components as $ac) {
+                if (isset($ac['types'][0]) && $ac['types'][0] == $type) {
+                    return $ac['long_name'];
+                }
             }
         }
         return false;
