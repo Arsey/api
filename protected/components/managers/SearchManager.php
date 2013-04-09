@@ -299,7 +299,12 @@ class SearchManager extends CApplicationComponent {
         $restaurants = $this->_rebuildResults($this->_search_results);
         $total_found = $results['total_found'];
 
-        if ($this->_in_google_places && (($c = count($restaurants)) < $this->_limit) && $total_found < $this->_limit) {
+        if (
+                $this->_in_google_places &&
+                (($c = count($restaurants)) < $this->_limit) &&
+                $total_found < $this->_limit&&
+                !$this->_restaurants_with_meals
+        ) {
 
             $additional_search = Yii::app()->gp->setRadius($this->_radius);
 
@@ -328,8 +333,6 @@ class SearchManager extends CApplicationComponent {
             }
         }
 
-
-
         return array(
             'total_found' => $total_found,
             'restaurants' => $restaurants
@@ -345,7 +348,7 @@ class SearchManager extends CApplicationComponent {
             }
             if ($sort) {
                 return $this->_sortByDistance($restaurants);
-            }else{
+            } else {
                 return $restaurants;
             }
         }
