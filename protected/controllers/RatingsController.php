@@ -57,15 +57,6 @@ class RatingsController extends ApiController {
         $this->_restaurant_id = $restaurant_id;
         $this->_meal_id = $meal_id;
 
-        if (
-                is_null($this->_meal_id) &&
-                $this->_restaurant_id == 0 &&
-                isset($this->_parsed_attributes['reference']) &&
-                !empty($this->_parsed_attributes['reference'])
-        ) {
-            $this->_createRestaurantFromReference();
-        }
-
         if ($this->_restaurant_id)
             $this->_addRatingWithMealCreation();
 
@@ -73,49 +64,6 @@ class RatingsController extends ApiController {
             $this->_addRatingWitoutMealCreation();
 
         $this->_apiHelper->sendResponse(400);
-    }
-
-    private function _createRestaurantFromReference() {
-        $details_from_reference = Yii::app()->gp->getDetails($this->_parsed_attributes['reference']);
-        if (isset($details_from_reference['result'])) {
-
-            $result = $details_from_reference['result'];
-            $model = new Restaurants('from_google_reference_details');
-            $model->external_id = $result['id'];
-            $model->name = isset($result['name']) ? $result['name'] : '';
-            $model->street_address = GoogleGeocode::getStreet($result);
-            $model->city = GoogleGeocode::getCity($result);
-            $model->state = GoogleGeocode::getState($result);
-            $model->zip = GoogleGeocode::getPostalCode($result);
-            $model->country = GoogleGeocode::getCountry($result);
-            $model->rating = 0;
-
-            if (isset($result['formatted_phone_number']) && !empty($result['formatted_phone_number'])) {
-                $model->phone = $result['formatted_phone_number'];
-            } elseif (isset($result['international_phone_number'])) {
-                $model->phone = $result['international_phone_number'];
-            }
-
-            if (isset($result['website']) && !empty($result['website'])) {
-                $model->website = $result['website'];
-            }
-
-
-            if (isset($result['geometry']) && isset($result['geometry']['location'])) {
-                $location = $result['geometry']['location'];
-                $model->location = new CDbExpression("GeomFromText('POINT({$location['lat']} {$location['lng']})')");
-            }
-
-            if (!$model->save()) {
-                if (isset($model->errors['restaurant_id'])) {
-                    $this->_restaurant_id = $model->errors['restaurant_id'][0];
-                    return;
-                }
-                $this->_apiHelper->sendResponse(400, array('errors' => $model->errors));
-            }
-
-            $this->_restaurant_id = $model->id;
-        }
     }
 
     /**

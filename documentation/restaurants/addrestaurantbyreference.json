@@ -1,0 +1,19 @@
+"path":"/restaurantfromreference",
+        "description":"This page allows the user create restaurant with reference from Google Places API",
+        "operations":[
+        {
+        "httpMethod":"POST",
+                "nickname":"addrestaurantbyreference",
+                "parameters":[
+                {
+                "name":"reference",
+                        "required":"true",
+                        "allowMultiple":"false",
+                        "dataType":"google_reference",
+                        "paramType":"body"
+                        }
+        ],
+                "summary":"Add Restaurant By Refernce",
+                "notes": "This page allows the user create restaurant with reference from Google Places API"
+                }
+]

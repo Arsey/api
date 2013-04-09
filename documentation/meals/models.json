@@ -1,25 +1,25 @@
 "models":{
-    "addrestaurantmeal_required":{
-        "properties":{
-            "name":{
-                "type":"string",
-                "description":"Any A-Za-z0-9_ characters please. Also name length needs to be between 3 and 100 characters"
+    "addrestaurantmeal_required": {
+        "properties": {
+            "name": {
+                "type": "string",
+                "description": "Any A-Za-z0-9_ characters please. Also name length needs to be between 3 and 100 characters"
             },
-            "rating":{
-                "type":"integer",
-                "description":"Numbers from 1 to 5"
+            "rating": {
+                "type": "integer",
+                "description": "Numbers from 1 to 5"
             },
-             "veg":{
-                "type":"string",
-                "description":"can be:vegan, vegan_on_request, vegetarian, vegetarian_on_request"
+            "veg": {
+                "type": "string",
+                "description": "can be:vegan, vegan_on_request, vegetarian, vegetarian_on_request"
             },
-            "comment":{
-                "type":"string",
-                "description":"Comment(optional) is text"
+            "comment": {
+                "type": "string",
+                "description": "Comment(optional) is text"
             },
-            "gluten_free":{
-                "type":"integer",
-                "description":"Numbers: 1 - IS_GLUTEN_FREE or 0 - NOT_GLUTEN_FREE. By default it's equals 0"
+            "gluten_free": {
+                "type": "integer",
+                "description": "Numbers: 1 - IS_GLUTEN_FREE or 0 - NOT_GLUTEN_FREE. By default it's equals 0"
             }
         }
     }

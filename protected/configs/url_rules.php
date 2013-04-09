@@ -53,7 +53,7 @@ return array(
     array('reports/mealreport', 'pattern' => $prefix . 'meal/<id:\d+>/report/<report:\w+>'),
     /* Add Meal */
     array('ratings/addrating', 'pattern' => $prefix . 'restaurant/<restaurant_id:\d+>/addmeal', 'verb' => 'POST'),
-    array('ratings/addrating', 'pattern' => $prefix . 'restaurant/<restaurant_id:0>/addmeal', 'verb' => 'POST'),
+    array('restaurants/createfromreference', 'pattern' => $prefix . 'restaurantfromreference', 'verb' => 'POST'),
     array('ratings/addrating', 'pattern' => $prefix . 'meal/<meal_id:\d+>/addrating', 'verb' => 'POST'),
 
     /////////

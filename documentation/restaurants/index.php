@@ -11,6 +11,8 @@ echo'{
 echo file_get_contents('search.json');
 echo '},{';
 echo file_get_contents('view_restaurant_by_id.json');
+echo '},{';
+echo file_get_contents('addrestaurantbyreference.json');
 echo '}],';
 echo file_get_contents('models.json');
 echo '}';

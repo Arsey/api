@@ -1,3 +1,10 @@
 "models":{
-    
+    "google_reference": {
+        "properties": {
+            "reference": {
+                "type": "string",
+                "description": "Reference from Google Places API"
+            }
+        }
+    }
 }

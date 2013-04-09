@@ -78,6 +78,7 @@ class ApiController extends Controller {
             array(
                 'allow',
                 'actions' => array(
+                    'createfromreference',
                     'addrating',
                     'addmealtorestaurant',
                     'addmealphoto',
