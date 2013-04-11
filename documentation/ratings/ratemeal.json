@@ -1,4 +1,4 @@
-"path":"/meal/{id}/ratemeal",
+"path":"/meal/{id}/addrating",
 "description":"This page allows the user rate meal",
 "operations":[
     {
@@ -8,20 +8,59 @@
             {
                 "name":"id",
                 "required":"true",
-                "description":"Id of existing meal",
+                "description":"Meal identifier",
                 "allowMultiple":"false",
                 "dataType":"Integer",
                 "paramType":"path"
             },
             {
-                "name":"rating,veg,comment,gluten_free,photo_id",
+                "name":"rating",
                 "required":"true",
+                "description":"Is number from 1 to 5",
                 "allowMultiple":"false",
-                "dataType":"rate_meal_required",
-                "paramType":"body"
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"veg",
+                "required":"true",
+                "description":"Can take the following values: vegan, vegan_on_request, vegetarian, vegetarian_on_request",
+                "allowMultiple":"false",
+                "dataType":"string",
+                "paramType":"query"
+            },
+            {
+                "name":"gluten_free",
+                "required":"true",
+                "description":"Can take the 1(gluten free) and 0(not gluten free)",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"image",
+                "required":"true",
+                "description":"Image file to upload",
+                "allowMultiple":"false",
+                "dataType":"file",
+                "paramType":"query"
+            },
+            {
+                "name":"photo_id",
+                "description":"Instead of uploading a new image file, you can set id of an existing photo that belongs to current meal",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"comment",
+                "description":"Comment text",
+                "allowMultiple":"false",
+                "dataType":"string",
+                "paramType":"query"
             }
         ],
-        "summary":"Rate Meal",
+        "summary":"Rate A Meal",
         "notes": "This page allows the user rate meal"
     }
 ]

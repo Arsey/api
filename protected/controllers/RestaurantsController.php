@@ -39,11 +39,11 @@ class RestaurantsController extends ApiController {
                 } else {
                     $this->_apiHelper->sendResponse(201, array('results' => array('id' => $model->id)));
                 }
-            }else{
-                $this->_apiHelper->sendResponse(400,array('errors'=>array('Bad Google Places API reference.')));
+            } else {
+                $this->_apiHelper->sendResponse(400, array('errors' => array(Constants::BAD_PLACE_REFERENCE)));
             }
         }
-        $this->_apiHelper->sendResponse(400,array('errors'=>array('Field "reference" is required.')));
+        $this->_apiHelper->sendResponse(400, array('errors' => array(Constants::PLACES_REFERENCE_REQUIRED)));
     }
 
     /**

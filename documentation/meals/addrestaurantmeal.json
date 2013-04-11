@@ -1,4 +1,4 @@
-"path":"/restaurant/{id}/meal",
+"path":"/restaurant/{id}/addmeal",
 "description":"This page allows the user create meal in choosen restaurant",
 "operations":[
     {
@@ -14,11 +14,51 @@
                 "paramType":"path"
             },
             {
-                "name":"name, rating,veg,comment, gluten_free",
+                "name":"name",
                 "required":"true",
+                "description":"Meal name. Must be unique inside a restaurant.",
                 "allowMultiple":"false",
-                "dataType":"addrestaurantmeal_required",
-                "paramType":"body"
+                "dataType":"string",
+                "paramType":"query"
+            },
+            {
+                "name":"rating",
+                "required":"true",
+                "description":"Rating for meal(from 1 to 5)",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"veg",
+                "required":"true",
+                "description":"",
+                "allowMultiple":"false",
+                "dataType":"string",
+                "paramType":"query"
+            },
+            {
+                "name":"gluten_free",
+                "required":"true",
+                "description":"",
+                "allowMultiple":"false",
+                "dataType":"integer",
+                "paramType":"query"
+            },
+            {
+                "name":"comment",
+                "description":"",
+                "allowMultiple":"false",
+                "dataType":"string",
+                "paramType":"query"
+            },
+            {
+                "name":"image",
+                "required":"true",
+                "description":"Image file",
+                "allowMultiple":"false",
+                "dataType":"file",
+                "paramType":"query"
             }
         ],
         "summary":"Add Restaurant Meal",

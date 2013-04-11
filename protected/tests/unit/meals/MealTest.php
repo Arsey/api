@@ -4,17 +4,16 @@ class MealTest extends MainCTestCase {
 
     private $_uri = 'restaurant/1/addmeal';
 
-    protected function setUp() {
-        Yii::app()->db->createCommand()->truncateTable(Meals::model()->tableName());
-    }
-
-    function atestAddWithoutLogin() {
+    function testAddWithoutLogin() {
         $response = helper::jsonDecode($this->_rest->post($this->_uri));
         $this->assertEquals(ApiHelper::MESSAGE_403, $response['status']);
     }
 
     function testAddMeal() {
-        $this->_login_user = $this->_users_for_registration['demo'];
+        Yii::app()->db->createCommand()->truncateTable(Meals::model()->tableName());
+        Yii::app()->db->createCommand()->truncateTable(Photos::model()->tableName());
+
+        $this->_login_user = $this->_users_for_registration['super'];
         $auth_token = $this->setLoginCookie();
 
         $db = Yii::app()->db;
@@ -31,7 +30,7 @@ class MealTest extends MainCTestCase {
             $this->setLoginCookie($rest, $auth_token);
             $response = helper::jsonDecode($rest->post($this->_uri, $meal));
 
-            if (isset($meal['error'])&&!$meal['error']) {
+            if (isset($meal['error']) && !$meal['error']) {
                 $this->assertEquals(ApiHelper::MESSAGE_201, $response['status']);
                 $this->assertTrue(is_numeric($response['results']['meal_id']));
 

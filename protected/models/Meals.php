@@ -26,7 +26,7 @@
 class Meals extends PlantEatersARMain {
 
     const MEAL_NAME_REQUIRED='Meal name cannot be blank.';
-    const MEAL_NAME_EXISTS='Such a meal name already exists';
+    const MEAL_NAME_EXISTS='Food with the same name already exists in this restaurant.';
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII

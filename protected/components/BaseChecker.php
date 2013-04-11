@@ -2,14 +2,14 @@
 
 class BaseChecker extends CApplicationComponent {
 
-    public static function isMeal($id, $api_helper, $access_status=Constants::ACCESS_STATUS_PUBLISHED) {
+    public static function isMeal($id, $api_helper, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
         $meal = Meals::model()->findByPk($id);
 
         if (!$meal)
             $api_helper->sendResponse(400, array('errors' => sprintf(Constants::NO_MEAL_WAS_FOUND, $id)));
 
         if ($meal->access_status !== $access_status)
-            $api_helper->sendResponse(400, array('errors' => sprintf('You\'re allowed to get only %s meal. Current acess status equal "%s"', $access_status,$meal->access_status)));
+            $api_helper->sendResponse(400, array('errors' => sprintf('You\'re allowed to get only %s meal. Current acess status equal "%s"', $access_status, $meal->access_status)));
 
         return $meal;
     }
@@ -20,9 +20,11 @@ class BaseChecker extends CApplicationComponent {
         return $restaurant;
     }
 
-    public static function canUserRateMeal($user_id, $meal_id, $api_helper) {
+    public static function canUserRateMeal($user_id, $meal_id, $api_helper, $by_user_id = false) {
         if (!$can = Yii::app()->ratings->canUserRateMeal($user_id, $meal_id))
-            $api_helper->sendResponse(403, array('message' => 'Can\'t rate this meal'));
+            $api_helper->sendResponse(403, array(
+                'message' => $by_user_id ? Constants::CANNOT_RATE_MEAL_BY_USER_ID : Constants::CANNOT_RATE_MEAL
+            ));
         return $can;
     }
 

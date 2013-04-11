@@ -11,32 +11,27 @@
     </selenium>
 
     <testsuites>
-        <testsuite name="AllTests">
-
-            <!--Users-->
+        <testsuite name="all">
             <file>unit/users/RegistrationTest.php</file>
-            <!--Components-->
             <directory>unit/components</directory>
             <file>unit/users/LoginLogoutTest.php</file>
             <file>unit/users/PasswordRecoveryTest.php</file>
             <file>unit/users/ProfileTest.php</file>
             <file>unit/users/AvatarTest.php</file>
-            <!--Feedbacks-->
+            <file>unit/restaurants/FromReferenceTest.php</file>
             <directory>unit/feedbacks</directory>
-            <!--Meals-->
             <file>unit/meals/MealTest.php</file>
-            <file>unit/meals/RestaurantMealsTest.php</file>
-            <file>unit/meals/AddMealTest.php</file>
-            <file>unit/meals/UploadPhotoTest.php</file>
-            <file>unit/meals/GetMealPhotosTest.php</file>
-            <!--Ratings-->
-            <directory>unit/ratings</directory>
+            <file>unit/meals/RestaurantMealsTest</file>
+            <file>unit/meals/GetPhotosTest.php</file>
+            <file>unit/ratings/IsUserCanRateAMeal.php</file>
+            <file>unit/ratings/AddRatingTest.php</file>
+        </testsuite>
+        <testsuite name="notready">
             <file>unit/users/ActivityTest.php</file>
             <!--Reports-->
             <directory>unit/reports</directory>
             <!--Restaurants-->
-            <directory>unit/restaurants</directory>-->
+            <directory>unit/restaurants</directory>
         </testsuite>
     </testsuites>
-
 </phpunit>

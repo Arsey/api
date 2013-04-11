@@ -302,7 +302,7 @@ class SearchManager extends CApplicationComponent {
         if (
                 $this->_in_google_places &&
                 (($c = count($restaurants)) < $this->_limit) &&
-                $total_found < $this->_limit&&
+                $total_found < $this->_limit &&
                 !$this->_restaurants_with_meals
         ) {
 
@@ -334,7 +334,7 @@ class SearchManager extends CApplicationComponent {
         }
 
         return array(
-            'total_found' => (int)$total_found,
+            'total_found' => (int) $total_found,
             'restaurants' => $restaurants
         );
     }
@@ -356,14 +356,13 @@ class SearchManager extends CApplicationComponent {
     }
 
     private function _sortByDistance($restaurants) {
-        if (!$this->_isLatLng()) {
-            usort($restaurants, function($a, $b) {
-                        if ($a['distance'] == $b['distance']) {
-                            return 0;
-                        }
-                        return ($a['distance'] < $b['distance']) ? -1 : 1;
-                    });
-        }
+        usort($restaurants, function($a, $b) {
+                    if ($a['distance'] == $b['distance']) {
+                        return 0;
+                    }
+                    return ($a['distance'] < $b['distance']) ? -1 : 1;
+                });
+
         return $restaurants;
     }
 

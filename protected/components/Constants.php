@@ -95,7 +95,7 @@ class Constants {
     //message wich sey to user foolow instructions for password recovery
     const INSTRUCTIONS_SENT = 'Instructions have been sent to you. Please check your email.';
     const NO_USER_WAS_FOUND = 'No user was found with id=%d';
-    const RESET_ONCE_A_DAY= 'You can try to reset your password once per 24 hours. Maybe you tried to make recovery password? Please check your email first.';
+    const RESET_ONCE_A_DAY = 'You can try to reset your password once per 24 hours. Maybe you tried to make recovery password? Please check your email first.';
     /*
      * authenticate method
      */
@@ -118,7 +118,7 @@ class Constants {
     ///////////////////////////////MEALS CONTROLLER////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
     const ZERO_RESULTS_BY_RESTAURANT_ID = 'No meals was found in restaurant with id %d';
-    const NO_MEAL_RATINGS='No available ratings was found for meal %s';
+    const NO_MEAL_RATINGS = 'No available ratings was found for meal %s';
 
     ///////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////IMAGES CONTROLLER///////////////////////////////
@@ -140,5 +140,13 @@ class Constants {
     const PHOTO_ATTACHED_TO_RATING = 'Photo is already attached to rating';
     const NO_MEAL_IMAGES = 'No photos was found for meal with id=%d';
     const NO_USER_RATINGS = 'No available ratings  was found for user %s';
-
+    const CANNOT_RATE_MEAL_BY_USER_ID='The user cannot rate this meal.';
+    const CANNOT_RATE_MEAL='You cannot rate this meal.';
+    const CAN_RATE_MEAL_BY_USER_ID='The user can rate this meal';
+    const CAN_RATE_MEAL='You can rate this meal';
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////RESTAURANTS CONTROLLER//////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    const BAD_PLACE_REFERENCE='Bad Google Places API reference.';
+    const PLACES_REFERENCE_REQUIRED='Field "reference" is required.';
 }

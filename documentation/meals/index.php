@@ -7,11 +7,9 @@ echo'{
     "basePath": "' . API_HOST . '",
     "resourcePath": "/restaurants",
     "apis":[{';
-echo file_get_contents('restaurantmeals.json');
-echo '},{';
 echo file_get_contents('addrestaurantmeal.json');
 echo '},{';
-echo file_get_contents('addmealphoto.json');
+echo file_get_contents('restaurantmeals.json');
 echo '},{';
 echo file_get_contents('getmealphotos.json');
 echo '},{';

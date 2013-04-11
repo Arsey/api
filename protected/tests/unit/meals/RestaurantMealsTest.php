@@ -1,17 +1,21 @@
 <?php
 
 class MealsTest extends MainCTestCase {
-    /* function testGetNotExistingMealsForRestaurant() {
-      Yii::app()->db->createCommand()->truncateTable('meals');
-      $response = helper::jsonDecode($this->_rest->get('api/json/restaurant/1/meals'));
-      $this->assertEquals(ApiHelper::MESSAGE_404, $response['status']);
-      $this->assertEquals(sprintf(Constants::ZERO_RESULTS_BY_RESTAURANT_ID, $this->_restaurant_id), $response['errors']);
 
-      } */
+    private $_uri = 'restaurant/1/meals';
+    private $_fake_uri = 'restaurant/1000/meals';
 
-    function testGetRestaurantMeals(){
-
+    function testGetMealsForFakeRestaurant() {
+        $response = helper::jsonDecode($this->_rest->get($this->_fake_uri));
+        $this->assertEquals(ApiHelper::MESSAGE_400, $response['status']);
     }
 
+    function testGetRestaurantMeals() {
+        $response = helper::jsonDecode($this->_rest->get($this->_uri));
+        $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
+        $this->assertArrayHasKey('results', $response);
+        $this->assertNotEmpty($response['results']['restaurant']);
+        $this->assertTrue(count($response['results']['meals'])==2);
+    }
 
 }

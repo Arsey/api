@@ -220,12 +220,20 @@ class RatingsController extends ApiController {
         BaseChecker::isMeal($meal_id, $this->_apiHelper);
 
         $user_id = $this->_user_info['id'];
-        if (isset($this->_parsed_attributes['user_id']) && !empty($this->_parsed_attributes['user_id']))
+        $by_user_id = false;
+        if (isset($this->_parsed_attributes['user_id']) && !empty($this->_parsed_attributes['user_id'])) {
+            $by_user_id = true;
             $user_id = $this->_parsed_attributes['user_id'];
+        }
 
-        BaseChecker::canUserRateMeal($user_id, $meal_id, $this->_apiHelper);
+        BaseChecker::canUserRateMeal($user_id, $meal_id, $this->_apiHelper, $by_user_id);
 
-        $this->_apiHelper->sendResponse(200, array('message' => 'Can rate this meal'));
+        $this->_apiHelper->sendResponse(200, array(
+            'message' =>
+            $by_user_id ?
+                    Constants::CAN_RATE_MEAL_BY_USER_ID :
+                    Constants::CAN_RATE_MEAL
+        ));
     }
 
     function actionUserActivity() {
