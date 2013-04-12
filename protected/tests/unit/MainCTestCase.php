@@ -163,41 +163,14 @@ class MainCTestCase extends CTestCase {
         ),
     );
     protected $_ratings = array(
-        'meal_without_image' => array(
-            'name' => 'test meal name',
-            'rating' => '3',
-            'veg' => 'vegetarian',
-            'comment' => 'test meal comment',
-            'gluten_free' => 1,
-            'image' => false,
-            'error' => Constants::IMAGE_REQUIRED
-        ),
-        'meal_with_fake_image' => array(
-            'name' => 'test meal name',
-            'rating' => '3',
-            'veg' => 'vegetarian',
-            'comment' => 'test meal comment',
-            'gluten_free' => 1,
-            'image' => 'fake image',
-            'error' => Constants::IMAGE_REQUIRED
-        ),
-        'meal_without_name' => array(
-            'rating' => '3',
-            'veg' => 'vegetarian',
-            'comment' => 'test meal comment',
-            'gluten_free' => 1,
-            'image' => true,
-            'error' => Meals::MEAL_NAME_REQUIRED
-        ),
-        'meal_without_rating' => array(
-            'name' => 'test meal name',
+        'rating_without_rating_field' => array(
             'veg' => 'vegetarian',
             'comment' => 'test meal comment',
             'gluten_free' => 1,
             'image' => true,
             'error' => Ratings::RATING_NOT_LESS
         ),
-        'meal_without_veg' => array(
+        'rating_without_veg' => array(
             'name' => 'test meal name',
             'rating' => '3',
             'comment' => 'test meal comment',
@@ -205,7 +178,7 @@ class MainCTestCase extends CTestCase {
             'image' => true,
             'error' => Ratings::VEG_CANNOT_BE_BLANK
         ),
-        'meal_without_gluten_free' => array(
+        'rating_without_gluten_free' => array(
             'name' => 'test meal name',
             'rating' => '3',
             'veg' => 'vegetarian',
@@ -213,8 +186,7 @@ class MainCTestCase extends CTestCase {
             'image' => true,
             'error' => Ratings::GLUTEN_FREE_CANNOT_BE_BLANK
         ),
-        'normal_meal' => array(
-            'name' => 'test meal name',
+        'normal_rating' => array(
             'rating' => '3',
             'veg' => 'vegetarian',
             'comment' => 'test meal comment',
@@ -222,25 +194,14 @@ class MainCTestCase extends CTestCase {
             'image' => true,
             'error' => false
         ),
-        'meal_with_the_same_name' => array(
-            'name' => 'test meal name',
+        'try_to_rate_again' => array(
             'rating' => '3',
             'veg' => 'vegetarian',
             'comment' => 'test meal comment',
             'gluten_free' => 1,
-            'image' => true,
-            'error' => Meals::MEAL_NAME_EXISTS
-        ),
-        'meal_with_the_same_name' => array(
-            'name' => 'test meal name 2',
-            'rating' => '1',
-            'veg' => 'vegan',
-            'comment' => 'test meal comment',
-            'description' => 'description',
-            'gluten_free' => 0,
-            'image' => true,
-            'error' => false
-        ),
+            'photo_id' => 1,
+            'error' => Constants::CANNOT_RATE_MEAL
+        )
     );
     protected $_feedback = array(
         'text' => 'Test feedback text',

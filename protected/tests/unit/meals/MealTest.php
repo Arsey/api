@@ -12,6 +12,7 @@ class MealTest extends MainCTestCase {
     function testAddMeal() {
         Yii::app()->db->createCommand()->truncateTable(Meals::model()->tableName());
         Yii::app()->db->createCommand()->truncateTable(Photos::model()->tableName());
+        Yii::app()->db->createCommand()->truncateTable(Ratings::model()->tableName());
 
         $this->_login_user = $this->_users_for_registration['super'];
         $auth_token = $this->setLoginCookie();

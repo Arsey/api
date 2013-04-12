@@ -30,25 +30,7 @@
  */
 class Restaurants extends PlantEatersARMain {
 
-    protected $_search_results = null;
-
-    /**
-     * current user position latitude
-     * @var float
-     */
-    private $_current_lat = null;
-
-    /**
-     * current user position longitude
-     * @var float
-     */
-    private $_current_long = null;
-    private static $_table_name = 'restaurants';
-    private $_external_ids_not_in_db = null;
-    private $_external_ids = null;
     public $role_based_attributes = array();
-    public $latitude;
-    public $longitude;
     public $not_model_attributes = null;
 
     const EXTERNAL_ID_NOT_UNIQUE = 'Such restaurant set in reference already exists in our database.';
@@ -69,7 +51,7 @@ class Restaurants extends PlantEatersARMain {
      * @return string the associated database table name
      */
     public function tableName() {
-        return self::$_table_name;
+        return 'restaurants';
     }
 
     /**
@@ -186,12 +168,15 @@ class Restaurants extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
+    /**
+     * This is the rule custom validator.
+     * uniqueExternalId need to check if some restaurant in
+     * database already exists with given external_id
+     */
     public function uniqueExternalId($attribute, $params) {
 
-        $result = Yii::app()
-                ->db
-                ->createCommand()
-                ->select(array('external_id','id'))
+        $result = Yii::app()->db->createCommand()
+                ->select(array('external_id', 'id'))
                 ->from(self::model()->tableName())
                 ->where(array('and', 'external_id=:external_id'), array(':external_id' => $this->$attribute))
                 ->queryAll();
@@ -204,12 +189,23 @@ class Restaurants extends PlantEatersARMain {
         }
     }
 
+    /**
+     * Returns the number of restaurants in database relying on access_status
+     * @param string $access_status
+     * @return integer
+     */
     public static function getNumberOfRestaurants($access_status = Constants::ACCESS_STATUS_PUBLISHED) {
         return Yii::app()->db->createCommand("SELECT COUNT(id) FROM `restaurants` WHERE `access_status`=:access_status")->queryScalar(array(':access_status' => $access_status));
     }
 
+    /**
+     * This method returns the city and higher type of location for a restaurant
+     * @param integer $restaurant_id
+     * @return false or string
+     */
     public function getCityAndHigherLocation($restaurant_id) {
         $location = false;
+
         $restaurant = Yii::app()->db->createCommand()
                 ->select(array('city', 'state', 'country', 'name'))
                 ->from(self::model()->tableName())
@@ -232,57 +228,51 @@ class Restaurants extends PlantEatersARMain {
 
     public function getFullInfo($restaurant_id) {
         $restaurant = Yii::app()->db->createCommand()
-                ->select(
-                        array(
-                            'id',
-                            'name',
-                            'external_id',
-                            'reference',
-                            'X(location) as latitude',
-                            'Y(location) as longitude',
-                            'street_address',
-                            'street_address_2',
-                            'zip',
-                            'city',
-                            'state',
-                            'country',
-                            'phone',
-                            'email',
-                            'website',
-                            'veg',
-                            'rating',
-                            'createtime',
-                            'modifiedtime',
-                            'access_status',
-                            '(SELECT COUNT(*) AS count
+                ->select(array(
+                    'id',
+                    'name',
+                    'external_id',
+                    'reference',
+                    'X(location) as latitude',
+                    'Y(location) as longitude',
+                    'street_address',
+                    'street_address_2',
+                    'zip',
+                    'city',
+                    'state',
+                    'country',
+                    'phone',
+                    'email',
+                    'website',
+                    'veg',
+                    'rating',
+                    'createtime',
+                    'modifiedtime',
+                    'access_status',
+                    '(SELECT COUNT(*) AS count
                                 FROM ' . Meals::model()->tableName() . '
                                     WHERE `restaurant_id`=\'' . $restaurant_id . '\' AND `access_status`=\'published\'
                              ) AS number_of_meals',
-                        )
-                )
+                ))
                 ->from(Restaurants::model()->tableName())
                 ->where(array('and', 'id=:id'), array(':id' => $restaurant_id,))
                 ->queryRow();
 
         $restaurant_best_meals = Yii::app()->db->createCommand()
-                ->select(
-                        array(
-                            'id',
-                            'name',
-                            'rating',
-                        )
-                )
+                ->select(array(
+                    'id',
+                    'name',
+                    'rating',
+                ))
                 ->from(Meals::model()->tableName())
-                ->where(
-                        array(
+                ->where(array(
                     'and',
                     'restaurant_id=:restaurant_id',
                     'access_status=:access_status',
                         ), array(
                     ':restaurant_id' => $restaurant_id,
                     ':access_status' => Constants::ACCESS_STATUS_PUBLISHED
-                        )
-                )
+                ))
                 ->limit(2)
                 ->queryAll();
 
@@ -300,201 +290,6 @@ class Restaurants extends PlantEatersARMain {
      */
     public function filterByRole($user_role) {
         return parent::filterByRole($this, $user_role, $this->not_model_attributes);
-    }
-
-    /**
-     *
-     * @param array $params
-     * @return results from Google Places API textsearch request
-     */
-    public function searchByText($params) {
-        $this->setLatLngFromQuery($params);
-        if (isset($params['nextpagetoken'])) {
-            $this->_search_results = Yii::app()->gp->textsearchNextpage($params['nextpagetoken']);
-        } elseif (isset($params['query'])) {
-            $this->_search_results = Yii::app()
-                    ->gp
-                    ->setRadius(self::_getRadius($params))
-                    ->textsearch($params['query']);
-        }
-        return $this->decide($params);
-    }
-
-    /**
-     *
-     * @param array $params
-     * @return results from Google Places API textsearch request
-     */
-    public function searchByNearby($params) {
-        $this->setLatLngFromQuery($params);
-        if (isset($params['nextpagetoken'])) {
-            $this->_search_results = Yii::app()->gp->nearbyNextpage($params['nextpagetoken']);
-        } elseif (isset($params['location'])) {
-            $this->_search_results = Yii::app()
-                    ->gp
-                    ->setRadius(self::_getRadius($params))
-                    ->nearbysearch($params['location']);
-        }
-        return $this->decide($params);
-    }
-
-    protected function setLatLngFromQuery($params) {
-        if (isset($params['location'])) {
-            $location = explode(',', $params['location']);
-            $this->_current_lat = $location[0];
-            $this->_current_long = $location[1];
-        }
-    }
-
-    /**
-     * This method decides what to do with results form Google Places API response
-     * @return type
-     */
-    protected function decide($params) {
-        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OK')
-            $this->_filterRequiredData();
-
-        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'OVER_QUERY_LIMIT')
-            $this->_search_results = array('message' => 'OVER_QUERY_LIMIT');
-
-        if (isset($this->_search_results['status']) && $this->_search_results['status'] === 'ZERO_RESULTS')
-            $this->_search_results = array('message' => sprintf(Constants::ZERO_RESULTS, $_GET['model']));
-
-        SearchManager::rotateIndexes();
-
-        return $this->_search_results;
-    }
-
-    /**
-     *
-     * @param type $params
-     * @return type
-     */
-    protected static function _getRadius($params) {
-        return (isset($params['radius']) && (int) $params['radius']) ? $params['radius'] : 5000;
-    }
-
-    /**
-     *
-     * @param type $searchtype
-     * @param type $data
-     */
-    protected function _filterRequiredData() {
-        $new_data = array();
-
-        $this->_external_ids = helper::getFieldsList($this->_search_results['results'], 'id');
-
-        $this->_external_ids_not_in_db = Restaurants::getListIdNotInDB($this->_external_ids, 'id');
-
-        $this->addRestaurantsFromSearch();
-
-        if (isset($this->_search_results['next_page_token'])) {
-            $new_data['next_page_token'] = $this->_search_results['next_page_token'];
-        }
-        $new_data['status'] = $this->_search_results['status'];
-
-        $new_data['results'] = $this->getBaseRestaurantsByExternalIds();
-
-        if (!empty($new_data)) {
-            $this->_search_results = $new_data;
-        }
-    }
-
-    public function getBaseRestaurantsByExternalIds() {
-        $select = array(
-            'id',
-            'name',
-            'street_address',
-            'city',
-            'country',
-            'state',
-            'X(location) as latitude',
-            'Y(location) as longitude',);
-
-        if (!is_null($this->_current_lat) && !is_null($this->_current_long)) {
-            $select[] = "(SELECT ( GLength( LineString(( PointFromWKB( POINT({$this->_current_lat}, {$this->_current_long} ))), ( PointFromWKB( POINT( X(location), Y(location) ) ))))*100*1000)) as meters";
-        }
-        if (!is_null($this->_external_ids)) {
-            $restaurants = Yii::app()->db->createCommand()
-                    ->select($select)
-                    ->from(self::$_table_name)
-                    ->where(array('in', 'external_id', $this->_external_ids))
-                    ->queryAll();
-            return $restaurants;
-        }
-    }
-
-    /**
-     *
-     */
-    public function addRestaurantsFromSearch() {
-        if (!empty($this->_search_results['results'])) {
-            foreach ($this->_search_results['results'] as $result) {
-                $this->addRestaurantBaseFromSearch($result);
-            }
-        }
-    }
-
-    /**
-     *
-     * @param array() $restaurant
-     */
-    public function addRestaurantBaseFromSearch($restaurant) {
-        if (in_array($restaurant['id'], $this->_external_ids_not_in_db)) {
-
-            $model = new Restaurants;
-            $model->external_id = $restaurant['id'];
-            $model->reference = $restaurant['reference'];
-            $model->location = new CDbExpression("GeomFromText('POINT({$restaurant['geometry']['location']['lat']} {$restaurant['geometry']['location']['lng']})')");
-            $model->name = $restaurant['name'];
-            $model->rating = 0;
-            if (
-                    isset($restaurant['formatted_address']) &&
-                    $parsed_address = GoogleGeocode::parseAddress($restaurant['formatted_address'])
-            ) {
-                $model->street_address = GoogleGeocode::getStreet($parsed_address);
-                $model->city = GoogleGeocode::getCity($parsed_address);
-                $model->state = GoogleGeocode::getState($parsed_address);
-                $model->country = GoogleGeocode::getCountry($parsed_address);
-            }
-
-            $model->access_status = Constants::ACCESS_STATUS_PUBLISHED;
-
-            if ($model->validate()) {
-                $model->save();
-            } else {
-                helper::p($model->errors);
-            }
-        }
-    }
-
-    /**
-     *
-     * @param type $list
-     * @param type $field
-     * @return type
-     */
-    public static function getListIdNotInDB($list) {
-        $in = Yii::app()->db->createCommand()
-                ->select('external_id')
-                ->from(self::$_table_name)
-                ->where(array('in', 'external_id', $list))
-                ->queryAll(false);
-
-
-        $in = array_map(function($e) {
-                    return $e[0];
-                }, $in);
-
-        $not_in = array();
-
-        foreach ($list as $external) {
-            if (!in_array($external, $in)) {
-                $not_in[] = $external;
-            }
-        }
-
-        return $not_in;
     }
 
 }

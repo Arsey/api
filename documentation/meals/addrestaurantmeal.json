@@ -8,7 +8,7 @@
             {
                 "name":"id",
                 "required":"true",
-                "description":"Id of existing restaurant",
+                "description":"Restaurant Identifier",
                 "allowMultiple":"false",
                 "dataType":"Integer",
                 "paramType":"path"
@@ -24,7 +24,7 @@
             {
                 "name":"rating",
                 "required":"true",
-                "description":"Rating for meal(from 1 to 5)",
+                "description":"Is number from 1 to 5",
                 "allowMultiple":"false",
                 "dataType":"integer",
                 "paramType":"query"
@@ -32,7 +32,7 @@
             {
                 "name":"veg",
                 "required":"true",
-                "description":"",
+                "description":"Can take the following values: vegan, vegan_on_request, vegetarian, vegetarian_on_request",
                 "allowMultiple":"false",
                 "dataType":"string",
                 "paramType":"query"
@@ -40,14 +40,14 @@
             {
                 "name":"gluten_free",
                 "required":"true",
-                "description":"",
+                "description":"Can take the 1(gluten free) and 0(not gluten free)",
                 "allowMultiple":"false",
                 "dataType":"integer",
                 "paramType":"query"
             },
             {
                 "name":"comment",
-                "description":"",
+                "description":"Comment text",
                 "allowMultiple":"false",
                 "dataType":"string",
                 "paramType":"query"
@@ -55,7 +55,7 @@
             {
                 "name":"image",
                 "required":"true",
-                "description":"Image file",
+                "description":"Image file to upload",
                 "allowMultiple":"false",
                 "dataType":"file",
                 "paramType":"query"

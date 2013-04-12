@@ -24,13 +24,11 @@
             <file>unit/meals/RestaurantMealsTest</file>
             <file>unit/meals/GetPhotosTest.php</file>
             <file>unit/ratings/IsUserCanRateAMeal.php</file>
-            <file>unit/ratings/AddRatingTest.php</file>
+            <file>unit/ratings/RatingsTest.php</file>
+            <!--            <directory>unit/reports</directory>-->
         </testsuite>
         <testsuite name="notready">
             <file>unit/users/ActivityTest.php</file>
-            <!--Reports-->
-            <directory>unit/reports</directory>
-            <!--Restaurants-->
             <directory>unit/restaurants</directory>
         </testsuite>
     </testsuites>

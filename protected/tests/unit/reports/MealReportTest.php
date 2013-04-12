@@ -2,14 +2,7 @@
 
 class MealReportTest extends MainCTestCase {
 
-    private $_uri;
-
-    /* with wrong url */
-
-    protected function setUp() {
-        $id = Yii::app()->db->createCommand("select id from meals limit 1")->queryScalar();
-        $this->_uri = 'meal/' . $id . '/report/';
-    }
+    private $_uri = 'meal/1/report/';
 
     function testWrongUrl() {
         $response = helper::jsonDecode($this->_rest->post($this->_uri));

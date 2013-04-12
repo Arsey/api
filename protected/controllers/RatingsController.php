@@ -45,6 +45,12 @@ class RatingsController extends ApiController {
     private $_photo_id_from_request = false;
 
     /**
+     *
+     * @var boolean
+     */
+    private $_rating_without_photo = false;
+
+    /**
      * With this action API allow to add new meal or rate an existing meal.
      * To add new meal, $restaurant_id must be a real restaurant identifier.
      * To rate a meal, $meal_id is not null, and also here is two ways for photo:
@@ -97,7 +103,7 @@ class RatingsController extends ApiController {
 
         /* Meal must have publish access status for rate */
         if ($meal->access_status !== Constants::ACCESS_STATUS_PUBLISHED)
-            $this->_apiHelper->sendResponse(400, array('errors' => Constants::DONT_HAVE_ACCESS_TO_MEAL));
+            $this->_apiHelper->sendResponse(400, array('errors' => array(Constants::DONT_HAVE_ACCESS_TO_MEAL)));
 
         BaseChecker::canUserRateMeal(Yii::app()->user->id, $this->_meal_id, $this->_apiHelper);
 
@@ -124,7 +130,7 @@ class RatingsController extends ApiController {
             $this->_meal_id = $this->_meal->id;
         }
 
-        if (!$this->_photo_id_from_request)
+        if (!$this->_photo_id_from_request && !$this->_rating_without_photo)
             $this->_savePhoto();
 
         /* Save rating */
@@ -165,6 +171,12 @@ class RatingsController extends ApiController {
 
         /* Fill model "Photo" */
         $this->_meal_photo = Yii::app()->imagesManager->mealImageFromRequest;
+
+        if (!is_null($this->_meal_id) && !$this->_meal_photo->photo) {
+            $this->_rating_without_photo = true;
+            return;
+        }
+
         if (!$photo = $this->_meal_photo->photo)
             $this->_apiHelper->sendResponse(400, array('errors' => array('image' => array(Constants::IMAGE_REQUIRED))));
 
@@ -216,6 +228,10 @@ class RatingsController extends ApiController {
         $this->_rating->photo_id = $this->_photo->id;
     }
 
+    /**
+     * Shows that user can set a rating for meal or not
+     * @param integer $meal_id
+     */
     function actionCanUserRateMeal($meal_id) {
         BaseChecker::isMeal($meal_id, $this->_apiHelper);
 
@@ -236,6 +252,9 @@ class RatingsController extends ApiController {
         ));
     }
 
+    /**
+     * The User activity is a list of ratings, which were set by himself.
+     */
     function actionUserActivity() {
         /* by default user identifier is equal to logged in user identifier */
         $user_id = $this->_user_info['id'];
@@ -267,58 +286,6 @@ class RatingsController extends ApiController {
         $results['ratings'] = $ratings;
 
         $this->_apiHelper->sendResponse(200, array('results' => $results));
-    }
-
-    function actionRateMeal($meal_id) {
-
-        /* If meal with given id not found, raise not found error */
-        $meal = BaseChecker::isMeal($meal_id, $this->_apiHelper);
-        /* Meal must have publish access status for rate */
-        if ($meal->access_status !== Constants::ACCESS_STATUS_PUBLISHED)
-            $this->_apiHelper->sendResponse(400, array('errors' => Constants::DONT_HAVE_ACCESS_TO_MEAL));
-
-        BaseChecker::canUserRateMeal($this->_user_info['id'], $meal_id, $this->_apiHelper);
-
-        /**
-         * Fill fields for new rating
-         */
-        $rating = new Ratings;
-        $this->_assignModelAttributes($rating);
-        $rating->meal_id = $meal->id;
-        $rating->user_id = $this->_user_info['id'];
-        ($rating->gluten_free === '' ) ? $rating->gluten_free = Meals::NOT_GLUTEN_FREE : '';
-
-        $find_photo = Photos::model()->findByAttributes(array('id' => $rating->photo_id, 'access_status' => Constants::ACCESS_STATUS_PUBLISHED, 'meal_id' => $meal->id));
-
-        if (empty($rating->photo_id))
-            unset($rating->photo_id);
-
-        if ($rating->photo_id == 0 || !$find_photo) {
-            $rating->access_status = Constants::ACCESS_STATUS_NEEDS_FOR_ACTION;
-        } else {
-            $rating->access_status = Constants::ACCESS_STATUS_PUBLISHED;
-        }
-
-        /**
-         * Validate rating
-         */
-        if (!$rating->validate())
-            $this->_apiHelper->sendResponse(400, array('errors' => $rating->errors));
-
-        $rating->save();
-
-        $msg = Constants::RATING_SUCCESSFULLY_SENT;
-        if ($rating->access_status === Constants::ACCESS_STATUS_NEEDS_FOR_ACTION) {
-            $msg = Constants::RATING_NEED_ACTION_MESSAGE;
-        } else {
-            Photos::makeDefaultPhoto($meal_id);
-        }
-
-
-        $this->_apiHelper->sendResponse(200, array(
-            'results' => array('rating_id' => $rating->id),
-            'message' => $msg
-        ));
     }
 
 }
