@@ -84,22 +84,22 @@ class MainCTestCase extends CTestCase {
     );
     protected $_meals = array(
         'meal_without_image' => array(
-            'name' => 'test meal name',
+            'name' => 'test meal without image',
             'rating' => '3',
             'veg' => 'vegetarian',
             'comment' => 'test meal comment',
             'gluten_free' => 1,
             'image' => false,
-            'error' => Constants::IMAGE_REQUIRED
+            'error' => false
         ),
         'meal_with_fake_image' => array(
-            'name' => 'test meal name',
+            'name' => 'test meal with fake image',
             'rating' => '3',
             'veg' => 'vegetarian',
             'comment' => 'test meal comment',
             'gluten_free' => 1,
             'image' => 'fake image',
-            'error' => Constants::IMAGE_REQUIRED
+            'error' => false
         ),
         'meal_without_name' => array(
             'rating' => '3',

@@ -2,10 +2,14 @@
 
 class GetMealPhotosTest extends MainCTestCase {
 
-    private $_uri = 'meal/1/photos';
+    private $_uri = 'meal/%d/photos';
 
     function testGetMealPhotos() {
+        $photo = Yii::app()->db->createCommand()->select()->from(Photos::model()->tableName())->limit(1)->queryRow();
+        $this->_uri = sprintf($this->_uri, $photo['meal_id']);
+
         $response = helper::jsonDecode($this->_rest->get($this->_uri));
+
         $this->assertEquals(ApiHelper::MESSAGE_200, $response['status']);
         $this->assertArrayHasKey('results', $response);
         $this->assertTrue(isset($response['results'][0]));

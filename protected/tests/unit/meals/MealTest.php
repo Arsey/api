@@ -47,8 +47,10 @@ class MealTest extends MainCTestCase {
                 $this->assertEquals(Constants::ACCESS_STATUS_PUBLISHED, $rating['access_status']);
 
                 $photo = $db->createCommand("SELECT * FROM photos WHERE meal_id=" . $response['results']['meal_id'])->queryRow();
-                $this->assertTrue(!is_null($photo));
-                $this->assertEquals(Constants::ACCESS_STATUS_PUBLISHED, $photo['access_status']);
+                if ($photo) {
+                    $this->assertTrue(!is_null($photo));
+                    $this->assertEquals(Constants::ACCESS_STATUS_PUBLISHED, $photo['access_status']);
+                }
             } else {
                 if (isset($response['errors']) && isset($meal['error'])) {
                     foreach ($response['errors'] as $error) {

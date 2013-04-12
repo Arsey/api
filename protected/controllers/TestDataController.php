@@ -58,7 +58,9 @@ class TestDataController extends CController {
 
         $this->_saveRestaurants();
 
-        $this->_saveMeals();
+        if (!isset($_GET['restaurants'])) {
+            $this->_saveMeals();
+        }
 
         Yii::app()->end();
     }
@@ -190,7 +192,7 @@ class TestDataController extends CController {
             $model = Restaurants::model()->findByAttributes(array('external_id' => $cid));
         }
 
-        $model->name = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['name']);
+        $model->name = utf8_encode($this->_getCellOffset($this->_restaurant_cell_fields_offsets['name']));
         $model->street_address = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['street_address']);
         $model->street_address_2 = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['street_address_2']);
         $model->city = $this->_getCellOffset($this->_restaurant_cell_fields_offsets['city']);

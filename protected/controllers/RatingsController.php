@@ -48,7 +48,7 @@ class RatingsController extends ApiController {
      *
      * @var boolean
      */
-    private $_rating_without_photo = false;
+    private $_without_photo = false;
 
     /**
      * With this action API allow to add new meal or rate an existing meal.
@@ -130,7 +130,7 @@ class RatingsController extends ApiController {
             $this->_meal_id = $this->_meal->id;
         }
 
-        if (!$this->_photo_id_from_request && !$this->_rating_without_photo)
+        if (!$this->_photo_id_from_request && !$this->_without_photo)
             $this->_savePhoto();
 
         /* Save rating */
@@ -185,8 +185,8 @@ class RatingsController extends ApiController {
         /* Fill model "Photo" */
         $this->_meal_photo = Yii::app()->imagesManager->mealImageFromRequest;
 
-        if (!is_null($this->_meal_id) && !$this->_meal_photo->photo) {
-            $this->_rating_without_photo = true;
+        if (!$this->_meal_photo->photo) {
+            $this->_without_photo = true;
             return;
         }
 

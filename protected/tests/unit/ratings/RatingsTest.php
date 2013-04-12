@@ -20,8 +20,6 @@ class AddRatingTest extends MainCTestCase {
      * @depends testAddWithoutLogin
      */
     function testAddRatings($meals) {
-        //Yii::app()->db->createCommand()->truncateTable(Ratings::model()->tableName());
-
         $this->_login_user = $this->_users_for_registration['demo'];
         $auth_token = $this->setLoginCookie();
 
