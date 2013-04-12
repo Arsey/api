@@ -154,13 +154,26 @@ class RatingsController extends ApiController {
         if (is_null($this->_meal_id))
             return;
 
-        if (
-                isset($this->_parsed_attributes['photo_id']) &&
-                !empty($this->_parsed_attributes['photo_id']) &&
-                $this->_parsed_attributes['photo_id'] != 0 &&
-                Photos::model()->findByAttributes(array('id' => $this->_parsed_attributes['photo_id'], 'access_status' => Constants::ACCESS_STATUS_PUBLISHED, 'meal_id' => $this->_meal_id))
-        ) {
-            $this->_photo_id_from_request = $this->_parsed_attributes['photo_id'];
+
+
+        if (isset($this->_parsed_attributes['photo_id']) && !empty($this->_parsed_attributes['photo_id']) && $this->_parsed_attributes['photo_id'] != 0) {
+
+            $found_photo = Photos::model()->findByAttributes(
+                    array(
+                        'id' => $this->_parsed_attributes['photo_id'],
+                        'access_status' => Constants::ACCESS_STATUS_PUBLISHED,
+                        'meal_id' => $this->_meal_id
+            ));
+
+            if ($found_photo) {
+                $this->_photo_id_from_request = $this->_parsed_attributes['photo_id'];
+            } elseif (!$found_photo) {
+                $this->_apiHelper->sendResponse(400, array(
+                    'errors' => array(
+                        'photo_id' => array(sprintf(Constants::PHOTO_FOR_MEAL_NOT_FOUND, $this->_parsed_attributes['photo_id'], $this->_meal_id))
+                    )
+                ));
+            }
         }
         return;
     }
@@ -191,6 +204,7 @@ class RatingsController extends ApiController {
         /* Fill model "Ratings" */
         $rating = new Ratings;
         $this->_assignModelAttributes($rating);
+        $rating->photo_id = $this->_photo_id_from_request ? $this->_photo_id_from_request : null;
         $rating->meal_id = is_null($this->_meal_id) ? 1 : $this->_meal_id; //fake meal id or not
         $rating->user_id = $this->_user_info['id'];
         $rating->access_status = Constants::ACCESS_STATUS_PUBLISHED;

@@ -144,6 +144,7 @@ class Constants {
     const CANNOT_RATE_MEAL='You cannot rate this meal.';
     const CAN_RATE_MEAL_BY_USER_ID='The user can rate this meal';
     const CAN_RATE_MEAL='You can rate this meal';
+    const PHOTO_FOR_MEAL_NOT_FOUND='The photo with id=%d, was not found for meal with id=%d.';
     ///////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////RESTAURANTS CONTROLLER//////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
