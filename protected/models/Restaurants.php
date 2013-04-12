@@ -154,6 +154,13 @@ class Restaurants extends PlantEatersARMain {
     //CUSTOM OVERLOAD METHODS OF RA
     ////////////////////////////////
 
+    public function beforeSave() {
+        $this->name=helper::translitRuToEn($this->name);
+        $this->street_address=helper::translitRuToEn($this->street_address);
+        $this->street_address_2=helper::translitRuToEn($this->street_address_2);
+        return parent::beforeSave();
+    }
+
     public function behaviors() {
         return array(
             'timestamps' => array(
