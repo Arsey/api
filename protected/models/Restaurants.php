@@ -155,11 +155,18 @@ class Restaurants extends PlantEatersARMain {
     ////////////////////////////////
 
     public function beforeSave() {
-        $this->name=helper::translitRuToEn($this->name);
-        $this->street_address=helper::translitRuToEn($this->street_address);
-        $this->street_address_2=helper::translitRuToEn($this->street_address_2);
+        $this->name = helper::translitRuToEn($this->name);
+        $this->street_address = helper::translitRuToEn($this->street_address);
+        $this->street_address_2 = helper::translitRuToEn($this->street_address_2);
         return parent::beforeSave();
     }
+
+    /*public function afterSave() {
+        SearchManager::rotateIndexes();
+        return parent::afterSave();
+    }
+     * 
+     */
 
     public function behaviors() {
         return array(

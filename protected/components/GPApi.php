@@ -37,8 +37,6 @@ class GPApi extends CApplicationComponent {
         $this->_googlePlaces->setCurloptSslVerifypeer($this->_SslVerifypeer);
         $this->_googlePlaces->setRadius($this->_radius);
         $this->_googlePlaces->setTypes(helper::yiiparam('google_places_types'));
-        $this->_googlePlaces->setName(helper::yiiparam('google_places_name'));
-        $this->_googlePlaces->setKeyword(helper::yiiparam('google_places_keywords'));
     }
 
     public function textsearch($query, $location = false) {
