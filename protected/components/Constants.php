@@ -114,6 +114,9 @@ class Constants {
     const MISSING_ANY_REQUIRED_FIELDS = 'One of required (new_username, new_email, new_password) fields must be filled';
 
 
+    const EMAIL_NOT_VALID='Email address is not valid.';
+    const PASSWORD_NOT_VALID='Password is not valid.';
+    const EMAIL_END_PASSWORD_REQUIRED='Email address and password are required!';
     ///////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////MEALS CONTROLLER////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////

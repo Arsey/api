@@ -252,59 +252,35 @@ class SearchManager extends CApplicationComponent {
         $is_lat_lng = $this->_isLatLng();
         $search = Yii::app()->sphinxsearch;
 
-        $search
-                ->select('*')
-                ->from($this->_index)
-                ->where($this->_query)
-                ->limit($this->_offset, $this->_limit, $this->_max)
-                ->setArrayResult(true);
+        $search->select('*')->from($this->_index)->where($this->_query)->limit($this->_offset, $this->_limit, $this->_max)->setArrayResult(true);
 
         /*
          * If user searching with current location we must add geo filter
          * and order by @geodist
          */
         if ($is_lat_lng) {
-            $search
-                    ->filters(
-                            array(
-                                'geo' => array(
+            $search->filters(
+                            array('geo' => array(
                                     'min' => 0.0,
                                     'buffer' => $this->_radius,
                                     'point' => "POINT({$this->_current_lat} $this->_current_lng)",
                                     'lat_field_name' => 'lat',
-                                    'lng_field_name' => 'lng',
-                                )
-                            )
-                    )
+                                    'lng_field_name' => 'lng',)))
                     ->orderby('@geodist ASC');
         }
 
         /* If $_restaurants_with_meals is true, add where expression */
         if ($this->_restaurants_with_meals) {
-            $search->filters(
-                    array(
-                        'range' => array(
-                            'attribute' => 'number_of_meals',
-                            'min' => 1,
-                            'max' => 10000,
-                        )
-                    )
-            );
+            $search->filters(array('range' => array('attribute' => 'number_of_meals', 'min' => 1, 'max' => 10000,)));
         }
 
         $results = $search->searchRaw();
-
         $this->_search_results = $results['matches'];
-
         $restaurants = $this->_rebuildResults($this->_search_results);
         $total_found = $results['total_found'];
 
-        if (
-                $this->_in_google_places &&
-                (($c = count($restaurants)) < $this->_limit) &&
-                $total_found < $this->_limit &&
-                !$this->_restaurants_with_meals
-        ) {
+        /* Additional search with Google Places API */
+        if ($this->_in_google_places && (($c = count($restaurants)) < $this->_limit) && $total_found < $this->_limit && !$this->_restaurants_with_meals) {
 
             $additional_search = Yii::app()->gp->setRadius($this->_radius);
 
@@ -313,10 +289,10 @@ class SearchManager extends CApplicationComponent {
             } elseif ($is_lat_lng) {
                 $results = $additional_search->nearbysearch($this->_current_lat . ',' . $this->_current_lng);
             }
-
+            /* Process google results if not empty */
             if (!empty($results['results'])) {
 
-                $filtered_additional_search = $this->filterRequiredDataFromPlacesAPIResonse($results['results'], $is_lat_lng);
+                $filtered_additional_search = $this->filterRequiredDataFromPlacesAPIResonse($results['results']);
                 $restaurants_names = array();
 
                 foreach ($restaurants as $r) {
@@ -333,24 +309,22 @@ class SearchManager extends CApplicationComponent {
             }
         }
 
-        return array(
-            'total_found' => (int) $total_found,
-            'restaurants' => $restaurants
-        );
+        if ($is_lat_lng) {
+            $restaurants = $this->_sortByDistance($restaurants);
+        }
+
+        return array('total_found' => (int) $total_found, 'restaurants' => $restaurants);
     }
 
-    public function filterRequiredDataFromPlacesAPIResonse($results, $sort = false) {
+    public function filterRequiredDataFromPlacesAPIResonse($results) {
         if (!empty($results)) {
             $restaurants = array();
             foreach ($results as $result) {
                 if ($r = $this->filterRestaurant($result))
                     $restaurants[] = $r;
             }
-            if ($sort) {
-                return $this->_sortByDistance($restaurants);
-            } else {
-                return $restaurants;
-            }
+
+            return $restaurants;
         }
         return false;
     }

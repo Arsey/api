@@ -3,16 +3,12 @@
 class UsersController extends ApiController {
 
     public function actions() {
-        return array(
-            'captcha' => array(
-                'class' => 'CCaptchaAction'
-            )
-        );
+        return array('captcha' => array('class' => 'CCaptchaAction'));
     }
 
     /**
      * This is the Join action, that is invoked,
-     * when client go with POST to api/<format>/user/activation.
+     * when client go with POST to user/activation.
      */
     public function actionJoin() {
         $model = new Users;
@@ -21,10 +17,8 @@ class UsersController extends ApiController {
         $this->_assignModelAttributes($model);
 
         /* validating post fields */
-        if ($model->validate()) {
-            $model->save();
+        if ($model->save()) {
             /* sending registration email with activation url to user */
-
             UsersManager::sendRegistrationEmail($model, $this->is_mobile_client_device);
 
             //send response to a client
@@ -56,21 +50,22 @@ class UsersController extends ApiController {
         if (
                 !empty($this->_parsed_attributes) &&
                 isset($this->_parsed_attributes['email']) &&
+                !empty($this->_parsed_attributes['email']) &&
                 isset($this->_parsed_attributes['password'])
         ) {
 
-            if ($user = Users::model()->find('email = :email', array(':email' => $this->_parsed_attributes['email']))) {
+            if ($user = Users::model()->findByAttributes(array('email' => $this->_parsed_attributes['email']))) {
                 if ($this->authenticate($user, $this->_parsed_attributes['password'])) {
                     $auth_token = Yii::app()->session->sessionID;
                     $this->_apiHelper->sendResponse(200, array('results' => array('auth_token' => $auth_token)));
                 }
             } else {
-                //send response to a client
-                $this->_apiHelper->sendResponse(401, array('errors' => array(Constants::BAD_USER_CREDNTIALS)));
+                //send response, that email is not valid
+                $this->_apiHelper->sendResponse(401, array('errors' => array(Constants::EMAIL_NOT_VALID)));
             }
         }
         //send response to a client
-        $this->_apiHelper->sendResponse(401, array('errors' => array('User email and password are required!')));
+        $this->_apiHelper->sendResponse(401, array('errors' => array(Constants::EMAIL_END_PASSWORD_REQUIRED)));
     }
 
     /**
@@ -133,7 +128,7 @@ class UsersController extends ApiController {
         ) {
 
             if (!PasswordResetTokens::isCanResetPassword($user->id))
-                $this->_apiHelper->sendResponse(400, array('message' =>  Constants::RESET_ONCE_A_DAY));
+                $this->_apiHelper->sendResponse(400, array('message' => Constants::RESET_ONCE_A_DAY));
 
             $model = new PasswordResetTokens;
             $model->createResetToken($user);
@@ -159,11 +154,11 @@ class UsersController extends ApiController {
         if (!$user = Users::model()->findByPk($user_id))
             $this->_apiHelper->sendResponse(400, array('errors' => sprintf(Constants::NO_USER_WAS_FOUND, $user_id)));
 
-        $avatar_thumbnails=UsersManager::getAvatarThumbnails($user->avatar);
-        if (($user->avatar === '')||empty($avatar_thumbnails))
+        $avatar_thumbnails = UsersManager::getAvatarThumbnails($user->avatar);
+        if (($user->avatar === '') || empty($avatar_thumbnails))
             $this->_apiHelper->sendResponse(404, array('errors' => 'Current user have no avatar'));
 
-        $this->_apiHelper->sendResponse(200, array('results' => array('avatar_thumbnails'=>$avatar_thumbnails)));
+        $this->_apiHelper->sendResponse(200, array('results' => array('avatar_thumbnails' => $avatar_thumbnails)));
     }
 
     /**
@@ -252,9 +247,9 @@ class UsersController extends ApiController {
                 $this->_apiHelper->sendResponse(401, array('errors' => array(Constants::ACCOUNT_DELETED)));
                 break;
             case UserIdentity::ERROR_PASSWORD_INVALID:
-                $error_msg = strtr(Constants::PASSWORD_INVALID_FOR_USER, array('{ip}' => Yii::app()->request->getUserHostAddress(), '{username}' => $user->username));
-                $this->_apiHelper->sendResponse(401, array('errors' => array($error_msg)));
+                $this->_apiHelper->sendResponse(401, array('errors' => array(Constants::PASSWORD_NOT_VALID)));
                 break;
+
                 return false;
         }
     }
