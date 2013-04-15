@@ -8,7 +8,7 @@
             {
                 "name":"id",
                 "required":"true",
-                "description":"Id of existing restaurant",
+                "description":"<div style=width:370px></div>Id of existing restaurant",
                 "allowMultiple":"false",
                 "dataType":"Integer",
                 "paramType":"path"
@@ -19,7 +19,7 @@
                 "allowMultiple":"false",
                 "dataType":"Integer",
                 "paramType":"query"
-            
+
             },
             {
                 "name":"limit",
@@ -28,9 +28,33 @@
                 "dataType":"Integer",
                 "paramType":"query"
             }
+            ,
+            {
+                "name":"order_rating",
+                "description":"To order the results by rating, add the query paramter order_rating, which can take one of two values - <strong>ASC</strong> or <strong>DESC</strong><p style=color:red>ASC for an ascending sort, DESC for a descending sort.</p>",
+                "allowMultiple":"false",
+                "dataType":"string",
+                "paramType":"query"
+            },
+            {
+                "name":"order_rounded_rating",
+                "description":"To order the results by rounded rating, add the query paramter order_rounded_rating, which can take one of two values - <strong>ASC</strong> or <strong>DESC</strong><p style=color:red>ASC for an ascending sort, DESC for a descending sort.</p>",
+                "allowMultiple":"false",
+                "dataType":"string",
+                "paramType":"query"
+            },
+            {
+                "name":"order_name",
+                "description":"To order the results by meal name , add the query paramter order_name, which can take one of two values - <strong>ASC</strong> or <strong>DESC</strong><p style=color:red>ASC for an ascending sort, DESC for a descending sort.</p>",
+                "allowMultiple":"false",
+                "dataType":"string",
+                "paramType":"query"
+            }
+
+
         ],
         "summary":"Text searching",
-        "notes": "This page allows the user to search restaurants by text"
+        "notes": "This page allows the user to search restaurants by text<h3><strong>For the parameters of sorting:</strong></h3><h3 style=color:red>Sorting will be applied in the order in which the parameters are listed in the request</h3>"
 
     }
 ]

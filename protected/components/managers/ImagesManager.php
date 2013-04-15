@@ -80,12 +80,7 @@ class ImagesManager extends CApplicationComponent {
 
         if (!empty($this->_sizes)) {
             foreach ($this->_sizes as $size) {
-                $thumb_web_path = $web_path . '/' . $file . '_' . $size[0] . '.' . $this->_ext;
-                if (@GetImageSize($thumb_web_path)) {
-                    $thumbs['thumb_' . $size[0]] = $thumb_web_path;
-                } else {
-                    Yii::log('Problem with GetImageSize function. Maybe in php.ini not included extension=php_openssl.dll', CLogger::LEVEL_ERROR);
-                }
+                $thumbs['thumb_' . $size[0]] = $web_path . '/' . $file . '_' . $size[0] . '.' . $this->_ext;
             }
         }
         return $thumbs;
@@ -222,15 +217,16 @@ class ImagesManager extends CApplicationComponent {
                         ->getImageThumbnails();
     }
 
-
     /**
      *
      * @var type
      */
-    private $_photo=false;
-    public function getPhoto(){
+    private $_photo = false;
+
+    public function getPhoto() {
         return $this->_photo;
     }
+
     /**
      * Field name, that must contain image
      * @var string
@@ -255,7 +251,7 @@ class ImagesManager extends CApplicationComponent {
 
     public function getMealImageFromRequest() {
 
-        if (empty($_FILES)||!isset($_FILES[$this->_image_field]))
+        if (empty($_FILES) || !isset($_FILES[$this->_image_field]))
             return $this;
 
         $this->setImageExtInRequestFile($this->_image_field);

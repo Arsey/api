@@ -38,6 +38,9 @@ class AddRatingTest extends MainCTestCase {
 
                 $rest = helper::curlInit($this->_server);
                 $this->setLoginCookie($rest, $auth_token);
+                if (isset($rating['rating'])) {
+                $rating['rating'] = rand(1, 5);
+            }
                 $response = helper::jsonDecode($rest->post(sprintf($this->_uri, $meal['id']), $rating));
 
                 if (isset($rating['error']) && !$rating['error']) {

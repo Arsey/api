@@ -58,6 +58,34 @@ class helper extends CApplicationComponent {
         return $limit;
     }
 
+    public static function getOrder($parsed_attributes, $prefix = 'order_') {
+        $order = array();
+        foreach ($parsed_attributes as $key => $value) {
+            if (preg_match('/^order_(\w+)$/', $key, $matches) && preg_match('/asc|desc/', strtolower($value))) {
+                $order[$matches[1]] = $value;
+            }
+        }
+        return $order;
+    }
+
+    public static function buildYiiCommandOrder($order_fields, $allowed_fields = array()) {
+        $command_order = '';
+        if (empty($order_fields) || !is_array($allowed_fields))
+            return $command_order;
+
+        $fields = array();
+        foreach ($order_fields as $key => $value) {
+            if (in_array($key, $allowed_fields)) {
+                $fields[] = $key . ' ' . $value;
+            }
+        }
+        if (!empty($fields)) {
+            $command_order = implode(',', $fields);
+        }
+
+        return $command_order;
+    }
+
     /**
      * Translate access status from usual words onto system constants of access
      * @param type $string

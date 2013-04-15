@@ -37,8 +37,8 @@ class MealsManager extends CApplicationComponent {
      * @param type $offset
      * @return boolean|null
      */
-    function getRestaurantMeals($offset, $limit) {
-        if (!$meals = Meals::getRestaurantMeals($this->_restaurant_id, $offset, $limit))
+    function getRestaurantMeals($offset, $limit,$order) {
+        if (!$meals = Meals::getRestaurantMeals($this->_restaurant_id, $offset, $limit,$order))
             return false;
 
         foreach ($meals as $key => $meal) {

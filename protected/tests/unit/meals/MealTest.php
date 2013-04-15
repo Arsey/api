@@ -29,6 +29,9 @@ class MealTest extends MainCTestCase {
 
             $rest = helper::curlInit($this->_server);
             $this->setLoginCookie($rest, $auth_token);
+            if (isset($meal['rating'])) {
+                $meal['rating'] = rand(1, 5);
+            }
             $response = helper::jsonDecode($rest->post($this->_uri, $meal));
 
             if (isset($meal['error']) && !$meal['error']) {

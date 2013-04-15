@@ -25,8 +25,10 @@
  */
 class Meals extends PlantEatersARMain {
 
-    const MEAL_NAME_REQUIRED='Meal name cannot be blank.';
-    const MEAL_NAME_EXISTS='Food with the same name already exists in this restaurant.';
+    const MEAL_NAME_REQUIRED = 'Meal name cannot be blank.';
+    const MEAL_NAME_EXISTS = 'Food with the same name already exists in this restaurant.';
+
+    static $_allowed_custom_order_fields = array('rating', 'name','rounded_rating');
 
     //////////////////////////////
     //BASE METHODS CREATED BY GII
@@ -55,7 +57,7 @@ class Meals extends PlantEatersARMain {
         // will receive user inputs.
         return array(
             array('restaurant_id, user_id', 'required'),
-            array('name','required','message'=>self::MEAL_NAME_REQUIRED),
+            array('name', 'required', 'message' => self::MEAL_NAME_REQUIRED),
             array('gluten_free, createtime, modifiedtime', 'numerical', 'integerOnly' => true),
             array('restaurant_id, user_id', 'length', 'max' => 20),
             array('name', 'length', 'max' => 100),
@@ -179,11 +181,13 @@ class Meals extends PlantEatersARMain {
                 ) ? $count : 0;
     }
 
-    public static function getRestaurantMeals($restaurant_id, $offset = 0, $limit = 10, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
+    public static function getRestaurantMeals($restaurant_id, $offset = 0, $limit = 10, $custom_order = array(), $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
 
         $meals_table = self::model()->tableName();
         $ratings_table = Ratings::model()->tableName();
         $photos_table = Photos::model()->tableName();
+
+        $order=helper::buildYiiCommandOrder($custom_order,self::$_allowed_custom_order_fields);
 
         return
                         Yii::app()->db->createCommand()
@@ -195,12 +199,13 @@ class Meals extends PlantEatersARMain {
                                     'veg',
                                     'gluten_free',
                                     'rating',
+                                    'ROUND(rating) AS rounded_rating',
                                     "(SELECT COUNT(`id`) FROM `$ratings_table` WHERE `access_status`='published' AND `meal_id`=`meals`.`id`) AS number_of_ratings",
                                     "(SELECT `name` FROM `$photos_table` WHERE `access_status`='published' AND `meal_id`=`meals`.`id` AND `default`=1 LIMIT 1) as default_photo"
                                 )
                         )
                         ->from($meals_table)
-                        ->order('rating DESC, name ASC')
+                        ->order($order)
                         ->where(array('and', 'restaurant_id=:restaurant_id', 'access_status=:access_status'), array(':restaurant_id' => $restaurant_id, ':access_status' => $access_status,))
                         ->limit($limit)
                         ->offset($offset)

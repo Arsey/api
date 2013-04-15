@@ -37,11 +37,12 @@ class MealsController extends ApiController {
 
         $offset = helper::getOffset($this->_parsed_attributes);
         $limit = helper::getLimit($this->_parsed_attributes);
+        $order = helper::getOrder($this->_parsed_attributes);
 
         $mealsManager = Yii::app()->meals->setRestaurantId($id);
 
         /* Check if restaurant have meals */
-        if (!$meals = $mealsManager->getRestaurantMeals($offset, $limit))
+        if (!$meals = $mealsManager->getRestaurantMeals($offset, $limit, $order))
             $this->_apiHelper->sendResponse(404, array('message' => 'No meals for restaurant'));
 
 
