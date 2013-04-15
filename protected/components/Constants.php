@@ -112,11 +112,9 @@ class Constants {
      */
     const PROFILE_UPDATED = 'Profile was successfully updated';
     const MISSING_ANY_REQUIRED_FIELDS = 'One of required (new_username, new_email, new_password) fields must be filled';
-
-
-    const EMAIL_NOT_VALID='Email address is not valid.';
-    const PASSWORD_NOT_VALID='Password is not valid.';
-    const EMAIL_END_PASSWORD_REQUIRED='Email address and password are required!';
+    const EMAIL_NOT_VALID = 'Email address is not valid.';
+    const PASSWORD_NOT_VALID = 'Password is not valid.';
+    const EMAIL_END_PASSWORD_REQUIRED = 'Email address and password are required!';
     ///////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////MEALS CONTROLLER////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
@@ -143,14 +141,19 @@ class Constants {
     const PHOTO_ATTACHED_TO_RATING = 'Photo is already attached to rating';
     const NO_MEAL_IMAGES = 'No photos was found for meal with id=%d';
     const NO_USER_RATINGS = 'No available ratings  was found for user %s';
-    const CANNOT_RATE_MEAL_BY_USER_ID='The user cannot rate this meal.';
-    const CANNOT_RATE_MEAL='You cannot rate this meal.';
-    const CAN_RATE_MEAL_BY_USER_ID='The user can rate this meal';
-    const CAN_RATE_MEAL='You can rate this meal';
-    const PHOTO_FOR_MEAL_NOT_FOUND='The photo with id=%d, was not found for meal with id=%d.';
+    const CANNOT_RATE_MEAL_BY_USER_ID = 'The user cannot rate this meal.';
+    const CANNOT_RATE_MEAL = 'You cannot rate this meal.';
+    const CAN_RATE_MEAL_BY_USER_ID = 'The user can rate this meal';
+    const CAN_RATE_MEAL = 'You can rate this meal';
+    const PHOTO_FOR_MEAL_NOT_FOUND = 'The photo with id=%d, was not found for meal with id=%d.';
     ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////RESTAURANTS CONTROLLER//////////////////////////////
+    ///////////////////////////////RESTAURANTS CONTROLLER//////////////////////////
     ///////////////////////////////////////////////////////////////////////////////
-    const BAD_PLACE_REFERENCE='Bad Google Places API reference.';
-    const PLACES_REFERENCE_REQUIRED='Field "reference" is required.';
+    const BAD_PLACE_REFERENCE = 'Bad Google Places API reference.';
+    const PLACES_REFERENCE_REQUIRED = 'Field "reference" is required.';
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////PasswordResetTokens Model///////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    const TOKEN_EXPIRED='Token expired';
+    const TOKEN_USED='This token has already been used';
 }

@@ -93,45 +93,43 @@ class PasswordResetTokens extends CActiveRecord {
         $criteria->compare('status', $this->status);
 
         return new CActiveDataProvider($this, array(
-                    'criteria' => $criteria,
-                ));
+            'criteria' => $criteria,
+        ));
     }
 
+    /**
+     * Returns true if user can reset his password,
+     * and returns false if user cannot reset his password
+     * @param integer $user_id
+     * @return boolean
+     */
     public static function isCanResetPassword($user_id) {
 
         $tokens = Yii::app()->db->createCommand()
                 ->select('*')
                 ->from('password_reset_tokens')
-                ->where(
-                        array(
-                    'and',
-                    "user_id=:user_id",
-                    //"status=:status",
-                    "expire>:expire",
-                        ), array(
-                    ':user_id' => $user_id,
-                    //':status' => self::TOKEN_UNUSED,
-                    ':expire' => time(),
-                        )
-                )
+                ->where(array('and', "user_id=:user_id", "expire>:expire",), array(':user_id' => $user_id, ':expire' => time()))
                 ->queryAll();
 
-        if ($tokens) {
+        if ($tokens)
             return false;
-        }
+
         return true;
     }
 
+    /**
+     * This method checks given token, that must be valid and not yet expired
+     * @param type $errors
+     * @return boolean
+     */
     public function isValidToken(&$errors = array()) {
         $token_errors = array();
         $time = time();
         if ($this->expire < $time) {
-
-            $token_errors[] = 'Token expired';
+            $token_errors[] = Constants::TOKEN_EXPIRED;
         }
         if ($this->expire > $time && $this->status == self::TOKEN_USED) {
-
-            $token_errors[] = 'This token has already been used';
+            $token_errors[] = Constants::TOKEN_USED;
         }
         if (!empty($token_errors)) {
             $errors = $token_errors;
