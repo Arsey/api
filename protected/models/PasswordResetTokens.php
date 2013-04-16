@@ -125,9 +125,13 @@ class PasswordResetTokens extends CActiveRecord {
     public function isValidToken(&$errors = array()) {
         $token_errors = array();
         $time = time();
+
+        /* verify if a token had expired */
         if ($this->expire < $time) {
             $token_errors[] = Constants::TOKEN_EXPIRED;
         }
+
+        /* verify if a token has been used */
         if ($this->expire > $time && $this->status == self::TOKEN_USED) {
             $token_errors[] = Constants::TOKEN_USED;
         }
@@ -138,19 +142,28 @@ class PasswordResetTokens extends CActiveRecord {
         return true;
     }
 
+    /**
+     * This method creates a new password reset token
+     * @param Users $user
+     * @return \PasswordResetTokens
+     */
     public function createResetToken(Users $user) {
         $this->user_id = $user->id;
         $this->token = self::generateToken();
-        $this->expire = strtotime('+24 hours');
+        $this->expire = strtotime('+24 hours'); //token can be used for 24 hours after creation
         $this->status = self::TOKEN_UNUSED;
-        if ($this->validate()) {
-            $this->save();
-        } else {
+
+        if (!$this->save())
             return $this->errors;
-        }
+
         return $this;
     }
 
+    /**
+     * Generates token
+     * @param integer $len
+     * @return string
+     */
     protected static function generateToken($len = 32) {
         mt_srand((double) microtime() * 1000000 + time());
         $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZqwertyuiopasdfghjklzxcvbnm_';

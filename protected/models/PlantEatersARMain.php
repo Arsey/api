@@ -109,8 +109,6 @@ class PlantEatersARMain extends CActiveRecord {
                     $attributes_return[$key] = $val;
                 }
             }
-
-
             return $attributes_return;
         }
         return $model->attributes;

@@ -161,11 +161,11 @@ class Restaurants extends PlantEatersARMain {
         return parent::beforeSave();
     }
 
-    /*public function afterSave() {
-        SearchManager::rotateIndexes();
-        return parent::afterSave();
-    }
-     * 
+    /* public function afterSave() {
+      SearchManager::rotateIndexes();
+      return parent::afterSave();
+      }
+     *
      */
 
     public function behaviors() {
@@ -272,23 +272,7 @@ class Restaurants extends PlantEatersARMain {
                 ->where(array('and', 'id=:id'), array(':id' => $restaurant_id,))
                 ->queryRow();
 
-        $restaurant_best_meals = Yii::app()->db->createCommand()
-                ->select(array(
-                    'id',
-                    'name',
-                    'rating',
-                ))
-                ->from(Meals::model()->tableName())
-                ->where(array(
-                    'and',
-                    'restaurant_id=:restaurant_id',
-                    'access_status=:access_status',
-                        ), array(
-                    ':restaurant_id' => $restaurant_id,
-                    ':access_status' => Constants::ACCESS_STATUS_PUBLISHED
-                ))
-                ->limit(2)
-                ->queryAll();
+        $restaurant_best_meals = Yii::app()->meals->setRestaurantId($restaurant_id)->getBestRestaurantMeals(2);
 
         if ($restaurant) {
             $restaurant['best_meals'] = $restaurant_best_meals;

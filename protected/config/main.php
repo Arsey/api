@@ -109,6 +109,7 @@ $main = array(
             'support_email',
             'restaurants_search_index',
             'restaurants_and_meals_search_index',
+            'meals_search_index'
         ),
         /* using on restaurants search throught Google Places API */
         'restaurants_keywords' => 'restaurant bar caffe vegan vegetarian',

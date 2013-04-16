@@ -292,6 +292,27 @@ class Meals extends PlantEatersARMain {
                         ->queryScalar(array(':access_status' => $access_status, ':meal_id' => $meal_id));
     }
 
+    public static function getBestRestaurantMeals($restaurant_id, $max, $exclude = array()) {
+        $not_in='';
+        if(is_array($exclude)&&!empty($exclude))
+            $not_in='id NOT IN('.implode (',', $exclude).')';
+
+        return Yii::app()->db->createCommand()
+                        ->select(array('id', 'name', 'ROUND(rating,1) as rating',))
+                        ->from(self::model()->tableName())
+                        ->where(array(
+                            'and',
+                            'restaurant_id=:restaurant_id',
+                            'access_status=:access_status',
+                            $not_in,
+                                ), array(
+                            ':restaurant_id' => $restaurant_id,
+                            ':access_status' => Constants::ACCESS_STATUS_PUBLISHED
+                        ))
+                        ->limit($max)
+                        ->queryAll();
+    }
+
     /**
      * This method need for filtering data by user role
      * @param string $user_role

@@ -31,7 +31,7 @@ class Ratings extends PlantEatersARMain {
     //Messages
     const RATING_NOT_LESS = 'Rating must be not less than 1';
     const VEG_CANNOT_BE_BLANK = 'Field "veg" (Vegetarian|Vegan) cannot be blank.';
-    const GLUTEN_FREE_CANNOT_BE_BLANK='Field "gluten_free" cannot be blank.';
+    const GLUTEN_FREE_CANNOT_BE_BLANK = 'Field "gluten_free" cannot be blank.';
 
     /**
      * Returns the static model of the specified AR class.
@@ -159,7 +159,12 @@ class Ratings extends PlantEatersARMain {
     //////////////////////////////
     //CUSTOM NOT RA MODEL METHODS
     //////////////////////////////
-
+    /**
+     *
+     * @param type $user_id
+     * @param type $meal_id
+     * @return type
+     */
     public static function isUserLeaveMealRating($user_id, $meal_id) {
         $ratings_table = self::model()->tableName();
         return Yii::app()
@@ -168,6 +173,11 @@ class Ratings extends PlantEatersARMain {
                         ->queryScalar();
     }
 
+    /**
+     *
+     * @param type $meal_id
+     * @return type
+     */
     public static function getMealRatings($meal_id) {
         $table = self::model()->tableName();
         $users_table = Users::model()->tableName();
@@ -193,9 +203,9 @@ class Ratings extends PlantEatersARMain {
      * @return object of rows from db
      */
     public static function getUserRatings($user_id, $offset = 0, $limit = 25) {
-        $meals_table=Meals::model()->tableName();
-        $restaurants_table=  Restaurants::model()->tableName();
-        $ratings_table=  Ratings::model()->tableName();
+        $meals_table = Meals::model()->tableName();
+        $restaurants_table = Restaurants::model()->tableName();
+        $ratings_table = Ratings::model()->tableName();
         return Yii::app()->db->createCommand()
                         ->select(
                                 array(

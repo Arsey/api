@@ -64,6 +64,12 @@ class SearchManager extends CApplicationComponent {
 
     /**
      *
+     * @var boolean
+     */
+    private $_meals_index = null;
+
+    /**
+     *
      * @var type
      */
     private $_with_meals = false;
@@ -79,6 +85,13 @@ class SearchManager extends CApplicationComponent {
      * @var boolean
      */
     private $_in_google_places = false;
+    private $_max_best_meals = 2;
+    private $_founded_restaurants = array();
+
+    function setMealsIndex($boolean) {
+        $this->_meals_index = $boolean;
+        return $this;
+    }
 
     function setWithMeals($boolean) {
         $this->_with_meals = $boolean;
@@ -276,11 +289,14 @@ class SearchManager extends CApplicationComponent {
 
         $results = $search->searchRaw();
         $this->_search_results = $results['matches'];
-        $restaurants = $this->_rebuildResults($this->_search_results);
+
+        $this->_founded_restaurants = $this->_rebuildResults($this->_search_results);
         $total_found = $results['total_found'];
 
+        $this->_addBestMeals();
+
         /* Additional search with Google Places API */
-        if ($this->_in_google_places && (($c = count($restaurants)) < $this->_limit) && $total_found < $this->_limit && !$this->_restaurants_with_meals) {
+        if ($this->_in_google_places && (($c = count($this->_founded_restaurants)) < $this->_limit) && $total_found < $this->_limit && !$this->_restaurants_with_meals) {
 
             $additional_search = Yii::app()->gp->setRadius($this->_radius);
 
@@ -295,25 +311,24 @@ class SearchManager extends CApplicationComponent {
                 $filtered_additional_search = $this->filterRequiredDataFromPlacesAPIResonse($results['results']);
                 $restaurants_names = array();
 
-                foreach ($restaurants as $r) {
+                foreach ($this->_founded_restaurants as $r) {
                     $restaurants_names[] = $r['name'];
                 }
 
                 foreach ($filtered_additional_search as $add) {
                     if ($c < $this->_limit && !in_array($add['name'], $restaurants_names)) {
                         $total_found++;
-                        $restaurants[] = $add;
+                        $this->_founded_restaurants[] = $add;
                     }
                     $c++;
                 }
             }
         }
 
-        if ($is_lat_lng) {
-            $restaurants = $this->_sortByDistance($restaurants);
-        }
+        if ($is_lat_lng)
+            $this->_sortByDistance();
 
-        return array('total_found' => (int) $total_found, 'restaurants' => $restaurants);
+        return array('total_found' => (int) $total_found, 'restaurants' => $this->_founded_restaurants);
     }
 
     public function filterRequiredDataFromPlacesAPIResonse($results) {
@@ -329,15 +344,66 @@ class SearchManager extends CApplicationComponent {
         return false;
     }
 
-    private function _sortByDistance($restaurants) {
-        usort($restaurants, function($a, $b) {
+    private function _addBestMeals() {
+        if (!is_null($this->_meals_index) && !empty($this->_query)) {
+
+            foreach ($this->_founded_restaurants as $i => $r) {
+
+                $best_match_meals_results
+                        = Yii::app()->sphinxsearch
+                        ->select('*')
+                        ->from($this->_meals_index)
+                        ->where($this->_query)
+                        ->limit(0, 2, 2)
+                        ->filters(array('restaurant_id' => $r['id']))
+                        ->setArrayResult(true)
+                        ->searchRaw();
+
+
+                $c = count($best_match_meals_results['matches']);
+                $best_meals = array();
+                $in_best_meals = array();
+
+                if ($c != 0) {
+                    foreach ($best_match_meals_results['matches'] as $m) {
+                        $in_best_meals[] = $m['id'];
+                        $best_meals[] = array(
+                            'id' => (string) $m['id'],
+                            'name' => (string) $m['attrs']['name'],
+                            'rating' => (string) $m['attrs']['rating']
+                        );
+                    }
+                }
+
+                if ($c < $this->_max_best_meals) {
+                    $best_rating = Yii::app()->meals->setRestaurantId($r['id'])->getBestRestaurantMeals($this->_max_best_meals - $c, $in_best_meals);
+                    foreach ($best_rating as $br) {
+                        $best_meals[] = $br;
+                    }
+                }
+
+                $this->_founded_restaurants[$i]['best_meals'] = $best_meals;
+            }
+        } else {
+            foreach ($this->_founded_restaurants as $i => $r) {
+                $best_meals = array();
+                $best_rating = Yii::app()->meals->setRestaurantId($r['id'])->getBestRestaurantMeals($this->_max_best_meals);
+                foreach ($best_rating as $br) {
+                    $best_meals[] = $br;
+                }
+
+                $this->_founded_restaurants[$i]['best_meals'] = empty($best_meals) ? null : $best_meals;
+            }
+        }
+    }
+
+    private function _sortByDistance() {
+        usort($this->_founded_restaurants, function($a, $b) {
                     if ($a['distance'] == $b['distance']) {
                         return 0;
                     }
                     return ($a['distance'] < $b['distance']) ? -1 : 1;
                 });
-
-        return $restaurants;
     }
 
     public function filterRestaurant($restaurant) {

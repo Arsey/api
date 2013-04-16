@@ -37,8 +37,8 @@ class MealsManager extends CApplicationComponent {
      * @param type $offset
      * @return boolean|null
      */
-    function getRestaurantMeals($offset, $limit,$order) {
-        if (!$meals = Meals::getRestaurantMeals($this->_restaurant_id, $offset, $limit,$order))
+    function getRestaurantMeals($offset, $limit, $order) {
+        if (!$meals = Meals::getRestaurantMeals($this->_restaurant_id, $offset, $limit, $order))
             return false;
 
         foreach ($meals as $key => $meal) {
@@ -53,11 +53,17 @@ class MealsManager extends CApplicationComponent {
         return $meals;
     }
 
+    function getBestRestaurantMeals($max = 2, $not_in = array()) {
+        $this->_checkRestaurantId();
+        return Meals::getBestRestaurantMeals($this->_restaurant_id, $max, $not_in);
+    }
+
     /**
      *
      * @return type
      */
     function getNumberOfMeals() {
+        $this->_checkRestaurantId();
         return Meals::numberOfMeals($this->_restaurant_id);
     }
 
@@ -67,6 +73,11 @@ class MealsManager extends CApplicationComponent {
      */
     function getCompleteInfo() {
         return Meals::getCompleteInfo($this->_meal_id);
+    }
+
+    private function _checkRestaurantId() {
+        if (is_null($this->_restaurant_id))
+            throw new BadFunctionCallException('restaurant_id can not be empty');
     }
 
 }

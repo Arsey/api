@@ -147,6 +147,14 @@ class Photos extends PlantEatersARMain {
         $this->update('access_status');
     }
 
+    /**
+     * Returns the photos list for a meal
+     * @param integer $meal_id
+     * @param integer $offset
+     * @param integer $limit
+     * @param string $access_status
+     * @return array
+     */
     public static function getMealPhotos($meal_id, $offset = 0, $limit = 25, $access_status = Constants::ACCESS_STATUS_PUBLISHED) {
         $photos_table = Photos::model()->tableName();
         $ratings_table = Ratings::model()->tableName();
@@ -169,9 +177,15 @@ class Photos extends PlantEatersARMain {
                         ->queryAll();
     }
 
+    /**
+     * This method sets a default photo for meal.
+     * @param integer $meal_id
+     */
     public static function makeDefaultPhoto($meal_id) {
         $db = Yii::app()->db;
+        /* At first we need just to reset all the meal photos and their default field to 0 */
         $db->createCommand("UPDATE  `photos` SET  `default` =  '0' WHERE  `photos`.`meal_id`=:meal_id")->execute(array(':meal_id' => $meal_id));
+
         $db->createCommand(
                         "UPDATE  `photos`
                     SET  `default` =  '1'
