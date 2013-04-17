@@ -164,7 +164,11 @@ class helper extends CApplicationComponent {
      */
     public function array_to_xml(array $arr, SimpleXMLElement $xml) {
         foreach ($arr as $k => $v) {
-            is_array($v) ? helper::array_to_xml($v, $xml->addChild($k)) : $xml->addChild($k, $v);
+            $key = $k;
+            if (is_numeric($k))
+                $key = 'item';
+
+            is_array($v) ? self::array_to_xml($v, $xml->addChild($key)) : $xml->addChild($key, htmlspecialchars($v, ENT_QUOTES));
         }
         return $xml;
     }

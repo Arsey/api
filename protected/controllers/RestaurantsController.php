@@ -40,6 +40,7 @@ class RestaurantsController extends ApiController {
                 if (!$model->save()) {
                     $this->_apiHelper->sendResponse(400, array('errors' => $model->errors));
                 } else {
+                    SearchManager::rotateIndexes();
                     $this->_apiHelper->sendResponse(201, array('results' => array('id' => $model->id)));
                 }
             } else {
@@ -75,7 +76,7 @@ class RestaurantsController extends ApiController {
         try {
             $results = $search->goSearch;
         } catch (DGSphinxSearchException $e) {
-            
+
             $this->_apiHelper->sendResponse(500, array('message' => 'Some problems with search server occurred'));
         }
 

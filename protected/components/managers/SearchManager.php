@@ -468,6 +468,7 @@ class SearchManager extends CApplicationComponent {
 
     public static function rotateIndexes() {
         shell_exec('indexer --rotate --all');
+        shell_exec('sudo /etc/init.d/sphinxsearch restart');
     }
 
     private function _isLatLng() {

@@ -293,9 +293,9 @@ class Meals extends PlantEatersARMain {
     }
 
     public static function getBestRestaurantMeals($restaurant_id, $max, $exclude = array()) {
-        $not_in='';
-        if(is_array($exclude)&&!empty($exclude))
-            $not_in='id NOT IN('.implode (',', $exclude).')';
+        $not_in = '';
+        if (is_array($exclude) && !empty($exclude))
+            $not_in = 'id NOT IN(' . implode(',', $exclude) . ')';
 
         return Yii::app()->db->createCommand()
                         ->select(array('id', 'name', 'ROUND(rating,1) as rating',))
@@ -309,6 +309,7 @@ class Meals extends PlantEatersARMain {
                             ':restaurant_id' => $restaurant_id,
                             ':access_status' => Constants::ACCESS_STATUS_PUBLISHED
                         ))
+                        ->order('rating DESC, name ASC')
                         ->limit($max)
                         ->queryAll();
     }
