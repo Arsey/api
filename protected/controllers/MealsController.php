@@ -100,6 +100,8 @@ class MealsController extends ApiController {
         $rating->meal_id = $meal->id;
         $rating->save();
 
+        SearchManager::rotateIndexes();
+
         $this->_apiHelper->sendResponse(200, array(
             'results' => array('meal_id' => $meal->id),
             'message' => 'Your meal was added, but you also need upload photo to it. If you will not do this, meal will not be avaliable in list of meals!'

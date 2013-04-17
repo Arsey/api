@@ -14,8 +14,17 @@ class FeedbacksController extends ApiController {
         /* also it must be availale by default */
         $feedback->access_status = Constants::ACCESS_STATUS_PUBLISHED;
         /* tryint to validate and save feedback into DB */
-        if ($feedback->save())
+        if ($feedback->save()) {
+            $message = new YiiMailMessage;
+            $message->view = 'feedback';
+            $message->setBody(array('user' => $this->_user_info, 'feedback' => $feedback));
+            $message->setSubject('Planteaters Feedback');
+            $message->addTo(helper::yiiparam('support_email'));
+            $message->from = $this->_user_info['email'];
+            Yii::app()->mail->send($message);
+
             $this->_apiHelper->sendResponse(200, array('results' => array('id' => $feedback->id)));
+        }
         $this->_apiHelper->sendResponse(400, array('errors' => $feedback->errors));
     }
 

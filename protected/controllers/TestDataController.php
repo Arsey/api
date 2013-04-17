@@ -62,6 +62,8 @@ class TestDataController extends CController {
             $this->_saveMeals();
         }
 
+        SearchManager::rotateIndexes();
+
         Yii::app()->end();
     }
 

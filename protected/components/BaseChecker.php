@@ -14,6 +14,14 @@ class BaseChecker extends CApplicationComponent {
         return $meal;
     }
 
+    public static function isMealPhotos($meal_id, $api_helper) {
+        $photos = Photos::getMealPhotos($meal_id);
+        if (!$photos)
+            $api_helper->sendResponse(400, array('errors' => sprintf(Constants::NO_MEAL_IMAGES, $meal_id)));
+
+        return $photos;
+    }
+
     public static function isRestaurant($id, $api_helper) {
         if (!$restaurant = Restaurants::model()->findByPk($id))
             $api_helper->sendResponse(400, array('errors' => sprintf(Constants::NO_RESTAURANT_WAS_FOUND, $id)));

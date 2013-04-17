@@ -53,16 +53,11 @@ return array(
     array('reports/mealreport', 'pattern' => $prefix . 'meal/<id:\d+>/report/<report:\w+>'),
     /* Add Meal */
     array('ratings/addrating', 'pattern' => $prefix . 'restaurant/<restaurant_id:\d+>/addmeal', 'verb' => 'POST'),
-    array('restaurants/createfromreference', 'pattern' => $prefix . 'restaurantfromreference', 'verb' => 'POST'),
+    /* Add a Meal Rating */
     array('ratings/addrating', 'pattern' => $prefix . 'meal/<meal_id:\d+>/addrating', 'verb' => 'POST'),
-
-    /////////
-    array('meals/addmealtorestaurant', 'pattern' => $prefix . 'restaurant/<restaurant_id:\d+>/meal', 'verb' => 'POST'),
-    array('ratings/ratemeal', 'pattern' => $prefix . 'meal/<meal_id:\d+>/ratemeal', 'verb' => 'POST'),
-    //photo upload
-    array('images/addratingphoto', 'pattern' => $prefix . 'rating/<rating_id:\d+>/addphoto', 'verb' => 'POST'),
-    /* Add Meal Photo */
-    array('images/addmealphoto', 'pattern' => $prefix . 'meal/<id:\d+>/addphoto', 'verb' => 'POST'),
+    /* Create restaurant from reference(Google Places API) */
+    array('restaurants/createfromreference', 'pattern' => $prefix . 'restaurantfromreference', 'verb' => 'POST'),
+    /* Add Feedback */
     array('feedbacks/addfeedback', 'pattern' => $prefix . 'feedback', 'verb' => 'POST'),
     array('api/create', 'pattern' => $prefix . '<model:\w+>', 'verb' => 'POST'),
 );

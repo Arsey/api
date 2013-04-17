@@ -139,6 +139,8 @@ class RatingsController extends ApiController {
 
         Photos::makeDefaultPhoto($this->_meal_id);
 
+        SearchManager::rotateIndexes();
+
         if ($withmeal) {
             $this->_apiHelper->sendResponse(201, array('results' => array('meal_id' => $this->_meal_id),));
         } else {
