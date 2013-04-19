@@ -241,6 +241,8 @@ class Restaurants extends PlantEatersARMain {
     }
 
     public function getFullInfo($restaurant_id) {
+        $meals_table = Meals::model()->tableName();
+        $restaurants_table = Restaurants::model()->tableName();
         $restaurant = Yii::app()->db->createCommand()
                 ->select(array(
                     'id',
@@ -263,12 +265,8 @@ class Restaurants extends PlantEatersARMain {
                     'createtime',
                     'modifiedtime',
                     'access_status',
-                    '(SELECT COUNT(*) AS count
-                                FROM ' . Meals::model()->tableName() . '
-                                    WHERE `restaurant_id`=\'' . $restaurant_id . '\' AND `access_status`=\'published\'
-                             ) AS number_of_meals',
-                ))
-                ->from(Restaurants::model()->tableName())
+                    "(SELECT COUNT(*) AS count FROM $meals_table WHERE `restaurant_id`='$restaurant_id' AND `access_status`='published') AS number_of_meals",))
+                ->from($restaurants_table)
                 ->where(array('and', 'id=:id'), array(':id' => $restaurant_id,))
                 ->queryRow();
 
@@ -279,6 +277,23 @@ class Restaurants extends PlantEatersARMain {
         }
 
         return $restaurant;
+    }
+
+    public function updateRating($id = null) {
+        $meals_table = Meals::model()->tableName();
+        $ratings_table = Ratings::model()->tableName();
+        $restaurants_table = Restaurants::model()->tableName();
+        Yii::app()->db->createCommand("
+            UPDATE `$restaurants_table` SET
+                `$restaurants_table`.`rating`=
+                    (
+                        SELECT AVG(rating) FROM `$meals_table` WHERE `$meals_table`.`restaurant_id`=:id AND access_status=:access_status AND
+                        (SELECT count(*) FROM `$ratings_table` WHERE `$ratings_table`.`meal_id`=`$meals_table`.`id` AND `$ratings_table`.`access_status`=:access_status)>=1
+                    )
+            WHERE `$restaurants_table`.`id`=:id")
+                ->query(array(
+                    ':id' => is_null($id) ? $this->id : $id,
+                    ':access_status' => Constants::ACCESS_STATUS_PUBLISHED));
     }
 
     /**

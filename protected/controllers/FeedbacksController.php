@@ -20,7 +20,7 @@ class FeedbacksController extends ApiController {
             $message->setBody(array('user' => $this->_user_info, 'feedback' => $feedback));
             $message->setSubject('Planteaters Feedback');
             $message->addTo(helper::yiiparam('support_email'));
-            $message->from = $this->_user_info['email'];
+            $message->from = helper::yiiparam('support_email');
             Yii::app()->mail->send($message);
 
             $this->_apiHelper->sendResponse(200, array('results' => array('id' => $feedback->id)));

@@ -176,6 +176,18 @@ class ApiController extends Controller {
                     $with = true;
                 }
             }
+            $where = null;
+            foreach ($this->_parsed_attributes['where'] as $key=>$attr) {
+
+                if (preg_match('/where_(\w+)/', $key, $matches)) {
+                    $findCriteria->condition = $matches[1]."='".$attr."'";
+                }
+            }
+            if(!is_null($where)){
+                $findCriteria->condition=$where;
+            }
+
+
 
             $models = $model_name::model()->findAll($findCriteria);
         } else {
@@ -193,7 +205,9 @@ class ApiController extends Controller {
                 $result = $model->attributes;
                 if ($with) {
                     foreach ($this->_parsed_attributes['with'] as $w) {
-                        $result[$w] = $model->$w->attributes;
+                        if (is_object($model->$w)) {
+                            $result[$w] = $model->$w->attributes;
+                        }
                     }
                 }
                 $results[strtolower($model_name)][] = $result;

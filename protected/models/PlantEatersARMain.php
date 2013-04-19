@@ -111,7 +111,7 @@ class PlantEatersARMain extends CActiveRecord {
             }
             return $attributes_return;
         }
-        return $model->attributes;
+        return is_null($not_model_attributes)?$model->attributes:$not_model_attributes;
     }
 
 }
